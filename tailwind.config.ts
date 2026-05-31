@@ -1,0 +1,132 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        surface: {
+          DEFAULT: "var(--c-surface)",
+          bright: "var(--c-surface-bright)",
+          dim: "var(--c-surface-dim)",
+          variant: "var(--c-surface-variant)",
+          "container-lowest": "var(--c-surface-container-lowest)",
+          "container-low": "var(--c-surface-container-low)",
+          container: "var(--c-surface-container)",
+          "container-high": "var(--c-surface-container-high)",
+          "container-highest": "var(--c-surface-container-highest)",
+          tint: "var(--c-surface-tint)",
+        },
+        "on-surface": {
+          DEFAULT: "var(--c-on-surface)",
+          variant: "var(--c-on-surface-variant)",
+        },
+        primary: {
+          DEFAULT: "var(--c-primary)",
+          container: "var(--c-primary-container)",
+          fixed: "var(--c-primary-fixed)",
+          "fixed-dim": "var(--c-primary-fixed-dim)",
+        },
+        "on-primary": {
+          DEFAULT: "var(--c-on-primary)",
+          container: "var(--c-on-primary-container)",
+          fixed: "var(--c-on-primary-fixed)",
+          "fixed-variant": "var(--c-on-primary-fixed-variant)",
+        },
+        secondary: {
+          DEFAULT: "var(--c-secondary)",
+          container: "var(--c-secondary-container)",
+          fixed: "var(--c-secondary-fixed)",
+          "fixed-dim": "var(--c-secondary-fixed-dim)",
+        },
+        "on-secondary": {
+          DEFAULT: "var(--c-on-secondary)",
+          container: "var(--c-on-secondary-container)",
+          fixed: "var(--c-on-secondary-fixed)",
+          "fixed-variant": "var(--c-on-secondary-fixed-variant)",
+        },
+        tertiary: {
+          DEFAULT: "var(--c-tertiary)",
+          container: "var(--c-tertiary-container)",
+          fixed: "var(--c-tertiary-fixed)",
+          "fixed-dim": "var(--c-tertiary-fixed-dim)",
+        },
+        "on-tertiary": {
+          DEFAULT: "var(--c-on-tertiary)",
+          container: "var(--c-on-tertiary-container)",
+          fixed: "var(--c-on-tertiary-fixed)",
+          "fixed-variant": "var(--c-on-tertiary-fixed-variant)",
+        },
+        error: {
+          DEFAULT: "var(--c-error)",
+          container: "var(--c-error-container)",
+        },
+        "on-error": {
+          DEFAULT: "var(--c-on-error)",
+          container: "var(--c-on-error-container)",
+        },
+        outline: {
+          DEFAULT: "var(--c-outline)",
+          variant: "var(--c-outline-variant)",
+        },
+        background: "var(--c-background)",
+        "on-background": "var(--c-on-background)",
+        "inverse-surface": "var(--c-inverse-surface)",
+        "inverse-on-surface": "var(--c-inverse-on-surface)",
+        "inverse-primary": "var(--c-inverse-primary)",
+        "band-excellent": "var(--c-band-excellent)",
+        "band-good": "var(--c-band-good)",
+        "band-average": "var(--c-band-average)",
+        "band-low": "var(--c-band-low)",
+        "referral-bg": "var(--c-referral-bg)",
+        "referral-border": "var(--c-referral-border)",
+        "referral-text": "var(--c-referral-text)",
+      },
+      fontFamily: {
+        body: ["Inter", "system-ui", "sans-serif"],
+        heading: ["Inter", "system-ui", "sans-serif"],
+        mono: ["JetBrains Mono", "monospace"],
+      },
+      fontSize: {
+        "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }],
+        "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600" }],
+        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "500" }],
+        "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }],
+        "data-lg": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+        "data-md": ["16px", { lineHeight: "20px", fontWeight: "500" }],
+      },
+      spacing: {
+        unit: "4px",
+        "section-gap": "64px",
+        "container-max": "1280px",
+        "margin-mobile": "16px",
+        gutter: "24px",
+        "card-padding": "24px",
+      },
+      borderRadius: {
+        sm: "0.25rem",
+        DEFAULT: "0.5rem",
+        md: "0.75rem",
+        lg: "1rem",
+        xl: "1.5rem",
+        "2xl": "1rem",
+        full: "9999px",
+      },
+      boxShadow: {
+        card: "var(--shadow-card)",
+        "card-hover": "var(--shadow-card-hover)",
+        dialog: "var(--shadow-dialog)",
+        ghost: "0 10px 40px -10px rgba(25, 28, 30, 0.06)",
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;

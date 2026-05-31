@@ -1,0 +1,233 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --c-primary: #062a60;
+  --c-primary-container: #1e4a90;
+  --c-primary-fixed: #dbeafe;
+  --c-primary-fixed-dim: #bfdbfe;
+  --c-on-primary: #ffffff;
+  --c-on-primary-container: #f0f4ff;
+  --c-on-primary-fixed: #061230;
+  --c-on-primary-fixed-variant: #0e3a78;
+  --c-inverse-primary: #93c5fd;
+
+  --c-secondary: #0390d4;
+  --c-secondary-container: #27b7f9;
+  --c-secondary-fixed: #e0f2fe;
+  --c-secondary-fixed-dim: #bae6fd;
+  --c-on-secondary: #ffffff;
+  --c-on-secondary-container: #f0f9ff;
+  --c-on-secondary-fixed: #082f49;
+  --c-on-secondary-fixed-variant: #0369a1;
+
+  --c-tertiary: #0f766e;
+  --c-tertiary-container: #14b8a6;
+  --c-tertiary-fixed: #ccfbf1;
+  --c-tertiary-fixed-dim: #99f6e4;
+  --c-on-tertiary: #ffffff;
+  --c-on-tertiary-container: #f0fdfa;
+  --c-on-tertiary-fixed: #042f2e;
+  --c-on-tertiary-fixed-variant: #115e59;
+
+  --c-error: #dc2626;
+  --c-error-container: #fee2e2;
+  --c-on-error: #ffffff;
+  --c-on-error-container: #991b1b;
+
+  --c-surface: #f8fafc;
+  --c-surface-bright: #f8fafc;
+  --c-surface-dim: #e2e8f0;
+  --c-surface-variant: #e2e8f0;
+  --c-surface-container-lowest: #ffffff;
+  --c-surface-container-low: #f1f5f9;
+  --c-surface-container: #eef2f6;
+  --c-surface-container-high: #e8ecf1;
+  --c-surface-container-highest: #e2e8f0;
+  --c-surface-tint: #1e4a90;
+
+  --c-on-surface: #0f172a;
+  --c-on-surface-variant: #475569;
+  --c-on-background: #0f172a;
+
+  --c-outline: #94a3b8;
+  --c-outline-variant: #cbd5e1;
+
+  --c-background: #f8fafc;
+  --c-inverse-surface: #1e293b;
+  --c-inverse-on-surface: #f1f5f9;
+
+  --c-band-excellent: #059669;
+  --c-band-good: #1e4a90;
+  --c-band-average: #0390d4;
+  --c-band-low: #dc2626;
+
+  --c-referral-bg: #f0f4ff;
+  --c-referral-border: #93c5fd;
+  --c-referral-text: #062a60;
+
+  --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.04);
+  --shadow-card-hover: 0px 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-dialog: 0px 16px 48px rgba(0, 0, 0, 0.12);
+  --radius-element: 0.5rem;
+  --radius-container: 1rem;
+  --radius-pill: 9999px;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-on-surface font-body antialiased;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+  }
+
+  :focus-visible {
+    @apply outline outline-2 outline-offset-2;
+    outline-color: var(--c-primary);
+    border-radius: var(--radius-element);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+@layer components {
+  .card {
+    background: var(--c-surface-container-lowest);
+    border-radius: var(--radius-container);
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(188, 202, 192, 0.3);
+  }
+
+  .card-interactive {
+    @apply card transition-shadow duration-200;
+  }
+
+  .card-interactive:hover {
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--c-primary-container);
+  }
+
+  .btn-primary {
+    background: var(--c-primary);
+    color: var(--c-on-primary);
+    border-radius: var(--radius-element);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.01em;
+    padding: 0.625rem 1.25rem;
+    transition: opacity 0.15s ease;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.9;
+  }
+
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--c-on-surface-variant);
+    border: 1px solid var(--c-outline-variant);
+    border-radius: var(--radius-element);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.01em;
+    padding: 0.625rem 1.25rem;
+    transition: all 0.15s ease;
+  }
+
+  .btn-secondary:hover {
+    background: var(--c-surface-container);
+    color: var(--c-on-surface);
+  }
+
+  .input-field {
+    background: var(--c-surface-container);
+    border: 2px solid transparent;
+    border-radius: var(--radius-element);
+    padding: 0.625rem 1rem;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--c-on-surface);
+    outline: none;
+    transition: all 0.15s ease;
+  }
+
+  .input-field:focus {
+    background: var(--c-surface-container-lowest);
+    border-color: var(--c-primary-container);
+    box-shadow: 0 0 0 3px rgba(0, 105, 72, 0.1);
+  }
+
+  .input-field::placeholder {
+    color: var(--c-on-surface-variant);
+    opacity: 0.5;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .tag-primary {
+    background: var(--c-primary-fixed-dim);
+    color: var(--c-on-primary-fixed);
+  }
+
+  .tag-secondary {
+    background: var(--c-secondary-fixed-dim);
+    color: var(--c-on-secondary-fixed);
+  }
+
+  .tag-amber {
+    background: var(--c-tertiary-fixed-dim);
+    color: var(--c-on-tertiary-fixed);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--radius-element);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    background: var(--c-secondary-container);
+    color: var(--c-on-secondary-container);
+  }
+}
+
+@layer utilities {
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
