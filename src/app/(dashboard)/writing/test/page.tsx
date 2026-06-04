@@ -88,24 +88,30 @@ export default function WritingTestPage() {
   // === SUBMITTING SCREEN ===
   if (phase === "submitting") {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6">
-        <span className="material-symbols-outlined text-[64px] text-primary mb-6 animate-spin">progress_activity</span>
-        <h2 className="font-headline-lg text-headline-lg text-on-surface mb-2">Generating Your Report</h2>
-        <p className="font-body-lg text-body-lg text-on-surface-variant mb-6 max-w-md">
-          Our AI is analyzing your writing. This usually takes 15–30 seconds.
-        </p>
-        <div className="w-full max-w-xs h-1.5 bg-surface-container-high rounded-full overflow-hidden">
-          <div className="h-full bg-primary rounded-full animate-pulse w-2/3" />
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6 max-w-[720px] mx-auto">
+        <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 p-10 md:p-14 flex flex-col items-center w-full">
+          <div className="relative w-[120px] h-[120px] mb-10">
+            <div className="absolute inset-0 rounded-full bg-primary-container animate-pulse-ring" style={{ animationDelay: "0s" }} />
+            <div className="absolute inset-0 rounded-full bg-primary-container animate-pulse-ring" style={{ animationDelay: "0.5s" }} />
+            <div className="absolute inset-[25%] rounded-full bg-primary flex items-center justify-center shadow-lg animate-pulse-dot z-10" style={{ boxShadow: "0 0 25px rgba(0, 105, 72, 0.3)" }}>
+              <span className="material-symbols-outlined text-on-primary text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>article</span>
+            </div>
+          </div>
+          <h1 className="text-headline-lg font-bold text-primary mb-4">Analyzing your essay...</h1>
+          <p className="text-body-md text-on-surface-variant max-w-md mb-10">
+            Our AI is evaluating Task Response, Coherence, Vocabulary, and Grammar. This usually takes 15-30 seconds.
+          </p>
+          <div className="flex items-end justify-center gap-1.5 h-10 mb-10">
+            {Array.from({ length: 8 }, (_, i) => (
+              <div key={i} className="w-1 bg-primary-container rounded-full" style={{ animation: "waveformBar 1.2s ease-in-out infinite", animationDelay: `${i * 0.15}s` }} />
+            ))}
+          </div>
+          <p className="text-label-sm text-on-surface-variant">{wordCount} words submitted</p>
         </div>
-        <p className="font-label-md text-label-md text-on-surface-variant mt-6">
-          {wordCount} words submitted
-        </p>
         {error && (
-          <div className="mt-8 bg-error-container/30 border border-error/20 rounded-xl p-5 max-w-md">
-            <p className="font-body-md text-body-md text-error mb-3">{error}</p>
-            <button onClick={handleSubmit} className="bg-primary text-on-primary font-label-md text-label-md px-5 py-2 rounded-full hover:opacity-90 transition-opacity">
-              Retry Submission
-            </button>
+          <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
+            <p className="text-body-md text-error mb-3">{error}</p>
+            <button onClick={handleSubmit} className="bg-primary text-on-primary text-label-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Retry</button>
           </div>
         )}
       </div>

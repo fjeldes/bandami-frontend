@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
-import { redirectToCheckout } from "@/lib/stripe";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -28,9 +27,9 @@ export function Sidebar() {
     { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
     { href: "/writing", label: "Writing", icon: "edit_note" },
     { href: "/speaking", label: "Speaking", icon: "record_voice_over" },
-    { href: "/reading", label: "Reading", icon: "menu_book" },
-    { href: "/listening", label: "Listening", icon: "headphones" },
-    { href: "/history", label: "History", icon: "history" },
+    { href: "/reading", label: "Reading", icon: "menu_book", comingSoon: true },
+    { href: "/listening", label: "Listening", icon: "headphones", comingSoon: true },
+    { href: "/history", label: "Reports", icon: "analytics" },
     { href: "/settings", label: "Settings", icon: "settings" },
   ];
 
@@ -46,19 +45,26 @@ export function Sidebar() {
 
   const navLinks = navItems.map((item) => {
     const isActive = pathname?.startsWith(item.href);
-    return (
-      <Link
-        key={item.href}
-        href={item.href}
-        onClick={() => setMobileOpen(false)}
-        className={`flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 text-label-sm ${
-          isActive
-            ? "text-primary font-semibold border-r-2 border-primary bg-surface-container-low"
-            : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
-        }`}
-      >
-        <span className="material-symbols-outlined mr-2.5 text-[20px]" aria-hidden="true" style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}>{item.icon}</span>
+    const linkContent = (
+      <span className={`flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 text-label-sm w-full ${
+        isActive && !item.comingSoon
+          ? "text-primary font-semibold border-r-2 border-primary bg-surface-container-low"
+          : item.comingSoon
+          ? "text-on-surface-variant/40 cursor-default"
+          : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
+      }`}>
+        <span className="material-symbols-outlined mr-2.5 text-[20px]" aria-hidden="true" style={isActive && !item.comingSoon ? { fontVariationSettings: "'FILL' 1" } : undefined}>{item.icon}</span>
         <span>{item.label}</span>
+        {item.comingSoon && (
+          <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded bg-surface-variant text-on-surface-variant/50">Soon</span>
+        )}
+      </span>
+    );
+    return item.comingSoon ? (
+      <div key={item.href}>{linkContent}</div>
+    ) : (
+      <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}>
+        {linkContent}
       </Link>
     );
   });
@@ -89,9 +95,9 @@ export function Sidebar() {
       </button>
 
       {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-50" role="dialog" aria-modal="true" aria-label="Navigation menu">
+        <div className="md:hidden fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label="Navigation menu">
           <div className="absolute inset-0 bg-black/30" onClick={() => setMobileOpen(false)} />
-          <nav className="absolute left-0 top-0 bottom-0 w-72 bg-surface shadow-xl flex flex-col">
+          <nav className="absolute left-0 top-0 bottom-0 w-64 max-w-[80vw] bg-surface shadow-xl flex flex-col">
             <div className="p-6 border-b border-outline-variant/30">
               <div className="flex items-center justify-between">
                 <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-48 w-auto" priority />
@@ -121,7 +127,7 @@ export function Sidebar() {
 
       <nav className="hidden md:flex h-screen w-60 fixed left-0 top-0 border-r border-outline-variant/30 bg-surface-container-lowest flex-col px-3 z-50">
         <div className="my-6 px-2">
-          <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-28 w-auto" priority />
+          <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-20 w-auto" priority />
         </div>
         <div className="flex-1 space-y-0.5">
           {navLinks}
@@ -135,9 +141,9 @@ export function Sidebar() {
         </div>
         <div className="mt-auto pt-4 border-t border-outline-variant/30 space-y-1.5 mb-3">
           {!isAdmin && !isPremium && (
-            <button onClick={() => redirectToCheckout("premium")} className="w-full py-2 px-3 rounded-full bg-primary-container text-on-primary text-label-sm hover:bg-primary hover:text-on-primary transition-colors text-center">
+            <Link href="/pricing" className="w-full py-2 px-3 rounded-full bg-primary-container text-on-primary text-label-sm hover:bg-primary hover:text-on-primary transition-colors text-center block">
               Upgrade to Premium
-            </button>
+            </Link>
           )}
           {isPremium && (
             <div className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-primary-fixed/30 text-primary-fixed text-label-sm">

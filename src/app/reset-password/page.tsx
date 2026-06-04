@@ -19,8 +19,8 @@ function ResetPasswordForm() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    
     setError("");
 
     if (password.length < 8) { setError("Password must be at least 8 characters."); return; }
@@ -72,11 +72,11 @@ function ResetPasswordForm() {
       <div className="absolute inset-0 z-0 opacity-40 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.05), transparent 25%), radial-gradient(circle at 85% 30%, rgba(254, 166, 25, 0.05), transparent 25%)" }} />
       <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-gutter md:p-[32px] z-10 relative">
         <header className="text-center mb-8">
-          <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-48 w-auto mx-auto" priority />
+          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority />
           <p className="text-body-md text-on-surface-variant mt-2">Choose a new password</p>
         </header>
         {error && <p className="text-body-md text-error bg-error-container/30 rounded-lg px-4 py-3 mb-4 text-center">{error}</p>}
-        <form className="space-y-5" onSubmit={handleSubmit}>
+        <div className="space-y-5" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-1.5">
             <label className="text-label-sm text-on-surface" htmlFor="password">New Password</label>
             <div className="relative">
@@ -91,10 +91,10 @@ function ResetPasswordForm() {
               <input className="w-full bg-surface-container text-on-surface text-body-md rounded-lg py-3 pl-10 pr-4 border-2 border-transparent focus:bg-surface-container-lowest focus:border-primary-container focus:ring-0 outline-none transition-all" id="confirmPassword" type="password" placeholder="••••••••" required minLength={8} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
             </div>
           </div>
-          <button type="submit" disabled={loading} className="w-full bg-primary-container text-on-primary font-mono text-data-md py-3.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all mt-2 shadow-sm disabled:opacity-60">
+          <button type="button" disabled={loading} className="w-full bg-primary-container text-on-primary font-mono text-data-md py-3.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all mt-2 shadow-sm disabled:opacity-60">
             {loading ? "Resetting..." : "Reset Password"}
           </button>
-        </form>
+        </div>
       </main>
     </div>
   );

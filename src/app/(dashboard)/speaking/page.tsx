@@ -5,7 +5,6 @@ import Link from "next/link";
 import { getQuestions, getUserExams } from "@/lib/api";
 import type { Question, ExamWithEvaluation } from "@/lib/types";
 import { useAuthStore } from "@/hooks/useAuth";
-import { redirectToCheckout } from "@/lib/stripe";
 
 export default function SpeakingListPage() {
   const user = useAuthStore((s) => s.user);
@@ -19,11 +18,11 @@ export default function SpeakingListPage() {
 
   useEffect(() => {
     Promise.all([getQuestions({ exam_type: "speaking" }), getUserExams({ limit: 100 })])
-      .then(([qs, exams]) => {
+      .then(([qs, result]) => {
         setQuestions(qs);
         const taken = new Set<string>();
         const scoreMap: Record<string, number> = {};
-        for (const exam of exams) {
+        for (const exam of result.exams) {
           if (exam.question_id) {
             taken.add(exam.question_id);
             const ev = exam.evaluations?.[0];
@@ -67,13 +66,13 @@ export default function SpeakingListPage() {
               Full IELTS Test
             </Link>
           ) : (
-            <button
-              onClick={() => redirectToCheckout("premium")}
+            <Link
+              href="/pricing"
               className="px-5 py-2.5 rounded-full bg-secondary-container text-on-secondary-container text-label-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shrink-0"
             >
               <span className="material-symbols-outlined text-[18px]">lock</span>
               Full Test — Premium
-            </button>
+            </Link>
           )}
         </div>
       </div>
@@ -101,13 +100,13 @@ export default function SpeakingListPage() {
         <div className="text-center py-16 text-body-md text-on-surface-variant">No questions found.</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {filtered.map((q) => {
+          {filtered.map((q, idx) => {
             const isTaken = takenIds.has(q.id);
             const bestScore = scores[q.id];
             const module = q.module || "part2";
 
             return (
-              <div key={q.id} className="group relative bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-4 transition-all duration-300 hover:shadow-lg hover:border-primary/20 flex flex-col h-full">
+              <div key={q.id} className="group relative bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-4 hover:shadow-lg hover:border-primary/20 flex flex-col h-full animate-fade-in-up" style={{ animationDelay: `${Math.min(idx * 0.05, 1)}s` }}>
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex flex-wrap gap-1.5">
                     <span className="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm uppercase tracking-wide">{partLabel[module] || module}</span>

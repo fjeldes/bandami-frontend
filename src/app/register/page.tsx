@@ -21,23 +21,14 @@ function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const register = useAuthStore((s) => s.register);
   const user = useAuthStore((s) => s.user);
-  const isLoading = useAuthStore((s) => s.isLoading);
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && user) router.push("/dashboard");
-  }, [isLoading, user, router]);
+    if (user) router.push("/dashboard");
+  }, [user, router]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <span className="material-symbols-outlined text-[40px] text-primary animate-spin">progress_activity</span>
-      </div>
-    );
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    if (loading) return;
     setError("");
 
     if (password !== confirmPassword) {
@@ -77,9 +68,9 @@ function RegisterForm() {
         }}
       />
 
-      <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-gutter md:p-[32px] z-10 relative">
+      <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-gutter md:p-[32px] z-10 relative animate-scale-in">
         <header className="text-center mb-8">
-          <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-48 w-auto mx-auto" priority />
+          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority />
           <p className="text-body-md text-on-surface-variant mt-2">Create your free account</p>
         </header>
 
@@ -117,7 +108,7 @@ function RegisterForm() {
           </p>
         )}
 
-        <form className="space-y-5" onSubmit={handleSubmit}>
+        <div className="space-y-5" onKeyDown={(e) => e.key === "Enter" && handleSubmit()}>
           <div className="flex flex-col gap-1.5">
             <label className="text-label-sm text-on-surface" htmlFor="name">
               Full Name
@@ -204,13 +195,14 @@ function RegisterForm() {
           </div>
 
           <button
-            type="submit"
+            type="button"
             disabled={loading}
+            onClick={handleSubmit}
             className="w-full bg-primary text-on-primary font-mono text-data-md py-3.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all mt-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Creating Account..." : "Create Account"}
           </button>
-        </form>
+        </div>
 
         <p className="text-center mt-8 text-body-md text-on-surface-variant">
           Already have an account?{" "}

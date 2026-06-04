@@ -9,6 +9,7 @@ export interface User {
   subscription_tier: string;
   role?: string;
   referral_code?: string;
+  referral_discounts?: number;
 }
 
 interface AuthState {
@@ -32,19 +33,19 @@ function getRefreshToken(): string | null {
   return localStorage.getItem("refresh_token");
 }
 
-function setAuthCookie() {
-  document.cookie = `auth_status=1; path=/; max-age=2592000; SameSite=Lax`;
+function setAuthCookie(token: string) {
+  document.cookie = `auth_token=${token}; path=/; max-age=2592000; SameSite=Lax`;
 }
 
 function removeAuthCookie() {
-  document.cookie = "auth_status=; path=/; max-age=0";
+  document.cookie = "auth_token=; path=/; max-age=0";
 }
 
 export function storeTokens(access: string, refresh: string) {
   if (typeof window === "undefined") return;
   sessionStorage.setItem("access_token", access);
   localStorage.setItem("refresh_token", refresh);
-  setAuthCookie();
+  setAuthCookie(access);
 }
 
 function clearTokens() {
@@ -90,11 +91,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
 
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 5000);
       const res = await fetch(`${API_BASE}/auth/refresh`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh_token: refresh }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
       if (!res.ok) {
         if (!get().user) clearTokens();

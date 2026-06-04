@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/hooks/useAuth";
 import { getDashboardStats, getUserExams, apiFetch } from "@/lib/api";
@@ -54,7 +54,7 @@ function OnboardingOverlay({ onDismiss }: { onDismiss: () => void }) {
   const s = steps[step];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4">
       <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/50 p-8 max-w-sm w-full text-center relative">
         <button onClick={onDismiss} className="absolute top-3 right-3 p-1 text-on-surface-variant hover:text-on-surface">
           <span className="material-symbols-outlined">close</span>
@@ -104,10 +104,16 @@ export default function DashboardPage() {
   const [targetInput, setTargetInput] = useState("");
   const [refCredits, setRefCredits] = useState(0);
   const [refCount, setRefCount] = useState(0);
+  const [activityPage, setActivityPage] = useState(1);
+  const ACTIVITY_PAGE_SIZE = 5;
+  const [studyPlan, setStudyPlan] = useState<any[] | null>(null);
+  const [planLoading, setPlanLoading] = useState(false);
+  const [planMessage, setPlanMessage] = useState("");
+  const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
 
   useEffect(() => {
     Promise.all([getDashboardStats(), getUserExams({ limit: 30 })])
-      .then(([s, e]) => { setStats(s); setExams(e.reverse()); })
+      .then(([s, result]) => { setStats(s); setExams(result.exams.reverse()); })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
       .finally(() => setLoading(false));
 
@@ -117,8 +123,8 @@ export default function DashboardPage() {
     const onboarded = typeof window !== "undefined" ? localStorage.getItem("ielts_onboarded") : "1";
     if (!onboarded) setShowOnboarding(true);
 
-    apiFetch<{ credits_remaining: number; referral_count: number }>("/users/me/referral")
-      .then((r) => { setRefCredits(r.credits_remaining); setRefCount(r.referral_count); })
+    apiFetch<{ has_referral_discount: boolean; referral_count: number }>("/users/me/referral")
+      .then((r) => { setRefCredits(0); setRefCount(r.referral_count); })
       .catch(() => {});
   }, []);
 
@@ -135,6 +141,30 @@ export default function DashboardPage() {
     }
     setShowTargetInput(false);
   };
+
+  const bandHistory = exams
+    .filter((e) => e.evaluations?.[0]?.overall_band != null)
+    .map((e) => ({
+      band: e.evaluations[0].overall_band,
+      date: new Date(e.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      type: e.exam_type,
+    }));
+
+  const bands = bandHistory.map((h) => h.band);
+  const latestBand = bands.length > 0 ? bands[bands.length - 1] : stats?.average_band;
+  const bestBand = stats?.highest_band ?? (bands.length > 0 ? Math.max(...bands) : null);
+
+  const streak = useMemo(() => {
+    let count = 0; const today = new Date(); today.setHours(0, 0, 0, 0);
+    for (let i = 0; i < 90; i++) { const d = new Date(today); d.setDate(d.getDate() - i); const ds = d.toDateString(); if (exams.some((e) => new Date(e.created_at).toDateString() === ds)) count++; else break; }
+    return count;
+  }, [exams]);
+
+  const totalTime = useMemo(() => {
+    const secs = exams.filter((e) => e.time_taken_seconds).reduce((a, e) => a + (e.time_taken_seconds || 0), 0);
+    const hrs = Math.floor(secs / 3600); const mins = Math.floor((secs % 3600) / 60);
+    if (hrs > 0) return `${hrs}h ${mins}m studied`; if (mins > 0) return `${mins}m studied`; return "";
+  }, [exams]);
 
   if (loading) {
     return (
@@ -171,17 +201,17 @@ export default function DashboardPage() {
   const limit = stats?.daily_eval_limit ?? 4;
   const evalsPct = limit > 0 ? Math.min(100, (used / limit) * 100) : 0;
 
-  const bandHistory = exams
-    .filter((e) => e.evaluations?.[0]?.overall_band != null)
-    .map((e) => ({
-      band: e.evaluations[0].overall_band,
-      date: new Date(e.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      type: e.exam_type,
-    }));
-
-  const bands = bandHistory.map((h) => h.band);
-  const latestBand = bands.length > 0 ? bands[bands.length - 1] : stats?.average_band;
-  const bestBand = stats?.highest_band ?? (bands.length > 0 ? Math.max(...bands) : null);
+  const generatePlan = async () => {
+    setPlanLoading(true);
+    try {
+      const result = await apiFetch<{ plan: any[]; message: string }>("/users/me/study-plan", { method: "POST" });
+      setStudyPlan(result.plan);
+      setPlanMessage(result.message);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Failed to generate plan");
+    }
+    setPlanLoading(false);
+  };
 
   const recentExams = exams.slice(-10);
   const writingBands = recentExams.filter((e) => e.exam_type === "writing" && e.evaluations?.[0]?.overall_band != null).map((e) => ({ b: e.evaluations[0].overall_band, d: new Date(e.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) }));
@@ -215,12 +245,41 @@ export default function DashboardPage() {
             <h1 className="text-headline-md font-bold text-on-surface">
               Welcome back{user?.full_name ? `, ${user.full_name.split(" ")[0]}` : ""}
             </h1>
-            <p className="text-body-md text-on-surface-variant mt-1">
-              {stats?.total_exams ? `${stats.total_exams} exams completed` : "Start practicing to see your stats"}
-            </p>
+            <div className="flex items-center gap-3 mt-1 flex-wrap">
+              <p className="text-body-md text-on-surface-variant">
+                {stats?.total_exams ? `${stats.total_exams} exams completed` : "Start practicing to see your stats"}
+              </p>
+              {streak > 1 && (
+                <span className="text-body-md text-secondary font-semibold flex items-center gap-1">🔥 {streak}-day streak</span>
+              )}
+              {totalTime !== "" && (
+                <span className="text-body-md text-on-surface-variant">· {totalTime}</span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-3">
-            {target != null ? (
+            {target != null && latestBand != null ? (
+              <div className="flex flex-col items-end gap-1">
+                <div className="flex items-center gap-2 bg-primary-fixed/30 rounded-full px-3 py-1.5">
+                  <span className="text-label-sm text-on-surface-variant">Target:</span>
+                  <span className="font-mono text-data-md font-bold text-primary">Band {target.toFixed(1)}</span>
+                  <button onClick={() => { setTarget(null); localStorage.removeItem("ielts_target"); }} className="text-on-surface-variant hover:text-error text-[14px] material-symbols-outlined">close</button>
+                </div>
+                {target > latestBand ? (
+                  <div className="w-48">
+                    <div className="flex justify-between text-label-sm text-on-surface-variant mb-0.5">
+                      <span>Band {latestBand.toFixed(1)}</span>
+                      <span>{((latestBand / target) * 100).toFixed(0)}% to target</span>
+                    </div>
+                    <div className="h-1.5 bg-surface-container rounded-full overflow-hidden">
+                      <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.min(100, (latestBand / target) * 100)}%` }} />
+                    </div>
+                  </div>
+                ) : (
+                  <span className="text-label-sm text-emerald-600">🎯 Target reached!</span>
+                )}
+              </div>
+            ) : target != null ? (
               <div className="flex items-center gap-2 bg-primary-fixed/30 rounded-full px-3 py-1.5">
                 <span className="text-label-sm text-on-surface-variant">Target:</span>
                 <span className="font-mono text-data-md font-bold text-primary">Band {target.toFixed(1)}</span>
@@ -249,8 +308,8 @@ export default function DashboardPage() {
           { icon: "analytics", label: "Average Band", value: stats?.average_band ? stats.average_band.toFixed(1) : "--", sub: `CEFR ${cefrLevel(stats?.average_band || 0)}`, color: "text-secondary-container" },
           { icon: "trending_up", label: "Best", value: bestBand ? bestBand.toFixed(1) : "--", sub: "highest score", color: "text-emerald-600" },
           { icon: "auto_awesome", label: "Progress", value: target && latestBand ? `${((latestBand / target) * 100).toFixed(0)}%` : "--", sub: target ? `to Band ${target.toFixed(1)}` : "set goal ↑", color: "text-primary" },
-        ].map((c) => (
-          <div key={c.label} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/40 shadow-sm">
+        ].map((c, idx) => (
+          <div key={c.label} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 animate-fade-in-up" style={{ animationDelay: `${0.1 + idx * 0.08}s` }}>
             <div className="flex items-center gap-2 mb-3">
               <span className={`material-symbols-outlined text-[18px] ${c.color}`}>{c.icon}</span>
               <span className="text-label-sm text-on-surface-variant">{c.label}</span>
@@ -279,7 +338,7 @@ export default function DashboardPage() {
                     <span className="text-label-sm text-on-surface-variant">Writing</span>
                     <span className="text-label-sm text-on-surface ml-auto font-mono">{writingBands[writingBands.length - 1].b.toFixed(1)}</span>
                   </div>
-                  <div className="h-20"><Sparkline points={writingBands.map((w) => w.b)} height={80} /></div>
+                  <div className="h-20 overflow-hidden"><Sparkline points={writingBands.map((w) => w.b)} height={80} /></div>
                 </div>
               )}
               {speakingBands.length >= 2 && (
@@ -289,7 +348,7 @@ export default function DashboardPage() {
                     <span className="text-label-sm text-on-surface-variant">Speaking</span>
                     <span className="text-label-sm text-on-surface ml-auto font-mono">{speakingBands[speakingBands.length - 1].b.toFixed(1)}</span>
                   </div>
-                  <div className="h-20"><Sparkline points={speakingBands.map((s) => s.b)} height={80} /></div>
+                  <div className="h-20 overflow-hidden"><Sparkline points={speakingBands.map((s) => s.b)} height={80} /></div>
                 </div>
               )}
             </div>
@@ -298,7 +357,7 @@ export default function DashboardPage() {
 
         {/* Activity Heatmap + Study Plan */}
         <div className="space-y-5">
-          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
             <h3 className="text-body-md font-semibold text-on-surface mb-3">This Week</h3>
             {daysThisWeek.every((d) => d.count === 0) ? (
               <div className="text-center py-4">
@@ -306,14 +365,23 @@ export default function DashboardPage() {
                 <p className="text-label-sm text-on-surface-variant">No activity yet this week. Start practicing!</p>
               </div>
             ) : (
-              <div className="flex items-end gap-1.5 h-16">
-                {daysThisWeek.map((d, i) => (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1">
+              <div className="flex items-end gap-1.5 h-16 overflow-hidden px-1">
+                {daysThisWeek.map((d, i) => {
+                  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                  const today = new Date();
+                  today.setDate(today.getDate() - (6 - i));
+                  const month = today.toLocaleDateString("en-US", { month: "short" });
+                  const dayNum = today.getDate();
+                  return (
+                  <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
                     <div className={`w-full rounded-sm transition-all ${d.count > 0 ? "bg-primary" : "bg-surface-variant"} ${d.count > 1 ? "opacity-100" : d.count > 0 ? "opacity-70" : "opacity-30"}`}
-                      style={{ height: `${Math.max(8, d.count * 20)}px` }} />
+                      style={{ height: `${Math.min(Math.max(4, d.count * 20), 64)}px` }} />
+                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] font-semibold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                      {d.count} {d.count === 1 ? "eval" : "evals"} · {month} {dayNum}
+                    </span>
                     <span className="text-[10px] text-on-surface-variant">{d.day}</span>
                   </div>
-                ))}
+                )})}
               </div>
             )}
           </div>
@@ -360,9 +428,22 @@ export default function DashboardPage() {
         {[
           { href: "/writing", icon: "edit", label: "Writing", sub: `${stats?.writing_exams ?? 0} completed` },
           { href: "/speaking", icon: "mic", label: "Speaking", sub: `${stats?.speaking_exams ?? 0} completed` },
-          { href: "/reading", icon: "menu_book", label: "Reading", sub: "Comprehension practice" },
-          { href: "/history", icon: "history", label: "History", sub: "Review past exams" },
+          { href: "/reading", icon: "menu_book", label: "Reading", sub: "Coming soon", comingSoon: true },
+          { href: "/history", icon: "analytics", label: "Reports", sub: "Review past exams" },
         ].map((a) => (
+          a.comingSoon ? (
+            <div key={a.href} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/40 shadow-sm opacity-50 cursor-default select-none">
+              <div className="flex items-center gap-3">
+                <div className="bg-surface-variant p-2.5 rounded-lg text-outline">
+                  <span className="material-symbols-outlined text-[24px]">{a.icon}</span>
+                </div>
+                <div>
+                  <h3 className="text-body-md font-semibold text-on-surface">{a.label}</h3>
+                  <p className="text-label-sm text-on-surface-variant">{a.sub}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
           <Link key={a.href} href={a.href} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/40 shadow-sm hover:border-primary hover:shadow-md transition-all group">
             <div className="flex items-center gap-3">
               <div className="bg-primary-container/20 p-2.5 rounded-lg text-primary group-hover:bg-primary-container/40 transition-colors">
@@ -374,8 +455,39 @@ export default function DashboardPage() {
               </div>
             </div>
           </Link>
+          )
         ))}
       </div>
+
+      {/* Study Plan (Premium) */}
+      {isPremium && (
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-body-md font-semibold text-on-surface">7-Day Study Plan</h3>
+            {!studyPlan && (
+              <button onClick={generatePlan} disabled={planLoading || exams.length === 0}
+                className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50 flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
+                {planLoading ? "Generating..." : "Generate Plan"}
+              </button>
+            )}
+          </div>
+          {planMessage && <p className="text-body-md text-on-surface-variant mb-4">{planMessage}</p>}
+          {studyPlan && studyPlan.length > 0 && (
+            <div className="space-y-2">
+              {studyPlan.map((item: any, i: number) => (
+                <div key={i} className="flex items-start gap-3 p-3 bg-surface-container rounded-lg">
+                  <span className="font-mono text-xs font-bold text-primary bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">{item.day}</span>
+                  <div>
+                    <p className="text-label-sm font-semibold text-on-surface">{item.focus}</p>
+                    <p className="text-label-sm text-on-surface-variant">{item.task}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Referral Banner */}
       <div className="bg-referral-bg rounded-xl border border-referral-border p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm mb-6">
@@ -386,9 +498,9 @@ export default function DashboardPage() {
           <div>
             <h3 className="text-body-md font-semibold text-on-surface">Earn Free Evaluations</h3>
             <p className="text-label-sm text-on-surface-variant mt-0.5">
-              {refCredits > 0
-                ? `You have ${refCredits} referral credits from ${refCount} ${refCount === 1 ? "friend" : "friends"}.`
-                : `Invite friends and earn +2 credits each. You both get rewarded.`}
+              {refCount > 0
+                ? `You have 50% off your next Week Pass from ${refCount} ${refCount === 1 ? "referral" : "referrals"}.`
+                : `Invite friends and earn 50% off your next Week Pass.`}
             </p>
           </div>
         </div>
@@ -409,13 +521,14 @@ export default function DashboardPage() {
             <span className="material-symbols-outlined text-[40px] text-outline mb-3">assignment</span>
             <p className="text-body-md text-on-surface-variant">No exams yet. Start practicing to see your activity here.</p>
             <div className="flex gap-3 justify-center mt-4">
-              <Link href="/writing" className="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity">Practice Writing</Link>
-              <Link href="/speaking" className="bg-primary text-on-primary px-4 py-2 rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity">Practice Speaking</Link>
+              <Link href="/writing" className="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all">Practice Writing</Link>
+              <Link href="/speaking" className="bg-primary text-on-primary px-4 py-2 rounded-lg text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all">Practice Speaking</Link>
             </div>
           </div>
         ) : (
-          <div className="divide-y divide-outline-variant/30">
-            {exams.slice(-8).reverse().map((exam) => {
+          <>
+            <div className="divide-y divide-outline-variant/30">
+              {exams.slice().reverse().slice((activityPage - 1) * ACTIVITY_PAGE_SIZE, activityPage * ACTIVITY_PAGE_SIZE).map((exam) => {
               const ev = exam.evaluations?.[0] || (exam as any).evaluations;
               const band = ev?.overall_band;
               return (
@@ -435,7 +548,32 @@ export default function DashboardPage() {
                 </div>
               );
             })}
-          </div>
+            </div>
+            {/* Pagination */}
+            {exams.length > ACTIVITY_PAGE_SIZE && (
+              <div className="flex items-center justify-between px-5 py-3 border-t border-outline-variant/40">
+                <span className="text-label-sm text-on-surface-variant">
+                  {((activityPage - 1) * ACTIVITY_PAGE_SIZE) + 1}–{Math.min(activityPage * ACTIVITY_PAGE_SIZE, exams.length)} of {exams.length}
+                </span>
+                <div className="flex gap-1">
+                  <button
+                    onClick={() => setActivityPage((p) => Math.max(1, p - 1))}
+                    disabled={activityPage === 1}
+                    className="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors disabled:opacity-30 disabled:cursor-default"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+                  </button>
+                  <button
+                    onClick={() => setActivityPage((p) => Math.min(Math.ceil(exams.length / ACTIVITY_PAGE_SIZE), p + 1))}
+                    disabled={activityPage * ACTIVITY_PAGE_SIZE >= exams.length}
+                    className="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors disabled:opacity-30 disabled:cursor-default"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

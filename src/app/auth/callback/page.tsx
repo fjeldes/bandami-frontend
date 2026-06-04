@@ -19,7 +19,6 @@ function AuthCallbackInner() {
     const handleCallback = async () => {
       const verificationToken = searchParams.get("token");
       const accessToken = searchParams.get("access_token");
-      const refreshToken = searchParams.get("refresh_token");
       const errorParam = searchParams.get("error");
 
       if (errorParam) {
@@ -31,8 +30,9 @@ function AuthCallbackInner() {
         if (verificationToken) {
           await verifyEmail(verificationToken);
           router.push("/dashboard");
-        } else if (accessToken && refreshToken) {
-          setTokens(accessToken, refreshToken);
+        } else if (accessToken) {
+          sessionStorage.setItem("access_token", accessToken);
+          // Refresh token is set as HttpOnly cookie by the backend oauth redirect
           router.push("/dashboard");
         } else {
           setError("Invalid callback parameters.");

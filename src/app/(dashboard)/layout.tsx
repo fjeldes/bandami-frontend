@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "@/components/ui/Sidebar";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useAuthStore } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { getDashboardStats } from "@/lib/api";
 import type { DashboardStats } from "@/lib/types";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user);
   const isLoading = useAuthStore((s) => s.isLoading);
+  const { dark, toggle: toggleTheme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -32,7 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  const isFullScreen = (pathname?.includes("/test") || pathname?.includes("/results")) && user?.role !== "admin";
+  const isFullScreen = pathname?.includes("/test") && user?.role !== "admin";
   const used = stats?.daily_evals_used ?? 0;
   const limit = stats?.daily_eval_limit ?? 4;
 
@@ -47,6 +49,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <span className="material-symbols-outlined text-[16px]">bolt</span>
                 {used}/{limit} today
               </div>
+              <button onClick={toggleTheme} className="text-on-surface-variant hover:text-primary transition-colors p-1" aria-label="Toggle dark mode">
+                <span className="material-symbols-outlined text-[20px]">{dark ? "light_mode" : "dark_mode"}</span>
+              </button>
               <Link href="/settings" aria-label="Settings" className="text-on-surface-variant hover:text-primary transition-colors">
                 <span className="material-symbols-outlined">account_circle</span>
               </Link>
@@ -55,21 +60,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         )}
 
         {isFullScreen ? (
-          <ErrorBoundary>{children}</ErrorBoundary>
+          <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><span className="material-symbols-outlined text-[40px] text-primary animate-spin">progress_activity</span></div>}>
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </Suspense>
         ) : (
-          <main className="flex-1 p-4 md:px-8 md:py-6 lg:px-12 lg:py-8 max-w-container-max mx-auto w-full pb-20 md:pb-0">
+          <main className="flex-1 p-4 md:px-8 md:py-6 lg:px-12 lg:py-8 max-w-container-max mx-auto w-full pb-20 md:pb-0 animate-fade-in-up">
             <ErrorBoundary>{children}</ErrorBoundary>
           </main>
         )}
 
         {!isFullScreen && (
-          <nav className="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-outline-variant/20 flex justify-around items-center h-16 z-50 px-1 pb-safe">
+          <nav className="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-outline-variant/20 flex justify-around items-center h-16 z-40 px-1 pb-safe">
             {[
               { href: "/dashboard", label: "Dashboard", icon: "dashboard" },
               { href: "/writing", label: "Writing", icon: "edit_note" },
               { href: "/speaking", label: "Speaking", icon: "record_voice_over" },
-              { href: "/reading", label: "Reading", icon: "menu_book" },
-              { href: "/history", label: "History", icon: "history" },
+              { href: "/settings", label: "Settings", icon: "settings" },
             ].map((item) => {
               const active = pathname?.startsWith(item.href);
               return (

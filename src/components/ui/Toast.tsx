@@ -57,7 +57,7 @@ function ToastItem({ toast }: { toast: Toast }) {
   };
 
   return (
-    <div className={`rounded-lg border px-4 py-3 shadow-lg flex items-start gap-3 animate-slide-up min-w-[300px] max-w-[420px] ${colors[toast.type]}`}>
+    <div className={`rounded-lg border px-4 py-3 shadow-lg flex items-start gap-3 animate-slide-up w-[calc(100vw-2rem)] max-w-[420px] ${colors[toast.type]}`}>
       <span className="material-symbols-outlined text-[20px] shrink-0 mt-0.5">{icons[toast.type]}</span>
       <p className="text-body-md flex-1">{toast.message}</p>
       <div className="flex items-center gap-2 shrink-0">

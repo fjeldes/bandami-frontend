@@ -12,8 +12,8 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+    
     setError("");
     setLoading(true);
 
@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
 
       <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-gutter md:p-[32px] z-10 relative">
         <header className="text-center mb-8">
-          <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-48 w-auto mx-auto" priority />
+          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority />
           <p className="text-body-md text-on-surface-variant mt-2">Reset your password</p>
         </header>
 
@@ -67,7 +67,7 @@ export default function ForgotPasswordPage() {
           <p className="text-body-md text-error bg-error-container/30 rounded-lg px-4 py-3 mb-4 text-center">{error}</p>
         )}
 
-        <form className="space-y-5" onSubmit={handleSubmit}>
+        <div className="space-y-5" onSubmit={handleSubmit}>
           <div className="flex flex-col gap-1.5">
             <label className="text-label-sm text-on-surface" htmlFor="email">Email Address</label>
             <div className="relative">
@@ -80,11 +80,11 @@ export default function ForgotPasswordPage() {
             </div>
           </div>
 
-          <button type="submit" disabled={loading}
+          <button type="button" disabled={loading}
             className="w-full bg-primary-container text-on-primary font-mono text-data-md py-3.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all mt-2 shadow-sm disabled:opacity-60">
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
-        </form>
+        </div>
 
         <p className="text-center mt-8 text-body-md text-on-surface-variant">
           <Link href="/login" className="text-primary font-semibold hover:underline decoration-2 underline-offset-4">Back to Sign In</Link>

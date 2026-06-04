@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/", "/auth/callback"];
-const ADMIN_PREFIX = "/admin";
+const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/", "/auth/callback", "/pricing", "/privacy", "/terms"];
 
 function isPublic(pathname: string) {
   return PUBLIC_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/")) || pathname.startsWith("/register/");
@@ -10,23 +9,19 @@ function isPublic(pathname: string) {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const authCookie = request.cookies.get("auth_status");
-  const isAuthenticated = authCookie?.value === "1";
 
   if (pathname.startsWith("/_next") || pathname.startsWith("/api") || pathname.includes(".")) {
     return NextResponse.next();
   }
 
-  if (!isAuthenticated && !isPublic(pathname)) {
+  const hasCookie = request.cookies.has("auth_token");
+
+  if (!hasCookie && !isPublic(pathname)) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (isAuthenticated && isPublic(pathname) && pathname !== "/") {
+  if (hasCookie && pathname === "/login") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
-  }
-
-  if (pathname.startsWith(ADMIN_PREFIX)) {
-    return NextResponse.next();
   }
 
   return NextResponse.next();

@@ -41,19 +41,6 @@ const plans = [
     ],
     cta: "Subscribe", href: "/register?plan=premium",
   },
-  {
-    slug: "packs", name: "Credit Packs", price: "From $7.99", period: "",
-    description: "Pay as you go. Credits never expire. No monthly subscription.",
-    featured: false, badge: null,
-    features: [
-      { text: "10 evaluations \u00b7 $7.99", included: true },
-      { text: "25 evaluations \u00b7 $14.99", included: true },
-      { text: "Advanced AI Feedback", included: true },
-      { text: "No daily limit", included: true },
-      { text: "Instant feedback", included: true },
-    ],
-    cta: "Buy Credits", href: "/register?plan=packs",
-  },
 ];
 
 export function Pricing() {
@@ -67,12 +54,13 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-7xl mx-auto items-start">
-          {plans.map((plan) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-5xl mx-auto items-start">
+          {plans.map((plan, idx) => (
             <div key={plan.slug}
-              className={`bg-surface-container-lowest p-card-padding ghost-shadow flex flex-col h-full relative border ${
+              className={`bg-surface-container-lowest p-card-padding ghost-shadow flex flex-col h-full relative border animate-fade-in-up ${
                 plan.featured ? "border-primary/20" : "border-outline-variant/30"
-              } ${plan.featured ? "xl:-translate-y-4" : ""}`}>
+              } ${plan.featured ? "xl:-translate-y-4" : ""}`}
+              style={{ animationDelay: `${0.4 + idx * 0.12}s` }}>
               {plan.badge && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-container text-on-secondary-container font-label-md text-label-md px-4 py-1 rounded-full">
                   {plan.badge}

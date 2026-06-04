@@ -1,12 +1,223 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
-import { getUserCreditPacks, getUserSubscription, getDashboardStats, apiFetch } from "@/lib/api";
+import { getUserSubscription, getDashboardStats, apiFetch } from "@/lib/api";
 import { showSuccess, showError } from "@/components/ui/Toast";
-import { CreditPackModal } from "@/components/ui/CreditPackModal";
-import type { UserCreditPack, UserSubscription as UserSubType, DashboardStats } from "@/lib/types";
+
+function SubscriptionSection() {
+  const [subData, setSubData] = useState<any>(null);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [switchModal, setSwitchModal] = useState<string | null>(null);
+
+  const load = () => {
+    Promise.all([
+      apiFetch("/payments/subscription").catch(() => null),
+      apiFetch<{ invoices: any[] }>("/payments/invoices").catch(() => ({ invoices: [] })),
+    ]).then(([sub, inv]) => {
+      setSubData(sub);
+      setInvoices(inv.invoices || []);
+    }).finally(() => setLoading(false));
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const cancel = async () => {
+    if (!confirm("Your Premium access will continue until the end of the billing period. After that, you'll be switched to the Free plan. Continue?")) return;
+    setActionLoading(true);
+    try {
+      await apiFetch("/payments/cancel", { method: "POST" });
+      showSuccess("Subscription will be canceled at period end.");
+      load();
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Failed to cancel");
+    }
+    setActionLoading(false);
+  };
+
+  const reactivate = async () => {
+    setActionLoading(true);
+    try {
+      await apiFetch("/payments/reactivate", { method: "POST" });
+      showSuccess("Subscription reactivated!");
+      load();
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Failed to reactivate");
+    }
+    setActionLoading(false);
+  };
+
+  const switchPlan = async (planSlug: string) => {
+    setSwitchModal(null);
+    setActionLoading(true);
+    try {
+      const result = await apiFetch<{ status: string; url?: string }>("/payments/switch-plan", { method: "POST", body: JSON.stringify({ plan_slug: planSlug }) });
+      if (result.url) {
+        window.location.href = result.url;
+        return;
+      }
+      showSuccess(`Switched to ${planSlug === "premium" ? "Premium Monthly" : "Exam Week Pass"}!`);
+      load();
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Failed to switch plan");
+    }
+    setActionLoading(false);
+  };
+
+  if (loading) return <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5"><div className="animate-pulse bg-surface-container-high rounded-lg h-20" /></section>;
+  if (!subData?.has_subscription) return null;
+
+  const periodEnd = subData.current_period_end ? new Date(subData.current_period_end).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—";
+  const willCancel = subData.cancel_at_period_end;
+  const isOneTime = subData.is_one_time;
+  const isMonthly = !isOneTime && subData.plan_interval === "month";
+  const isWeekPass = isOneTime || subData.plan_interval === "week";
+
+  return (
+    <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
+      <h3 className="text-body-md font-semibold text-on-surface mb-4">Subscription</h3>
+      <div className="space-y-4">
+        {/* Plan details card */}
+        <div className="bg-surface-container rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <p className="text-label-sm text-on-surface-variant">Plan</p>
+            <p className="text-body-md font-semibold text-on-surface">
+              {subData.plan_name} · ${subData.plan_amount}/{subData.plan_interval}
+            </p>
+          </div>
+          <div>
+            <p className="text-label-sm text-on-surface-variant">Status</p>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${willCancel ? "bg-amber-500" : "bg-emerald-500"}`} />
+              <span className="text-body-md text-on-surface capitalize">
+                {willCancel ? "Cancels at period end" : isWeekPass ? "Active" : "Active"}
+              </span>
+            </div>
+          </div>
+          <div>
+            <p className="text-label-sm text-on-surface-variant">{isOneTime ? "Expires" : "Next billing"}</p>
+            <p className="text-body-md text-on-surface">{periodEnd}</p>
+          </div>
+          {!isOneTime && (
+            <div>
+              <p className="text-label-sm text-on-surface-variant">Payment</p>
+              <p className="text-body-md text-on-surface capitalize">
+                {subData.card_brand ? `${subData.card_brand} ····${subData.card_last4}` : "—"}
+              </p>
+            </div>
+          )}
+          {isOneTime && (
+            <div>
+              <p className="text-label-sm text-on-surface-variant">Type</p>
+              <p className="text-body-md text-on-surface">One-time payment</p>
+            </div>
+          )}
+        </div>
+
+        {/* Switch Plan */}
+        <div className="bg-surface-container rounded-xl p-4">
+          <p className="text-label-sm font-semibold text-on-surface-variant mb-3">Switch Plan</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <button
+              onClick={() => setSwitchModal("premium")}
+              disabled={actionLoading || isMonthly}
+              className={`p-3 rounded-lg border text-left transition-colors ${isMonthly ? "border-primary bg-primary/5" : "border-outline-variant/30 hover:border-primary/50"}`}
+            >
+              <p className="text-body-md font-semibold text-on-surface">Premium</p>
+              <p className="text-label-sm text-on-surface-variant">$14.99/month</p>
+              {isMonthly && <span className="text-[10px] font-semibold text-primary bg-primary-container/20 px-1.5 py-0.5 rounded mt-1 inline-block">Current</span>}
+            </button>
+            <button
+              onClick={() => setSwitchModal("exam_week_pass")}
+              disabled={actionLoading || isWeekPass}
+              className={`p-3 rounded-lg border text-left transition-colors ${isWeekPass ? "border-primary bg-primary/5" : "border-outline-variant/30 hover:border-primary/50"}`}
+            >
+              <p className="text-body-md font-semibold text-on-surface">Week Pass</p>
+              <p className="text-label-sm text-on-surface-variant">$4.99/7 days</p>
+              {isWeekPass && <span className="text-[10px] font-semibold text-primary bg-primary-container/20 px-1.5 py-0.5 rounded mt-1 inline-block">Current</span>}
+            </button>
+          </div>
+        </div>
+
+        {/* Actions — only for subscription-based plans */}
+        {!isOneTime && (
+          <div className="flex flex-wrap gap-2">
+            {willCancel ? (
+            <button onClick={reactivate} disabled={actionLoading}
+              className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50">
+              Reactivate Subscription
+            </button>
+          ) : (
+            <button onClick={cancel} disabled={actionLoading}
+              className="px-4 py-2 rounded-xl border border-error/30 text-error text-label-sm font-semibold hover:bg-error-container/20 transition-colors">
+              Cancel Subscription
+            </button>
+            )}
+            <button onClick={async () => {
+              try {
+                const { url } = await apiFetch<{ url: string }>("/payments/create-portal", { method: "POST" });
+                window.location.href = url;
+              } catch { showError("Could not open billing settings"); }
+          }} className="px-4 py-2 rounded-xl border border-outline-variant text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">
+            Update Payment Method
+            </button>
+          </div>
+        )}
+
+        {/* Invoice History */}
+        {invoices.length > 0 && (
+          <div className="pt-4 border-t border-outline-variant/30">
+            <h4 className="text-label-sm text-on-surface-variant font-semibold mb-3 uppercase tracking-wider">Invoice History</h4>
+            <div className="space-y-1.5">
+              {invoices.slice(0, 5).map((inv: any) => (
+                <a key={inv.id} href={inv.hosted_invoice_url || inv.invoice_pdf} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-container transition-colors text-body-md">
+                  <div className="flex items-center gap-3">
+                    <span className="material-symbols-outlined text-on-surface-variant text-[18px]">receipt_long</span>
+                    <div>
+                      <p className="text-body-md text-on-surface">${inv.amount_paid.toFixed(2)}</p>
+                      <p className="text-label-sm text-on-surface-variant">{new Date(inv.created).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+                    </div>
+                  </div>
+                  <span className="text-primary text-label-sm hover:underline">View</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Switch Plan Modal */}
+      {switchModal && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center p-4" onClick={() => setSwitchModal(null)}>
+          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/40 p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+            <h4 className="text-headline-md font-bold text-on-surface mb-2">Switch Plan</h4>
+            <p className="text-body-md text-on-surface-variant mb-6">
+              {switchModal === "premium" && isOneTime
+                ? "Premium is a monthly subscription. You'll be redirected to our secure checkout to set up your recurring payment."
+                : switchModal === "premium"
+                ? "Switch to Premium Monthly ($14.99/month). Your billing period will be adjusted automatically."
+                : "Switch to Exam Week Pass ($4.99/7 days). Your billing period will be adjusted automatically."}
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button onClick={() => setSwitchModal(null)} className="px-4 py-2 rounded-xl text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">Cancel</button>
+              <button onClick={() => switchPlan(switchModal)} disabled={actionLoading}
+                className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50">
+                {actionLoading ? "Switching..." : "Confirm Switch"}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </section>
+  );
+}
+import type { UserSubscription as UserSubType, DashboardStats } from "@/lib/types";
 
 export default function SettingsPage() {
   const user = useAuthStore((s) => s.user);
@@ -14,7 +225,6 @@ export default function SettingsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [creditPacks, setCreditPacks] = useState<UserCreditPack[]>([]);
   const [subscription, setSubscription] = useState<UserSubType | null>(null);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -31,29 +241,45 @@ export default function SettingsPage() {
 
   const [referralCode, setReferralCode] = useState("");
   const [referralCount, setReferralCount] = useState(0);
-  const [refCredits, setRefCredits] = useState(0);
+  const [hasDiscount, setHasDiscount] = useState(false);
   const [refLoading, setRefLoading] = useState(true);
-  const [showCreditModal, setShowCreditModal] = useState(false);
 
   useEffect(() => {
+    const sessionId = searchParams.get("session_id");
     const isCheckoutSuccess = searchParams.get("checkout") === "success";
-    if (isCheckoutSuccess) {
-      showSuccess("Payment successful! Your plan is now active. Refreshing...");
+
+    if (isCheckoutSuccess && sessionId) {
+      showSuccess("Verifying payment...");
+      apiFetch<{ status: string; tier?: string }>(`/payments/verify-session?session_id=${sessionId}`)
+        .then((r) => {
+          if (r.status === "ok") {
+            useAuthStore.getState().refreshSession().then(() => {
+              showSuccess("Payment confirmed! Your plan is now active.");
+              setTimeout(() => window.location.href = "/settings", 1500);
+            });
+          } else {
+            showError("Payment still processing. It may take a few moments.");
+          }
+        })
+        .catch(() => {
+          showError("Could not verify payment. Please refresh.");
+        });
+    } else if (isCheckoutSuccess) {
+      showSuccess("Payment successful! Refreshing...");
       setTimeout(() => window.location.href = "/settings", 2000);
     }
     Promise.all([
-      getUserCreditPacks().catch(() => [] as UserCreditPack[]),
+      
       getUserSubscription().catch(() => null),
       getDashboardStats().catch(() => null),
-    ]).then(([packs, sub, s]) => {
-      setCreditPacks(packs);
+    ]).then(([sub, s]) => {
       setSubscription(sub);
       setStats(s);
       setLoading(false);
     });
 
-    apiFetch<{ referral_code: string; referral_count: number; credits_remaining: number }>("/users/me/referral")
-      .then((r) => { setReferralCode(r.referral_code); setReferralCount(r.referral_count); setRefCredits(r.credits_remaining); })
+    apiFetch<{ referral_code: string; referral_count: number; referral_discounts: number }>("/users/me/referral")
+      .then((r) => { setReferralCode(r.referral_code); setReferralCount(r.referral_count); setHasDiscount(r.referral_discounts > 0); })
       .catch(() => {})
       .finally(() => setRefLoading(false));
   }, []);
@@ -135,10 +361,18 @@ export default function SettingsPage() {
                 {user?.subscription_tier || "free"}
                 {subscription && <span className="text-label-sm text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded-full">Active</span>}
               </p>
+              {user?.subscription_tier === "premium" && (
+                <span className="text-label-sm text-on-surface-variant ml-2">· See Subscription section below for plan management</span>
+              )}
             </div>
           </div>
         </div>
       </section>
+
+      {/* Subscription Management */}
+      {user?.subscription_tier === "premium" && (
+        <SubscriptionSection />
+      )}
 
       {/* Password */}
       <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
@@ -166,33 +400,6 @@ export default function SettingsPage() {
           <button onClick={() => setChangePw(true)} className="text-primary text-label-sm font-semibold hover:underline">Change password</button>
         )}
       </section>
-
-      {/* Credit Packs */}
-      <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
-        <h3 className="text-body-md font-semibold text-on-surface mb-4">Credit Packs</h3>
-        {creditPacks.length === 0 ? (
-          <div className="text-center py-4">
-            <p className="text-body-md text-on-surface-variant mb-3">No active credit packs</p>
-            <button onClick={() => setShowCreditModal(true)} className="bg-primary-container text-on-primary px-4 py-2 rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity inline-block">Buy Credits</button>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {creditPacks.map((pack) => {
-              const pct = pack.credits_total > 0 ? (pack.credits_remaining / pack.credits_total) * 100 : 0;
-              return (
-                <div key={pack.id} className="bg-surface-container rounded-lg p-3 border border-outline-variant/30">
-                  <div className="flex justify-between items-center mb-1.5">
-                    <span className="text-body-md text-on-surface font-semibold">{pack.credits_total} Credits</span>
-                    <span className="font-mono text-label-sm text-primary font-bold">{pack.credits_remaining} left</span>
-                  </div>
-                  <div className="w-full bg-surface-variant rounded-full h-1.5"><div className="bg-primary h-full rounded-full" style={{ width: `${pct}%` }} /></div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
       {/* Referral */}
       <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
         <h3 className="text-body-md font-semibold text-on-surface mb-4">Referral Program</h3>
@@ -200,12 +407,12 @@ export default function SettingsPage() {
           <div className="animate-pulse bg-surface-container-high rounded-lg h-20" />
         ) : (
           <div className="space-y-3">
-            {refCredits > 0 && (
+            {hasDiscount && (
               <div className="bg-referral-bg rounded-xl border border-referral-border p-4 flex items-center gap-3">
                 <span className="material-symbols-outlined text-referral-text text-[24px]">stars</span>
                 <div>
-                  <p className="text-body-md font-semibold text-referral-text">{refCredits} earned {refCredits === 1 ? "credit" : "credits"}</p>
-                  <p className="text-label-sm text-referral-text/70">from {referralCount} {referralCount === 1 ? "referral" : "referrals"}</p>
+                  <p className="text-body-md font-semibold text-referral-text">50% off your next Week Pass</p>
+                  <p className="text-label-sm text-referral-text/70">Referral reward — expires after use</p>
                 </div>
               </div>
             )}
@@ -230,7 +437,6 @@ export default function SettingsPage() {
       </section>
 
       {/* Sign Out */}
-      <CreditPackModal open={showCreditModal} onClose={() => setShowCreditModal(false)} />
 
       <button onClick={handleSignOut} className="w-full flex items-center justify-center gap-2 bg-error-container/30 text-error font-semibold py-3 rounded-xl hover:bg-error-container/50 transition-colors text-body-md">
         <span className="material-symbols-outlined">logout</span> Sign Out

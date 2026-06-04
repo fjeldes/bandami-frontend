@@ -6,7 +6,33 @@ import Link from "next/link";
 import { getWritingEvaluation } from "@/lib/api";
 import type { Evaluation } from "@/lib/types";
 import { useAuthStore } from "@/hooks/useAuth";
-import { redirectToCheckout } from "@/lib/stripe";
+import { redirectToCheckout } from "@/lib/payments";
+
+const WRITING_CRITERIA = [
+  { key: "task_response", label: "Task Response", icon: "task_alt", description: "How well the task is addressed" },
+  { key: "coherence_and_cohesion", label: "Coherence & Cohesion", icon: "link", description: "Logical organization and flow" },
+  { key: "lexical_resource", label: "Lexical Resource", icon: "book", description: "Range and accuracy of vocabulary" },
+  { key: "grammatical_range_and_accuracy", label: "Grammatical Range & Accuracy", icon: "rule", description: "Variety and correctness of grammar" },
+];
+
+const WRITING_SUB_CRITERIA: Record<string, { key: string; label: string; icon: string; description: string }[]> = {
+  task_response: [
+    { key: "task_fulfillment", label: "Task Fulfillment", icon: "checklist", description: "Addresses all parts of the task, word count adequate" },
+    { key: "position_clarity", label: "Position Clarity", icon: "flag", description: "Clear thesis/overview and position throughout" },
+  ],
+  coherence_and_cohesion: [
+    { key: "paragraph_structure", label: "Paragraph Structure", icon: "view_agenda", description: "Logical paragraphing and topic sentences" },
+    { key: "cohesion_devices", label: "Cohesion Devices", icon: "link", description: "Appropriate use of linking words and referencing" },
+  ],
+  lexical_resource: [
+    { key: "vocabulary_range", label: "Vocabulary Range", icon: "dictionary", description: "Variety and sophistication of vocabulary" },
+    { key: "vocabulary_precision", label: "Vocabulary Precision", icon: "target", description: "Word choice accuracy and collocations" },
+  ],
+  grammatical_range_and_accuracy: [
+    { key: "grammar_range", label: "Grammatical Range", icon: "layers", description: "Variety of sentence structures" },
+    { key: "grammar_accuracy", label: "Grammatical Accuracy", icon: "checklist", description: "Error frequency and punctuation" },
+  ],
+};
 
 function LockedPeek({ text }: { text: string }) {
   if (!text) return null;
@@ -17,9 +43,9 @@ function LockedPeek({ text }: { text: string }) {
       <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-end pb-2 pt-8 bg-gradient-to-t from-surface-container-lowest to-transparent">
         <span className="material-symbols-outlined text-outline text-[20px] mb-1">lock</span>
         <span className="text-label-sm text-on-surface-variant mb-2">Full detailed feedback is locked</span>
-        <button onClick={() => redirectToCheckout("premium")} className="bg-primary text-on-primary font-semibold px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
+        <Link href="/pricing" className="bg-primary text-on-primary font-semibold px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
           Unlock · $14.99/mo
-        </button>
+        </Link>
       </div>
     </div>
   );
@@ -49,6 +75,8 @@ export default function WritingResultsPage() {
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [expandedCriterion, setExpandedCriterion] = useState<string | null>(null);
+  const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
 
   useEffect(() => {
     if (!examId) { setError("No exam ID provided"); setLoading(false); return; }
@@ -93,12 +121,16 @@ export default function WritingResultsPage() {
   const generalFeedback = evaluation.general_feedback;
   const detailedFeedback = evaluation.detailed_feedback;
   const corrections = evaluation.grammar_corrections || [];
+  const paragraphFeedback = (evaluation as any).paragraph_feedback || [];
 
   return (
     <div>
       <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <h1 className="text-headline-md font-bold text-primary">Writing Results</h1>
         <div className="flex gap-3">
+          <button onClick={() => window.print()} className="flex items-center gap-1 text-label-sm text-on-surface-variant hover:text-primary transition-colors">
+            <span className="material-symbols-outlined text-[16px]">print</span> Print
+          </button>
           <Link href="/dashboard" className="px-4 py-1.5 border border-outline rounded-lg text-label-sm text-primary hover:bg-surface-container transition-colors">Dashboard</Link>
           <Link href="/writing" className="px-4 py-1.5 bg-primary-container text-on-primary-container rounded-lg text-label-sm font-semibold hover:opacity-90 transition-colors">Try Another</Link>
         </div>
@@ -169,21 +201,83 @@ export default function WritingResultsPage() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {Object.entries(criteria).map(([key, val]) => {
-                const score = (val as { score: number }).score;
-                const comment = (val as { comment: string }).comment;
-                const colors = scoreColor(score);
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {WRITING_CRITERIA.map((c) => {
+                const data = criteria[c.key] as { score: number; comment: string } | undefined;
+                const score = data?.score;
+                const comment = data?.comment;
+                const colors = score != null ? scoreColor(score) : { badge: "bg-surface-variant text-on-surface-variant", bar: "bg-surface-variant" };
+                const subs = WRITING_SUB_CRITERIA[c.key] || [];
+                const isExpanded = expandedCriterion === c.key;
+
                 return (
-                  <div key={key} className="bg-surface-container-lowest rounded-xl shadow-sm p-3.5 border border-outline-variant/40 hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className="text-label-sm font-semibold text-on-surface capitalize">{key.replace(/_/g, " ")}</h4>
-                      <span className={`font-mono text-xs font-semibold px-2 py-0.5 rounded-full ${colors.badge}`}>{score.toFixed(1)}</span>
+                  <div key={c.key} className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/40 hover:shadow-md transition-shadow overflow-hidden">
+                    <div className="p-3.5">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="material-symbols-outlined text-[18px] text-primary-tint">{c.icon}</span>
+                        <h4 className="text-label-sm font-semibold text-on-surface">{c.label}</h4>
+                        {score != null ? (
+                          <span className={`font-mono text-xs font-semibold px-2 py-0.5 rounded-full ml-auto ${colors.badge}`}>{score.toFixed(1)}</span>
+                        ) : (
+                          <span className="font-mono text-xs px-2 py-0.5 rounded-full ml-auto bg-surface-variant text-on-surface-variant">--</span>
+                        )}
+                      </div>
+                      <div className="w-full bg-surface-container rounded-full h-1.5 mb-2 overflow-hidden">
+                        <div className={`${colors.bar} h-full rounded-full transition-all duration-700`} style={{ width: score != null ? `${(score / 9) * 100}%` : "0%" }} />
+                      </div>
+                      {comment ? (
+                        <p className="text-label-sm text-on-surface-variant leading-relaxed">{comment}</p>
+                      ) : (
+                        <p className="text-label-sm text-on-surface-variant/60 italic">{c.description}</p>
+                      )}
                     </div>
-                    <div className="w-full bg-surface-container rounded-full h-1.5 mb-2 overflow-hidden">
-                      <div className={`${colors.bar} h-full rounded-full transition-all duration-700`} style={{ width: `${(score / 9) * 100}%` }} />
-                    </div>
-                    <p className="text-label-sm text-on-surface-variant leading-relaxed">{comment}</p>
+                    {subs.length > 0 && (
+                      <>
+                        <button
+                          onClick={() => setExpandedCriterion(isExpanded ? null : c.key)}
+                          className="w-full flex items-center gap-1.5 px-3.5 py-2 border-t border-outline-variant/30 text-label-sm text-primary-tint hover:bg-primary/5 transition-colors"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">analytics</span>
+                          <span>Detailed Breakdown</span>
+                          <span className="material-symbols-outlined text-[14px] ml-auto transition-transform duration-200" style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
+                            expand_more
+                          </span>
+                        </button>
+                        {isExpanded && (
+                          <div className="px-3.5 pb-3.5 space-y-2 border-t border-outline-variant/30 pt-2">
+                            {subs.map((sub) => {
+                              const subData = criteria[sub.key] as { score: number; comment: string } | undefined;
+                              const subScore = subData?.score;
+                              const subComment = subData?.comment;
+                              const subColors = subScore != null ? scoreColor(subScore) : { badge: "bg-surface-variant text-on-surface-variant", bar: "bg-surface-variant/60" };
+                              return (
+                                <div key={sub.key} className="flex items-start gap-2 pl-2 border-l-2 border-outline-variant/30">
+                                  <span className="material-symbols-outlined text-[15px] text-outline mt-0.5 shrink-0">{sub.icon}</span>
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-center gap-1.5 mb-1">
+                                      <span className="text-label-sm text-on-surface">{sub.label}</span>
+                                      {subScore != null ? (
+                                        <span className={`font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded ${subColors.badge} ml-auto shrink-0`}>{subScore.toFixed(1)}</span>
+                                      ) : (
+                                        <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-surface-variant text-on-surface-variant ml-auto shrink-0">--</span>
+                                      )}
+                                    </div>
+                                    <div className="w-full bg-surface-container rounded-full h-1 mb-1 overflow-hidden">
+                                      <div className={`${subColors.bar} h-full rounded-full transition-all duration-500`} style={{ width: subScore != null ? `${(subScore / 9) * 100}%` : "0%" }} />
+                                    </div>
+                                    {subComment ? (
+                                      <p className="text-label-sm text-on-surface-variant/80 leading-relaxed">{subComment}</p>
+                                    ) : (
+                                      <p className="text-label-sm text-on-surface-variant/50 italic">{sub.description}</p>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 );
               })}
@@ -210,9 +304,27 @@ export default function WritingResultsPage() {
               </div>
               <p className="text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">{detailedFeedback}</p>
             </div>
-          ) : null}
+           ) : null}
         </div>
       </div>
+
+      {/* Paragraph Feedback (Premium) */}
+      {paragraphFeedback.length > 0 && !locked && (
+        <div className="mt-5 bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
+          <h3 className="text-body-md font-semibold text-on-surface mb-4">Paragraph-by-Paragraph Analysis</h3>
+          <div className="space-y-3">
+            {paragraphFeedback.map((p: any, i: number) => (
+              <div key={i} className="flex gap-3 p-3 bg-surface-container rounded-lg">
+                <span className="font-mono text-xs font-bold text-primary bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">{p.paragraph}</span>
+                <div className="min-w-0">
+                  <span className="text-label-sm font-semibold text-primary bg-primary/5 px-2 py-0.5 rounded">{p.role}</span>
+                  <p className="text-body-md text-on-surface-variant mt-1 leading-relaxed">{p.feedback}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Grammar Corrections */}
       {corrections.length > 0 && !locked && (

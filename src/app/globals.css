@@ -75,6 +75,66 @@
   --radius-pill: 9999px;
 }
 
+/* ---- Dark Mode ---- */
+.dark {
+  --c-primary: #60a5fa;
+  --c-primary-container: #1e3a5f;
+  --c-primary-fixed: #1e3a5f;
+  --c-primary-fixed-dim: #15294a;
+  --c-on-primary: #0f172a;
+  --c-on-primary-container: #bfdbfe;
+  --c-on-primary-fixed: #bfdbfe;
+  --c-on-primary-fixed-variant: #93c5fd;
+  --c-inverse-primary: #062a60;
+
+  --c-secondary: #38bdf8;
+  --c-secondary-container: #0c4a6e;
+  --c-on-secondary: #0c1929;
+  --c-on-secondary-container: #bae6fd;
+  --c-on-secondary-fixed: #bae6fd;
+  --c-on-secondary-fixed-variant: #7dd3fc;
+
+  --c-tertiary: #2dd4bf;
+  --c-tertiary-container: #134e4a;
+  --c-on-tertiary: #022c22;
+  --c-on-tertiary-container: #99f6e4;
+
+  --c-surface: #0f172a;
+  --c-surface-bright: #1e293b;
+  --c-surface-dim: #020617;
+  --c-surface-variant: #1e293b;
+  --c-surface-container-lowest: #0b1120;
+  --c-surface-container-low: #0f172a;
+  --c-surface-container: #1e293b;
+  --c-surface-container-high: #293449;
+  --c-surface-container-highest: #334155;
+  --c-surface-tint: #60a5fa;
+
+  --c-on-surface: #e2e8f0;
+  --c-on-surface-variant: #94a3b8;
+  --c-on-background: #e2e8f0;
+
+  --c-outline: #475569;
+  --c-outline-variant: #334155;
+
+  --c-background: #0f172a;
+  --c-inverse-surface: #f1f5f9;
+  --c-inverse-on-surface: #1e293b;
+
+  --c-band-excellent: #34d399;
+  --c-band-good: #60a5fa;
+  --c-band-average: #38bdf8;
+  --c-band-low: #f87171;
+
+  --c-referral-bg: #1e3a5f;
+  --c-referral-border: #60a5fa;
+  --c-referral-text: #bfdbfe;
+
+  --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0px 8px 30px rgba(0, 0, 0, 0.4);
+  --shadow-dialog: 0px 16px 48px rgba(0, 0, 0, 0.5);
+}
+
 @layer base {
   body {
     @apply bg-background text-on-surface font-body antialiased;
@@ -225,9 +285,188 @@
   .animate-slide-up {
     animation: slideUp 0.3s ease-out;
   }
+
+  .animate-fade-in-up {
+    opacity: 0;
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+
+  .animate-fade-in {
+    opacity: 0;
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    opacity: 0;
+    animation: scaleIn 0.35s ease-out forwards;
+  }
 }
 
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulseRing {
+  0% { transform: scale(0.33); opacity: 1; }
+  80%, 100% { transform: scale(1.5); opacity: 0; }
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1); }
+  100% { transform: scale(0.9); }
+}
+
+@keyframes waveformBar {
+  0%, 100% { height: 10px; }
+  50% { height: 32px; }
+}
+
+.animate-pulse-ring {
+  animation: pulseRing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+.animate-pulse-dot {
+  animation: pulseDot 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+/* Safe area padding for iPhone home indicator */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ---- Design System --- */
+@layer components {
+  .ds-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  .ds-card-interactive {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .ds-card-interactive:hover {
+    box-shadow: 0px 4px 28px rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.08);
+  }
+
+  .ds-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: var(--c-surface);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 0.5rem;
+    outline: none;
+    transition: border-color 0.2s;
+    font-size: 16px;
+    color: var(--c-on-surface);
+  }
+  .ds-input:focus {
+    border-color: var(--c-primary);
+  }
+  .ds-input::placeholder {
+    color: var(--c-on-surface-variant);
+    opacity: 0.5;
+  }
+
+  .ds-tag {
+    padding: 0.25rem 1rem;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .ds-tag-primary {
+    background: color-mix(in srgb, var(--c-primary) 10%, transparent);
+    color: var(--c-primary);
+  }
+  .ds-tag-error {
+    background: var(--c-error-container);
+    color: var(--c-on-error-container);
+  }
+  .ds-tag-secondary {
+    background: var(--c-secondary-container);
+    color: var(--c-on-secondary-container);
+  }
+}
+
+/* Waveform & pulse animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slideUp 0.3s ease-out; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.5s ease-out both; }
+
+@keyframes pulseRing {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+.animate-pulse-ring {
+  animation: pulseRing 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1); }
+  100% { transform: scale(0.9); }
+}
+.animate-pulse-dot {
+  animation: pulseDot 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+}
+
+@keyframes waveformBar {
+  0%, 100% { height: 10px; }
+  50% { height: 32px; }
+}
+
+/* Safe area padding for iPhone home indicator */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ---- Print-friendly results --- */
+@media print {
+  nav, header, footer, button, .fixed, .sticky, [role="dialog"], 
+  .bottom-0, .z-40, .z-50, .z-[60], .z-[9999],
+  a[href="/speaking"], a[href="/dashboard"], a[href="/writing"],
+  .material-symbols-outlined { display: none !important; }
+  
+  body { background: #fff !important; color: #000 !important; font-size: 13pt; }
+  .bg-surface-container-lowest, .bg-surface-container, .bg-primary\/5 { 
+    background: #fff !important; border: 1px solid #ddd !important; box-shadow: none !important; 
+  }
+  .text-on-surface { color: #000 !important; }
+  .text-on-surface-variant { color: #333 !important; }
+  .text-primary { color: #062a60 !important; }
+  .max-w-\[720px\], .lg\:col-span-8, .lg\:col-span-4 { max-width: 100% !important; }
+  .grid-cols-2 { grid-template-columns: 1fr 1fr !important; }
+  main, .flex-1 { margin: 0 !important; padding: 0 !important; }
+  h1 { font-size: 18pt !important; }
+  h3 { font-size: 13pt !important; }
 }
