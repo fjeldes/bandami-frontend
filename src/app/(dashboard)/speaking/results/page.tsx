@@ -215,6 +215,7 @@ export default function SpeakingResultsPage() {
                 {SPEAKING_CRITERIA.map((c) => {
                   const data = criteria[c.key] as { score: number; comment: string } | undefined;
                   const score = data?.score;
+                  const comment = data?.comment;
                   const colors = score != null ? scoreColor(score) : { badge: "bg-surface-variant text-on-surface-variant", bar: "bg-surface-variant" };
                   return (
                     <div key={c.key} className="bg-surface-container-lowest rounded-xl shadow-sm p-3.5 border border-outline-variant/40">
