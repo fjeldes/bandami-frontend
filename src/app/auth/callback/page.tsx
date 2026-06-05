@@ -31,7 +31,8 @@ function AuthCallbackInner() {
           await verifyEmail(verificationToken);
           router.push("/dashboard");
         } else if (accessToken) {
-          setTokens(accessToken, "");
+          const refreshToken = searchParams.get("refresh_token") || "";
+          setTokens(accessToken, refreshToken);
           router.push("/dashboard");
         } else {
           setError("Invalid callback parameters.");
