@@ -9,14 +9,8 @@ import type { DashboardStats } from "@/lib/types";
 
 export function Navbar() {
   const user = useAuthStore((s) => s.user);
-  const isLoading = useAuthStore((s) => s.isLoading);
   const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [hasToken, setHasToken] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    setHasToken(!!sessionStorage.getItem("access_token"));
-  }, []);
 
   useEffect(() => {
     if (user) {
@@ -25,8 +19,6 @@ export function Navbar() {
       setStats(null);
     }
   }, [user]);
-
-  const showDashboard = !!user || hasToken;
 
   return (
     <nav className="flex justify-between items-center w-full px-gutter py-4 sticky top-0 z-50 bg-surface border-b border-surface-container-high">
@@ -42,7 +34,7 @@ export function Navbar() {
       </div>
 
       <div className="hidden md:flex items-center gap-4">
-        {showDashboard ? (
+        {user ? (
           <>
             <div className="flex items-center text-on-surface-variant font-label-md text-label-md gap-2">
               <span className="material-symbols-outlined text-[18px]">bolt</span>
@@ -75,7 +67,7 @@ export function Navbar() {
 
       {/* Mobile hamburger + quick action */}
       <div className="flex md:hidden items-center gap-2">
-        {showDashboard ? (
+        {user ? (
           <Link href="/dashboard" className="bg-primary-container text-on-primary font-label-md text-label-md px-3 py-1.5 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all">
             Dashboard
           </Link>
@@ -105,7 +97,7 @@ export function Navbar() {
               <a href="#pricing" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">Pricing</a>
               <a href="#faq" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">FAQ</a>
               <div className="border-t border-outline-variant/30 my-2" />
-              {showDashboard ? (
+                {user ? (
                 <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="text-primary font-semibold text-label-md py-2">Dashboard</Link>
               ) : (
                 <Link href="/login" onClick={() => setMobileOpen(false)} className="text-on-surface font-semibold text-label-md py-2">Sign In</Link>
