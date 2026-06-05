@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 const FORM_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLScuentmf5p5Zyg5ZpuBFdqeEHHa1nQCLCwrJ3ILfZNo3LdBAA/viewform?embedded=true";
+  "https://docs.google.com/forms/d/e/1FAIpQLScuentmf5p5Zyg5ZpuBFdqeEHHa1nQCLCwrJ3ILfZNo3LdBAA/viewform?embedded=true&entry.1071395621=General";
 
 export default function FeedbackButton() {
   const [open, setOpen] = useState(false);
