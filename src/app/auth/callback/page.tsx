@@ -31,8 +31,7 @@ function AuthCallbackInner() {
           await verifyEmail(verificationToken);
           router.push("/dashboard");
         } else if (accessToken) {
-          sessionStorage.setItem("access_token", accessToken);
-          // Refresh token is set as HttpOnly cookie by the backend oauth redirect
+          setTokens(accessToken, "");
           router.push("/dashboard");
         } else {
           setError("Invalid callback parameters.");
