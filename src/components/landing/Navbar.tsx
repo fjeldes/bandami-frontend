@@ -26,8 +26,6 @@ export function Navbar() {
     }
   }, [user]);
 
-  const used = stats?.daily_evals_used ?? 0;
-  const limit = stats?.daily_eval_limit ?? 4;
   const showDashboard = !!user || hasToken;
 
   return (
@@ -48,12 +46,16 @@ export function Navbar() {
           <>
             <div className="flex items-center text-on-surface-variant font-label-md text-label-md gap-2">
               <span className="material-symbols-outlined text-[18px]">bolt</span>
-              {limit === -1 ? (
-                <span className="flex items-center gap-1 text-primary">
-                  <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
-                  Unlimited access
-                </span>
-              ) : `Daily: ${used}/${limit}`}
+              {stats ? (
+                stats.daily_eval_limit === -1 ? (
+                  <span className="flex items-center gap-1 text-primary">
+                    <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+                    Unlimited access
+                  </span>
+                ) : `Daily: ${stats.daily_evals_used}/${stats.daily_eval_limit}`
+              ) : (
+                <span className="w-16 h-4 bg-surface-container-high rounded animate-pulse" />
+              )}
             </div>
             <Link href="/dashboard" className="bg-primary-container text-on-primary font-label-md text-label-md px-5 py-2 rounded-xl hover:scale-[0.98] active:scale-[0.97] transition-all">
               Dashboard

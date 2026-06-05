@@ -35,8 +35,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   const isFullScreen = pathname?.includes("/test") && user?.role !== "admin";
-  const used = stats?.daily_evals_used ?? 0;
-  const limit = stats?.daily_eval_limit ?? 4;
 
   return (
     <div className="flex min-h-screen">
@@ -47,12 +45,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex items-center gap-4">
               <div className="flex items-center text-on-surface-variant text-label-sm gap-2">
                 <span className="material-symbols-outlined text-[16px]">bolt</span>
-                {limit === -1 ? (
-                  <span className="flex items-center gap-1 text-primary">
-                    <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
-                    Unlimited access
-                  </span>
-                ) : `${used}/${limit} today`}
+                {stats ? (
+                  stats.daily_eval_limit === -1 ? (
+                    <span className="flex items-center gap-1 text-primary">
+                      <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+                      Unlimited access
+                    </span>
+                  ) : `${stats.daily_evals_used}/${stats.daily_eval_limit} today`
+                ) : (
+                  <span className="w-16 h-4 bg-surface-container-high rounded animate-pulse" />
+                )}
               </div>
               <button onClick={toggleTheme} className="text-on-surface-variant hover:text-primary transition-colors p-1" aria-label="Toggle dark mode">
                 <span className="material-symbols-outlined text-[20px]">{dark ? "light_mode" : "dark_mode"}</span>

@@ -199,7 +199,8 @@ export default function DashboardPage() {
 
   const used = stats?.daily_evals_used ?? 0;
   const limit = stats?.daily_eval_limit ?? 4;
-  const evalsPct = limit > 0 ? Math.min(100, (used / limit) * 100) : 0;
+  const isUnlimited = limit === -1;
+  const evalsPct = !isUnlimited && limit > 0 ? Math.min(100, (used / limit) * 100) : 0;
 
   const generatePlan = async () => {
     setPlanLoading(true);
