@@ -47,7 +47,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <div className="flex items-center gap-4">
               <div className="flex items-center text-on-surface-variant text-label-sm gap-2">
                 <span className="material-symbols-outlined text-[16px]">bolt</span>
-                {used}/{limit} today
+                {limit === -1 ? (
+                  <span className="flex items-center gap-1 text-primary">
+                    <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
+                    Unlimited access
+                  </span>
+                ) : `${used}/${limit} today`}
               </div>
               <button onClick={toggleTheme} className="text-on-surface-variant hover:text-primary transition-colors p-1" aria-label="Toggle dark mode">
                 <span className="material-symbols-outlined text-[20px]">{dark ? "light_mode" : "dark_mode"}</span>
