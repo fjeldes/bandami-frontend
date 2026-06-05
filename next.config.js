@@ -4,10 +4,13 @@ const isProd = vercelEnv === "production";
 const apiHost = process.env.NEXT_PUBLIC_API_URL ? new URL(process.env.NEXT_PUBLIC_API_URL).origin : "http://localhost:8000";
 
 const fb = "https://widget.featurebase.app https://*.featurebase.app";
+const frameSrc = isProd
+  ? `'self' ${fb}`
+  : `'self' ${fb} https://vercel.live`;
 
 const csp = isProd
-  ? `default-src 'self'; script-src 'self' ${fb}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com ${fb}; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co ${apiHost} ${fb}; img-src 'self' data: https:; media-src 'self' blob:`
-  : `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live ${fb}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com ${fb}; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co ${apiHost} https://vercel.live ${fb}; img-src 'self' data: https:; media-src 'self' blob:`;
+  ? `default-src 'self'; script-src 'self' ${fb}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com ${fb}; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co ${apiHost} ${fb}; img-src 'self' data: https:; media-src 'self' blob:; frame-src ${frameSrc}`
+  : `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live ${fb}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com ${fb}; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co ${apiHost} https://vercel.live ${fb}; img-src 'self' data: https:; media-src 'self' blob:; frame-src ${frameSrc}`;
 
 const nextConfig = {
   output: "standalone",
@@ -27,7 +30,6 @@ const nextConfig = {
       {
         source: "/(.*)",
         headers: [
-          { key: "X-Frame-Options", value: "DENY" },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
