@@ -81,21 +81,38 @@ export default function SpeakingResultsPage() {
 
   useEffect(() => {
     if (!examId) { setError("No exam ID provided"); setLoading(false); return; }
-    const load = async () => {
+    let cancelled = false;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 30;
+
+    const poll = async () => {
+      if (cancelled) return;
+      attempts++;
       try {
         const evalData = await getSpeakingEvaluation(examId);
-        if (evalData.overall_band != null) setEvaluation(evalData);
-        else setTimeout(load, 2000);
+        if (evalData.overall_band != null) {
+          setEvaluation(evalData);
+          setLoading(false);
+          return;
+        }
       } catch (err) {
         const msg = err instanceof Error ? err.message : "";
-        if (msg.includes("404") || msg.includes("not found")) setTimeout(load, 2000);
-        else setError(msg || "Failed to load results");
+        if (!msg.includes("404") && !msg.includes("not found")) {
+          setError(msg || "Failed to load results");
+          setLoading(false);
+          return;
+        }
       }
-      setLoading(false);
+      if (attempts < MAX_ATTEMPTS) {
+        setTimeout(poll, 3000);
+      } else {
+        setError("The evaluation took too long. Our AI agent is experiencing high demand. Please try again.");
+        setLoading(false);
+      }
     };
-    const interval = setInterval(() => { if (!evaluation?.overall_band) load(); }, 3000);
-    load();
-    return () => clearInterval(interval);
+
+    poll();
+    return () => { cancelled = true; };
   }, [examId]);
 
   if (loading) return (

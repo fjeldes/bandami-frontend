@@ -235,7 +235,7 @@ export default function SpeakingTestPage() {
       router.push(`/speaking/results?examId=${exam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
-      setError(msg.includes("503") || msg.includes("UNAVAILABLE") ? "AI is busy. Please try again." : msg);
+      setError(msg.includes("503") || msg.includes("UNAVAILABLE") ? "Our AI agent is currently experiencing high demand. Please try again later." : msg);
       setPhase("preview");
     }
   }, [exam, audioBlob, router]);
@@ -333,7 +333,7 @@ export default function SpeakingTestPage() {
       router.push(`/speaking/results?examId=${exam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
-      setError(msg.includes("503") || msg.includes("UNAVAILABLE") ? "AI is busy. Please try again." : msg);
+      setError(msg.includes("503") || msg.includes("UNAVAILABLE") ? "Our AI agent is currently experiencing high demand. Please try again later." : msg);
       setPhase("preview");
     }
   }, [exam, audioBlob, router]);
