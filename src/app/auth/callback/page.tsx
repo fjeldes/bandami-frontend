@@ -13,12 +13,14 @@ function AuthCallbackInner() {
   const router = useRouter();
   const verifyEmail = useAuthStore((s) => s.verifyEmail);
   const setTokens = useAuthStore((s) => s.setTokens);
+  const refreshSession = useAuthStore((s) => s.refreshSession);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const handleCallback = async () => {
       const verificationToken = searchParams.get("token");
       const accessToken = searchParams.get("access_token");
+      const refreshToken = searchParams.get("refresh_token") || "";
       const errorParam = searchParams.get("error");
 
       if (errorParam) {
@@ -29,11 +31,15 @@ function AuthCallbackInner() {
       try {
         if (verificationToken) {
           await verifyEmail(verificationToken);
-          router.push("/dashboard");
+          window.location.href = "/dashboard";
         } else if (accessToken) {
-          const refreshToken = searchParams.get("refresh_token") || "";
           setTokens(accessToken, refreshToken);
-          router.push("/dashboard");
+          await refreshSession();
+          if (useAuthStore.getState().user) {
+            window.location.href = "/dashboard";
+          } else {
+            setError("Could not complete login. Please try again.");
+          }
         } else {
           setError("Invalid callback parameters.");
         }
