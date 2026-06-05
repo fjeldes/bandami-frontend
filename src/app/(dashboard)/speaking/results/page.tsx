@@ -196,19 +196,48 @@ export default function SpeakingResultsPage() {
               <span className="material-symbols-outlined text-[32px] text-outline mb-2">hourglass_empty</span>
               <p className="text-body-md text-on-surface-variant">Criteria data is being evaluated...</p>
             </div>
+          ) : locked && !hasCriteria ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 opacity-60">
+              {SPEAKING_CRITERIA.map((c) => (
+                <div key={c.key} className="bg-surface-container-lowest rounded-xl p-3 border border-dashed border-outline-variant/50">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-label-sm text-on-surface-variant">{c.label}</span>
+                    <span className="text-label-sm text-outline bg-surface-variant px-2 py-0.5 rounded">--</span>
+                  </div>
+                  <div className="w-full bg-surface-container rounded-full h-1.5 mb-2"><div className="bg-surface-variant h-full rounded-full w-1/3" /></div>
+                  <span className="material-symbols-outlined text-[14px] text-outline">lock</span>
+                </div>
+              ))}
+            </div>
           ) : locked ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 opacity-60">
-                {SPEAKING_CRITERIA.map((c) => (
-                  <div key={c.key} className="bg-surface-container-lowest rounded-xl p-3 border border-dashed border-outline-variant/50">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-label-sm text-on-surface-variant">{c.label}</span>
-                      <span className="text-label-sm text-outline bg-surface-variant px-2 py-0.5 rounded">--</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {SPEAKING_CRITERIA.map((c) => {
+                  const data = criteria[c.key] as { score: number; comment: string } | undefined;
+                  const score = data?.score;
+                  const colors = score != null ? scoreColor(score) : { badge: "bg-surface-variant text-on-surface-variant", bar: "bg-surface-variant" };
+                  return (
+                    <div key={c.key} className="bg-surface-container-lowest rounded-xl shadow-sm p-3.5 border border-outline-variant/40">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="material-symbols-outlined text-[18px] text-primary-tint">{c.icon}</span>
+                        <h4 className="text-label-sm font-semibold text-on-surface">{c.label}</h4>
+                        {score != null ? (
+                          <span className={`font-mono text-xs font-semibold px-2 py-0.5 rounded-full ml-auto ${colors.badge}`}>{score.toFixed(1)}</span>
+                        ) : (
+                          <span className="font-mono text-xs px-2 py-0.5 rounded-full ml-auto bg-surface-variant text-on-surface-variant">--</span>
+                        )}
+                      </div>
+                      <div className="w-full bg-surface-container rounded-full h-1.5 mb-2 overflow-hidden">
+                        <div className={`${colors.bar} h-full rounded-full transition-all duration-700`} style={{ width: score != null ? `${(score / 9) * 100}%` : "0%" }} />
+                      </div>
+                      {comment ? (
+                        <p className="text-label-sm text-on-surface-variant leading-relaxed line-clamp-1">{comment}</p>
+                      ) : (
+                        <p className="text-label-sm text-on-surface-variant/60 italic">{c.description}</p>
+                      )}
                     </div>
-                    <div className="w-full bg-surface-container rounded-full h-1.5 mb-2"><div className="bg-surface-variant h-full rounded-full w-1/3" /></div>
-                    <span className="material-symbols-outlined text-[14px] text-outline">lock</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               {/* Premium Detailed Scoring upsell — blurred */}
               <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/40 relative overflow-hidden">

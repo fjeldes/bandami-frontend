@@ -5,7 +5,7 @@ const apiHost = process.env.NEXT_PUBLIC_API_URL ? new URL(process.env.NEXT_PUBLI
 
 const csp = isProd
   ? "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co " + apiHost + "; img-src 'self' data: https:; media-src 'self' blob:"
-  : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co " + apiHost + "; img-src 'self' data: https:; media-src 'self' blob:";
+  : "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co " + apiHost + " https://vercel.live; img-src 'self' data: https:; media-src 'self' blob:";
 
 const nextConfig = {
   output: "standalone",

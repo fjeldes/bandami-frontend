@@ -187,7 +187,7 @@ export default function WritingResultsPage() {
               <span className="material-symbols-outlined text-[32px] text-outline mb-2">hourglass_empty</span>
               <p className="text-body-md text-on-surface-variant">Criteria data is being evaluated...</p>
             </div>
-          ) : locked ? (
+          ) : locked && !hasCriteria ? (
             <div className="grid grid-cols-2 gap-3 opacity-60">
               {["Task Response", "Coherence & Cohesion", "Lexical Resource", "Grammatical Range"].map((label) => (
                 <div key={label} className="bg-surface-container-lowest rounded-xl p-3 border border-dashed border-outline-variant/50">
@@ -199,6 +199,36 @@ export default function WritingResultsPage() {
                   <span className="material-symbols-outlined text-[14px] text-outline">lock</span>
                 </div>
               ))}
+            </div>
+          ) : locked ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {WRITING_CRITERIA.map((c) => {
+                const data = criteria[c.key] as { score: number; comment: string } | undefined;
+                const score = data?.score;
+                const comment = data?.comment;
+                const colors = score != null ? scoreColor(score) : { badge: "bg-surface-variant text-on-surface-variant", bar: "bg-surface-variant" };
+                return (
+                  <div key={c.key} className="bg-surface-container-lowest rounded-xl shadow-sm p-3.5 border border-outline-variant/40">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="material-symbols-outlined text-[18px] text-primary-tint">{c.icon}</span>
+                      <h4 className="text-label-sm font-semibold text-on-surface">{c.label}</h4>
+                      {score != null ? (
+                        <span className={`font-mono text-xs font-semibold px-2 py-0.5 rounded-full ml-auto ${colors.badge}`}>{score.toFixed(1)}</span>
+                      ) : (
+                        <span className="font-mono text-xs px-2 py-0.5 rounded-full ml-auto bg-surface-variant text-on-surface-variant">--</span>
+                      )}
+                    </div>
+                    <div className="w-full bg-surface-container rounded-full h-1.5 mb-2 overflow-hidden">
+                      <div className={`${colors.bar} h-full rounded-full transition-all duration-700`} style={{ width: score != null ? `${(score / 9) * 100}%` : "0%" }} />
+                    </div>
+                    {comment ? (
+                      <p className="text-label-sm text-on-surface-variant leading-relaxed line-clamp-1">{comment}</p>
+                    ) : (
+                      <p className="text-label-sm text-on-surface-variant/60 italic">{c.description}</p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
