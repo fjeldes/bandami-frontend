@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from "react";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getQuestions, createWritingExam, submitWritingEvaluation } from "@/lib/api";
 import { showError } from "@/components/ui/Toast";
@@ -57,9 +58,13 @@ export default function WritingTestPage() {
       router.push(`/writing/results?examId=${exam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
-      setError(msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("high demand")
-        ? "Our AI is experiencing high demand. Your answer has been saved. Please try again in a few moments."
-        : msg);
+      if (msg.includes("402") || msg.includes("limit") || msg.includes("Daily limit")) {
+        setError("daily_limit");
+      } else if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("high demand")) {
+        setError("provider_overloaded");
+      } else {
+        setError(msg);
+      }
       setPhase("writing");
     }
   }, [exam, text, router]);
@@ -108,12 +113,26 @@ export default function WritingTestPage() {
           </div>
           <p className="text-label-sm text-on-surface-variant">{wordCount} words submitted</p>
         </div>
-        {error && (
+        {error === "daily_limit" ? (
+          <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-5 w-full max-w-md">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="material-symbols-outlined text-amber-600 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
+              <p className="text-body-md font-semibold text-amber-800">Daily limit reached</p>
+            </div>
+            <p className="text-body-md text-amber-700 mb-3">You've used all your free evaluations for today. Upgrade to Premium for unlimited access.</p>
+            <Link href="/pricing" className="inline-block bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity">Upgrade →</Link>
+          </div>
+        ) : error === "provider_overloaded" ? (
+          <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
+            <p className="text-body-md text-error mb-3">Our AI is experiencing high demand. Please try again in a few moments.</p>
+            <button onClick={handleSubmit} className="bg-primary text-on-primary text-label-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Retry</button>
+          </div>
+        ) : error ? (
           <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
             <p className="text-body-md text-error mb-3">{error}</p>
             <button onClick={handleSubmit} className="bg-primary text-on-primary text-label-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Retry</button>
           </div>
-        )}
+        ) : null}
       </div>
     );
   }
