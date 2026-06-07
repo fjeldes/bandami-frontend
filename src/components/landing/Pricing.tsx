@@ -3,41 +3,44 @@ import { CheckoutButton } from "@/components/ui/CheckoutButton";
 const plans = [
   {
     slug: "free", name: "Free", price: "$0", period: "/forever",
-    description: "Perfect for trying out our AI accuracy. Band score only.",
+    description: "3 evaluations/day. Writing all tasks + Speaking Part 1.",
     featured: false, badge: null,
     features: [
-      { text: "4 daily evaluations", included: true },
-      { text: "Overall band score only", included: true },
-      { text: "Basic AI Feedback", included: true },
-      { text: "IELTS question bank", included: true },
-      { text: "Criterion breakdown", included: false },
+      { text: "3 daily evaluations", included: true },
+      { text: "Writing (all tasks)", included: true },
+      { text: "Speaking Part 1 only", included: true },
+      { text: "Instant band score", included: true },
+      { text: "Basic AI (Gemini)", included: true },
+      { text: "Full criteria breakdown", included: false },
       { text: "Grammar corrections", included: false },
     ],
     cta: "Get Started Free", href: "/register",
   },
   {
-    slug: "exam_week_pass", name: "Exam Week Pass", price: "$4.99", period: "/7 days",
-    description: "Full access for one week. Perfect if your exam is around the corner.",
+    slug: "exam_week_pass", name: "Week Pass", price: "$2.99", period: "/7 days",
+    description: "10 evaluations/day with advanced AI. All modules included.",
     featured: false, badge: "GOOD DEAL",
     features: [
-      { text: "30 daily evaluations", included: true },
-      { text: "Advanced AI Feedback", included: true },
-      { text: "Instant detailed feedback", included: true },
-      { text: "7-day unlimited access", included: true },
+      { text: "10 evaluations/day", included: true },
+      { text: "Advanced AI (OpenAI)", included: true },
+      { text: "All modules included", included: true },
+      { text: "Instant score + feedback", included: true },
       { text: "Grammar corrections", included: true },
+      { text: "Cancel anytime", included: true },
     ],
-    cta: "Get 7-Day Pass", href: "/register?plan=exam_week_pass",
+    cta: "Get Week Pass — $2.99", href: "/register?plan=exam_week_pass",
   },
   {
     slug: "premium", name: "Premium", price: "$14.99", period: "/month",
-    description: "Intensive preparation to reach your target score.",
+    description: "30 evaluations/day. Full detailed feedback. History & progress.",
     featured: true, badge: "MOST POPULAR",
     features: [
-      { text: "30 daily evaluations", included: true },
-      { text: "Advanced AI Feedback", included: true },
-      { text: "Full criterion breakdown", included: true },
-      { text: "Detailed grammar corrections", included: true },
+      { text: "30 evaluations/day", included: true },
+      { text: "Advanced AI (OpenAI)", included: true },
+      { text: "Full detailed feedback", included: true },
+      { text: "Grammar with explanations", included: true },
       { text: "History & progress tracking", included: true },
+      { text: "Unlimited Full Speaking Tests", included: true },
     ],
     cta: "Subscribe", href: "/register?plan=premium",
   },
@@ -48,9 +51,9 @@ export function Pricing() {
     <section className="py-section-gap px-margin-mobile md:px-gutter bg-surface-container-low" id="pricing">
       <div className="section-container">
         <div className="text-center mb-section-gap">
-          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Simple, Transparent Pricing</h2>
+          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Try Premium for $2.99</h2>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-            Plans designed to fit your study pace and exam date. Significantly more affordable than alternatives.
+            Start with the Week Pass for just $2.99. After 7 days, upgrade to Premium at $14.99/month or continue with Free. Cancel anytime.
           </p>
         </div>
 

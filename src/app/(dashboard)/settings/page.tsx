@@ -137,7 +137,7 @@ function SubscriptionSection() {
               className={`p-3 rounded-lg border text-left transition-colors ${isWeekPass ? "border-primary bg-primary/5" : "border-outline-variant/30 hover:border-primary/50"}`}
             >
               <p className="text-body-md font-semibold text-on-surface">Week Pass</p>
-              <p className="text-label-sm text-on-surface-variant">$4.99/7 days</p>
+              <p className="text-label-sm text-on-surface-variant">$2.99/7 days</p>
               {isWeekPass && <span className="text-[10px] font-semibold text-primary bg-primary-container/20 px-1.5 py-0.5 rounded mt-1 inline-block">Current</span>}
             </button>
           </div>
@@ -201,7 +201,7 @@ function SubscriptionSection() {
                 ? "Premium is a monthly subscription. You'll be redirected to our secure checkout to set up your recurring payment."
                 : switchModal === "premium"
                 ? "Switch to Premium Monthly ($14.99/month). Your billing period will be adjusted automatically."
-                : "Switch to Exam Week Pass ($4.99/7 days). Your billing period will be adjusted automatically."}
+                : "Switch to Exam Week Pass ($2.99/7 days). Your billing period will be adjusted automatically."}
             </p>
             <div className="flex gap-3 justify-end">
               <button onClick={() => setSwitchModal(null)} className="px-4 py-2 rounded-xl text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">Cancel</button>

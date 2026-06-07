@@ -14,7 +14,8 @@ export default function SpeakingListPage() {
   const [scores, setScores] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState<"all" | "part1" | "part2" | "part3">("all");
+  const isFree = !isPremium && user?.role !== "admin";
+  const [filter, setFilter] = useState<"all" | "part1" | "part2" | "part3">(isFree ? "part1" : "all");
 
   useEffect(() => {
     Promise.all([getQuestions({ exam_type: "speaking" }), getUserExams({ limit: 100 })])
@@ -78,7 +79,9 @@ export default function SpeakingListPage() {
       </div>
 
       <div className="flex border-b border-outline-variant/50 mb-8 overflow-x-auto">
-        {(["all", "part1", "part2", "part3"] as const).map((f) => (
+        {(["all", "part1", "part2", "part3"] as const)
+          .filter((f) => !(isFree && f !== "part1"))
+          .map((f) => (
           <button key={f} onClick={() => setFilter(f)}
             className={`px-5 py-2.5 text-label-sm whitespace-nowrap transition-colors ${
               filter === f ? "text-primary border-b-2 border-primary font-semibold" : "text-on-surface-variant hover:text-primary"
@@ -87,6 +90,13 @@ export default function SpeakingListPage() {
           </button>
         ))}
       </div>
+
+      {isFree && (
+        <div className="mb-6 p-3 rounded-xl bg-secondary-container/20 border border-secondary-container/30 flex items-center gap-2 text-label-sm text-on-surface-variant">
+          <span className="material-symbols-outlined text-[18px] text-primary">lock</span>
+          <span>Unlock Speaking Part 2 &amp; 3 with <a href="/pricing" className="text-primary font-semibold underline">Week Pass ($2.99)</a> or <a href="/pricing" className="text-primary font-semibold underline">Premium</a></span>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-16"><span className="material-symbols-outlined text-[36px] text-primary animate-spin">progress_activity</span></div>

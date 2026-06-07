@@ -13,16 +13,16 @@ const plans = [
     price: "$0",
     period: "forever",
     badge: "",
-    features: ["4 evaluations/day", "Overall band score", "General feedback", "Basic AI"],
+    features: ["3 evaluations/day", "Writing (all tasks)", "Speaking Part 1 only", "Instant band score", "Basic AI (Gemini)"],
     featured: false,
   },
   {
     slug: "exam_week_pass",
     name: "Week Pass",
-    price: "$4.99",
+    price: "$2.99",
     period: "7 days",
     badge: "Best Value",
-    features: ["Unlimited evaluations", "Full criteria breakdown", "Instant detailed feedback", "Advanced AI", "Grammar corrections", "No commitment"],
+    features: ["10 evaluations/day", "All modules included", "Advanced AI (OpenAI)", "Instant score + feedback", "Grammar corrections", "No commitment — cancel anytime"],
     featured: true,
   },
   {
@@ -31,7 +31,7 @@ const plans = [
     price: "$14.99",
     period: "month",
     badge: "",
-    features: ["Unlimited evaluations", "Full criteria breakdown", "Instant detailed feedback", "Advanced AI", "Grammar corrections", "Progress tracking", "Full Speaking Test", "Auto-renewal"],
+    features: ["30 evaluations/day", "All modules included", "Advanced AI (OpenAI)", "Full detailed feedback", "Grammar corrections with explanations", "History & progress tracking", "Unlimited Full Speaking Tests", "Cancel anytime"],
     featured: false,
   },
 ];
@@ -56,7 +56,7 @@ function PricingContent() {
           return null;
         }
         if (hasDiscount && p.slug === "exam_week_pass" && !isPremium) {
-          return { ...p, price: "$2.49", badge: "50% Off", featured: true, discountLabel: "Referral discount · 50% off" };
+          return { ...p, price: "$1.50", badge: "50% Off", featured: true, discountLabel: "Referral discount · 50% off" };
         }
         return p;
       })
@@ -68,9 +68,9 @@ function PricingContent() {
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-16 md:py-24">
         <div className="text-center mb-16">
-          <h1 className="text-headline-lg font-bold text-on-surface mb-4">Simple Pricing</h1>
+          <h1 className="text-headline-lg font-bold text-on-surface mb-4">Try Premium for $2.99</h1>
           <p className="text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-            Start free. Upgrade when you need more. No hidden fees.
+            Start with the Week Pass for just $2.99. After 7 days, upgrade to Premium at $14.99/month or continue with Free. Cancel anytime.
           </p>
           {isPremium && (
             <p className="text-label-sm text-primary font-semibold mt-3">You're currently on the {tier === "premium" ? "Premium" : "Free"} plan</p>
@@ -119,7 +119,7 @@ function PricingContent() {
                     {(plan as any).discountLabel ? (
                       <>
                         <span className="font-mono text-display-md font-extrabold text-primary">{plan.price}</span>
-                        <span className="text-label-sm text-on-surface-variant line-through">$4.99</span>
+                        <span className="text-label-sm text-on-surface-variant line-through">$2.99</span>
                       </>
                     ) : (
                       <>
@@ -147,7 +147,7 @@ function PricingContent() {
                 ) : (
                   <CheckoutButton
                     planSlug={plan.slug}
-                    label={plan.slug === "exam_week_pass" && (plan as any).discountLabel ? "Get Week Pass — $2.49" : plan.slug === "exam_week_pass" ? "Get Week Pass" : "Subscribe"}
+                    label={plan.slug === "exam_week_pass" && (plan as any).discountLabel ? "Get Week Pass — $1.50" : plan.slug === "exam_week_pass" ? "Start with $2.99" : "Subscribe"}
                     featured={plan.featured}
                     href="/register"
                     discountPercent={plan.slug === "exam_week_pass" && (plan as any).discountLabel ? 50 : undefined}
