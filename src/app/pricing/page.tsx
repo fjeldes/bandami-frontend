@@ -1,7 +1,6 @@
 "use client";
 
 import { Suspense } from "react";
-import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
 import { CheckoutButton } from "@/components/ui/CheckoutButton";
 import { Navbar } from "@/components/landing/Navbar";
@@ -23,8 +22,6 @@ const plans = [
     period: "month",
     badge: "",
     features: ["30 evaluations/day", "All modules included", "Advanced AI (OpenAI)", "Full detailed feedback", "Grammar corrections with explanations", "History & progress tracking", "Unlimited Full Speaking Tests", "Cancel anytime"],
-    trialPrice: "$2.99",
-    trialPeriod: "first week",
     featured: true,
   },
 ];
@@ -77,68 +74,107 @@ function PricingContent() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-6 items-start">
+          <div className="flex flex-col md:flex-row gap-6 max-w-3xl mx-auto items-stretch justify-center">
             {visiblePlans.map((plan, idx) => (
               <div
                 key={plan.slug}
-                className={`relative bg-surface-container-lowest border rounded-2xl p-6 flex flex-col h-full hover:shadow-lg animate-fade-in-up ${
-                  plan.featured ? "border-primary shadow-md md:-translate-y-2" : "border-outline-variant/30"
+                className={`animate-fade-in-up flex flex-col ${
+                  plan.slug === "premium" ? "flex-[3]" : "flex-[2]"
                 }`}
-                style={{
-                  width: "min(340px, 100%)",
-                  animationDelay: `${idx * 0.1}s`,
-                }}
+                style={{ animationDelay: `${idx * 0.1}s` }}
               >
-                {plan.slug === "premium" && !(plan as any).badge?.includes("Your Plan") && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-label-sm font-bold uppercase tracking-wider bg-primary text-on-primary">
-                    MOST POPULAR
-                  </div>
-                )}
-                {(plan as any).badge?.includes("Your Plan") && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-label-sm font-bold uppercase tracking-wider bg-primary text-on-primary">
-                    {(plan as any).badge}
+                {plan.slug === "free" && (
+                  <div className="h-full bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 flex flex-col shadow-sm">
+                    <h3 className="text-headline-md font-bold text-on-surface mb-1">{plan.name}</h3>
+                    <div className="flex items-baseline gap-1 mb-6">
+                      <span className="font-mono text-display-md font-extrabold text-primary">$0</span>
+                      <span className="text-label-sm text-on-surface-variant">/forever</span>
+                    </div>
+
+                    <ul className="space-y-3 mb-8 flex-1">
+                      {plan.features.map((f, i) => (
+                        <li key={i} className="flex items-start gap-2 text-body-md text-on-surface-variant">
+                          <span className="material-symbols-outlined text-[18px] text-primary mt-0.5 shrink-0">check</span>
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <CheckoutButton
+                      planSlug={plan.slug}
+                      label="Get Started Free"
+                      featured={false}
+                      href="/register"
+                    />
                   </div>
                 )}
 
-                <div className="mb-6">
-                  <h3 className="text-headline-md font-bold text-on-surface mb-1">{plan.name}</h3>
-
-                  {plan.slug === "premium" && isPremium ? (
-                    <div className="font-mono text-display-md font-extrabold text-primary">Active</div>
-                  ) : plan.slug === "premium" ? (
-                    <div>
-                      <div className="flex items-baseline gap-2 mb-1">
-                        <span className="font-mono text-display-md font-extrabold text-primary line-through">$14.99</span>
-                        <span className="font-mono text-display-md font-extrabold text-primary">$2.99</span>
+                {plan.slug === "premium" && (
+                  <>
+                    {isPremium ? (
+                      <div className="h-full bg-surface-container-lowest border border-primary rounded-2xl p-6 flex flex-col shadow-md">
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-0.5 rounded-full text-label-sm font-bold uppercase tracking-wider bg-primary text-on-primary shadow-md z-10">
+                          Your Plan ✓
+                        </div>
+                        <h3 className="text-headline-md font-bold text-on-surface mb-1 mt-2">{plan.name}</h3>
+                        <div className="font-mono text-display-md font-extrabold text-primary mb-6">Active</div>
+                        <ul className="space-y-3 mb-8 flex-1">
+                          {plan.features.map((f, i) => (
+                            <li key={i} className="flex items-start gap-2 text-body-md text-on-surface-variant">
+                              <span className="material-symbols-outlined text-[18px] text-primary mt-0.5 shrink-0">check</span>
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+                        <div className="w-full text-center py-2.5 rounded-full bg-primary-fixed/30 text-primary text-label-sm font-semibold">Your current plan</div>
                       </div>
-                      <p className="text-label-sm text-on-surface-variant">first week · then $14.99/month</p>
-                    </div>
-                  ) : (
-                    <div className="flex items-baseline gap-1">
-                      <span className="font-mono text-display-md font-extrabold text-primary">{plan.price}</span>
-                      {plan.period && <span className="text-label-sm text-on-surface-variant">/{plan.period}</span>}
-                    </div>
-                  )}
-                </div>
+                    ) : (
+                      <div className="h-full bg-gradient-to-b from-primary/5 to-surface-container-lowest border-2 border-primary rounded-2xl p-7 shadow-xl flex flex-col relative overflow-hidden">
+                        <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary" />
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-5 py-1 rounded-full text-label-sm font-bold uppercase tracking-wider shadow-md z-10">
+                          MOST POPULAR
+                        </div>
 
-                <ul className="space-y-2 mb-8 flex-1">
-                  {plan.features.map((f, i) => (
-                    <li key={i} className="flex items-start gap-2 text-body-md text-on-surface-variant">
-                      <span className="material-symbols-outlined text-[18px] text-primary mt-0.5 shrink-0">check</span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
+                        <h3 className="text-headline-md font-bold text-on-surface mb-1 mt-2">{plan.name}</h3>
 
-                {isPremium && plan.slug === "premium" ? (
-                  <div className="w-full text-center py-2.5 rounded-full bg-primary-fixed/30 text-primary text-label-sm font-semibold">Your current plan</div>
-                ) : (
-                  <CheckoutButton
-                    planSlug={plan.slug}
-                    label={plan.slug === "premium" ? "Start with $2.99" : "Get Started Free"}
-                    featured={plan.featured}
-                    href="/register"
-                  />
+                        <div className="mb-2">
+                          <div className="flex items-baseline gap-2">
+                            <span className="font-mono text-display-lg font-extrabold text-primary">$2.99</span>
+                            <span className="text-body-md text-on-surface font-semibold">first week</span>
+                          </div>
+                          <div className="flex items-baseline gap-1.5 mt-0.5">
+                            <span className="font-mono text-display-sm text-on-surface-variant line-through">$14.99</span>
+                            <span className="text-body-md text-on-surface-variant">/month after</span>
+                          </div>
+                        </div>
+
+                        <div className="inline-flex self-start items-center gap-1.5 bg-primary/10 text-primary text-label-sm font-semibold px-3 py-1 rounded-full mb-5">
+                          <span className="material-symbols-outlined text-[16px]">local_offer</span>
+                          Save 80% this week
+                        </div>
+
+                        <p className="text-body-md text-on-surface-variant mb-6 pb-6 border-b border-outline-variant/20">
+                          Cancel anytime. Charged $2.99 today, then $14.99/month after 7 days.
+                        </p>
+
+                        <ul className="space-y-3 mb-8 flex-1">
+                          {plan.features.map((f, i) => (
+                            <li key={i} className="flex items-start gap-2">
+                              <span className="material-symbols-outlined text-[18px] text-primary mt-0.5 shrink-0">check_circle</span>
+                              <span className="text-body-md text-on-surface font-medium">{f}</span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <CheckoutButton
+                          planSlug={plan.slug}
+                          label="Start with $2.99"
+                          featured={true}
+                          href="/register"
+                        />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             ))}
