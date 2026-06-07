@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { redirectToCheckout } from "@/lib/payments";
+import { showError } from "@/components/ui/Toast";
 
 export function CheckoutButton({
   planSlug,
@@ -39,8 +40,9 @@ export function CheckoutButton({
         setLoading(true);
         try {
           await redirectToCheckout(planSlug, discountPercent);
-        } catch {
+        } catch (e) {
           setLoading(false);
+          showError(e instanceof Error ? e.message : "Payment error. Please try again.");
         }
       }}
       disabled={loading}
