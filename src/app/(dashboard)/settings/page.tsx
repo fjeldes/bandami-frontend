@@ -60,7 +60,7 @@ function SubscriptionSection() {
         window.location.href = result.url;
         return;
       }
-      showSuccess(`Switched to ${planSlug === "premium" ? "Premium Monthly" : "Exam Week Pass"}!`);
+      showSuccess(`Switched to Premium Monthly!`);
       load();
     } catch (err) {
       showError(err instanceof Error ? err.message : "Failed to switch plan");
@@ -118,30 +118,22 @@ function SubscriptionSection() {
           )}
         </div>
 
-        {/* Switch Plan */}
-        <div className="bg-surface-container rounded-xl p-4">
-          <p className="text-label-sm font-semibold text-on-surface-variant mb-3">Switch Plan</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            <button
-              onClick={() => setSwitchModal("premium")}
-              disabled={actionLoading || isMonthly}
-              className={`p-3 rounded-lg border text-left transition-colors ${isMonthly ? "border-primary bg-primary/5" : "border-outline-variant/30 hover:border-primary/50"}`}
-            >
-              <p className="text-body-md font-semibold text-on-surface">Premium</p>
-              <p className="text-label-sm text-on-surface-variant">$14.99/month</p>
-              {isMonthly && <span className="text-[10px] font-semibold text-primary bg-primary-container/20 px-1.5 py-0.5 rounded mt-1 inline-block">Current</span>}
-            </button>
-            <button
-              onClick={() => setSwitchModal("exam_week_pass")}
-              disabled={actionLoading || isWeekPass}
-              className={`p-3 rounded-lg border text-left transition-colors ${isWeekPass ? "border-primary bg-primary/5" : "border-outline-variant/30 hover:border-primary/50"}`}
-            >
-              <p className="text-body-md font-semibold text-on-surface">Week Pass</p>
-              <p className="text-label-sm text-on-surface-variant">$2.99/7 days</p>
-              {isWeekPass && <span className="text-[10px] font-semibold text-primary bg-primary-container/20 px-1.5 py-0.5 rounded mt-1 inline-block">Current</span>}
-            </button>
+        {/* Upgrade to monthly Premium */}
+        {isOneTime && (
+          <div className="bg-surface-container rounded-xl p-4">
+            <p className="text-label-sm font-semibold text-on-surface-variant mb-3">Convert to Premium</p>
+            <div className="grid grid-cols-1 gap-2">
+              <button
+                onClick={() => setSwitchModal("premium")}
+                disabled={actionLoading}
+                className="p-3 rounded-lg border border-outline-variant/30 hover:border-primary/50 text-left transition-colors"
+              >
+                <p className="text-body-md font-semibold text-on-surface">Premium Monthly</p>
+                <p className="text-label-sm text-on-surface-variant">$14.99/month — cancel anytime</p>
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Actions — only for subscription-based plans */}
         {!isOneTime && (
@@ -197,11 +189,9 @@ function SubscriptionSection() {
           <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/40 p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
             <h4 className="text-headline-md font-bold text-on-surface mb-2">Switch Plan</h4>
             <p className="text-body-md text-on-surface-variant mb-6">
-              {switchModal === "premium" && isOneTime
+              {isOneTime
                 ? "Premium is a monthly subscription. You'll be redirected to our secure checkout to set up your recurring payment."
-                : switchModal === "premium"
-                ? "Switch to Premium Monthly ($14.99/month). Your billing period will be adjusted automatically."
-                : "Switch to Exam Week Pass ($2.99/7 days). Your billing period will be adjusted automatically."}
+                : "Switch to Premium Monthly ($14.99/month). Your billing period will be adjusted automatically."}
             </p>
             <div className="flex gap-3 justify-end">
               <button onClick={() => setSwitchModal(null)} className="px-4 py-2 rounded-xl text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">Cancel</button>

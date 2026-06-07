@@ -17,22 +17,9 @@ const plans = [
     cta: "Get Started Free", href: "/register",
   },
   {
-    slug: "exam_week_pass", name: "Week Pass", price: "$2.99", period: "/7 days",
-    description: "10 evaluations/day with advanced AI. All modules included.",
-    featured: false, badge: "GOOD DEAL",
-    features: [
-      { text: "10 evaluations/day", included: true },
-      { text: "Advanced AI (OpenAI)", included: true },
-      { text: "All modules included", included: true },
-      { text: "Instant score + feedback", included: true },
-      { text: "Grammar corrections", included: true },
-      { text: "Cancel anytime", included: true },
-    ],
-    cta: "Get Week Pass — $2.99", href: "/register?plan=exam_week_pass",
-  },
-  {
-    slug: "premium", name: "Premium", price: "$14.99", period: "/month",
-    description: "30 evaluations/day. Full detailed feedback. History & progress.",
+    slug: "premium", name: "Premium", price: "$2.99", period: "/first week",
+    priceFull: "$14.99/month",
+    description: "Then $14.99/month after the first week. Cancel anytime.",
     featured: true, badge: "MOST POPULAR",
     features: [
       { text: "30 evaluations/day", included: true },
@@ -42,7 +29,7 @@ const plans = [
       { text: "History & progress tracking", included: true },
       { text: "Unlimited Full Speaking Tests", included: true },
     ],
-    cta: "Subscribe", href: "/register?plan=premium",
+    cta: "Start with $2.99", href: "/register?plan=premium",
   },
 ];
 
@@ -70,10 +57,13 @@ export function Pricing() {
                 </div>
               )}
               <h3 className="font-headline-md text-headline-md text-on-surface mb-2">{plan.name}</h3>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="font-display-md text-display-md text-on-surface">{plan.price}</span>
-                {plan.period && <span className="font-body-md text-body-md text-on-surface-variant">{plan.period}</span>}
+              <div className="flex items-baseline gap-1 mb-2">
+                <span className={`font-display-md ${plan.priceFull ? "text-display-sm line-through text-on-surface-variant" : "text-display-md"} text-on-surface`}>{plan.price}</span>
+                {plan.period && <span className={`font-body-md text-body-md ${plan.priceFull ? "text-on-surface-variant" : "text-on-surface-variant"}`}>{plan.period}</span>}
               </div>
+              {plan.priceFull && (
+                <p className="font-body-md text-body-md text-primary font-semibold mb-6">{plan.priceFull}</p>
+              )}
               <p className="font-body-md text-body-md text-on-surface-variant mb-8 pb-8 border-b border-outline-variant/30 flex-1">{plan.description}</p>
               <ul className="space-y-4 mb-8">
                 {plan.features.map((f) => (
