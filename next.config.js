@@ -18,10 +18,14 @@ const nextConfig = {
   poweredByHeader: false,
 
   async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+    const apiOrigin = process.env.NEXT_PUBLIC_API_URL
+      ? new URL(process.env.NEXT_PUBLIC_API_URL).origin
+      : "http://localhost:8000";
+    const apiV1 = `${apiOrigin}/api/v1`;
     return [
-      { source: "/terms", destination: apiUrl.replace("/api/v1", "") + "/legal/terms" },
-      { source: "/privacy", destination: apiUrl.replace("/api/v1", "") + "/legal/privacy" },
+      { source: "/api/:path*", destination: `${apiOrigin}/api/:path*` },
+      { source: "/terms", destination: `${apiV1.replace("/api/v1", "")}/legal/terms` },
+      { source: "/privacy", destination: `${apiV1.replace("/api/v1", "")}/legal/privacy` },
     ];
   },
 
