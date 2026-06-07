@@ -12,7 +12,7 @@ const plans = [
     price: "$0",
     period: "forever",
     badge: "",
-    features: ["3 evaluations/day", "Writing (all tasks)", "Speaking Part 1 only", "Instant band score", "Basic AI (Gemini)"],
+    features: ["3 evaluations/day", "Writing (all tasks)", "Speaking Part 1 only", "Instant band score", "AI-powered evaluation"],
     featured: false,
   },
   {
@@ -21,7 +21,7 @@ const plans = [
     price: "$14.99",
     period: "month",
     badge: "",
-    features: ["30 evaluations/day", "All modules included", "Advanced AI (OpenAI)", "Full detailed feedback", "Grammar corrections with explanations", "History & progress tracking", "Unlimited Full Speaking Tests", "Cancel anytime"],
+    features: ["30 evaluations/day", "All modules included", "Advanced AI evaluation", "Full detailed feedback", "Grammar corrections with explanations", "History & progress tracking", "Unlimited Full Speaking Tests", "Cancel anytime"],
     featured: true,
   },
 ];

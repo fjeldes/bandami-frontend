@@ -9,7 +9,7 @@ const plans = [
       { text: "Writing (all tasks)", included: true },
       { text: "Speaking Part 1 only", included: true },
       { text: "Instant band score", included: true },
-      { text: "Basic AI (Gemini)", included: true },
+      { text: "AI-powered evaluation", included: true },
       { text: "Full criteria breakdown", included: false },
       { text: "Grammar corrections", included: false },
     ],
@@ -20,7 +20,7 @@ const plans = [
     featured: true, badge: "MOST POPULAR",
     features: [
       { text: "30 evaluations/day", included: true },
-      { text: "Advanced AI (OpenAI)", included: true },
+      { text: "Advanced AI evaluation", included: true },
       { text: "Full detailed feedback", included: true },
       { text: "Grammar with explanations", included: true },
       { text: "History & progress tracking", included: true },
