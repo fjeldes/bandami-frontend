@@ -129,7 +129,7 @@ function PricingContent() {
                         <div className="w-full text-center py-2.5 rounded-full bg-primary-fixed/30 text-primary text-label-sm font-semibold">Your current plan</div>
                       </div>
                     ) : (
-                      <div className="h-full bg-gradient-to-b from-primary/5 to-surface-container-lowest border-2 border-primary rounded-2xl p-7 shadow-xl flex flex-col relative overflow-hidden">
+                      <div className="h-full bg-gradient-to-b from-primary/5 to-surface-container-lowest border-2 border-primary rounded-2xl p-7 shadow-xl flex flex-col relative">
                         <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary" />
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary px-5 py-1 rounded-full text-label-sm font-bold uppercase tracking-wider shadow-md z-10">
                           MOST POPULAR

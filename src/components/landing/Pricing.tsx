@@ -73,7 +73,7 @@ export function Pricing() {
               )}
 
               {plan.slug === "premium" && (
-                <div className="h-full bg-gradient-to-b from-primary/5 to-surface-container-lowest border-2 border-primary rounded-2xl p-7 shadow-xl flex flex-col relative overflow-hidden">
+                <div className="h-full bg-gradient-to-b from-primary/5 to-surface-container-lowest border-2 border-primary rounded-2xl p-7 shadow-xl flex flex-col relative">
                   {/* Decorative accent */}
                   <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary" />
 
