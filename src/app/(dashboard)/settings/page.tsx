@@ -229,11 +229,6 @@ export default function SettingsPage() {
   const [confirmPw, setConfirmPw] = useState("");
   const [savingPw, setSavingPw] = useState(false);
 
-  const [referralCode, setReferralCode] = useState("");
-  const [referralCount, setReferralCount] = useState(0);
-  const [hasDiscount, setHasDiscount] = useState(false);
-  const [refLoading, setRefLoading] = useState(true);
-
   useEffect(() => {
     const sessionId = searchParams.get("session_id");
     const isCheckoutSuccess = searchParams.get("checkout") === "success";
@@ -270,10 +265,6 @@ export default function SettingsPage() {
       setLoading(false);
     });
 
-    apiFetch<{ referral_code: string; referral_count: number; referral_discounts: number }>("/users/me/referral")
-      .then((r) => { setReferralCode(r.referral_code); setReferralCount(r.referral_count); setHasDiscount(r.referral_discounts > 0); })
-      .catch(() => {})
-      .finally(() => setRefLoading(false));
   }, []);
 
   const saveName = async () => {
@@ -392,42 +383,6 @@ export default function SettingsPage() {
           <button onClick={() => setChangePw(true)} className="text-primary text-label-sm font-semibold hover:underline">Change password</button>
         )}
       </section>
-      {/* Referral */}
-      <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
-        <h3 className="text-body-md font-semibold text-on-surface mb-4">Referral Program</h3>
-        {refLoading ? (
-          <div className="animate-pulse bg-surface-container-high rounded-lg h-20" />
-        ) : (
-          <div className="space-y-3">
-            {hasDiscount && (
-              <div className="bg-referral-bg rounded-xl border border-referral-border p-4 flex items-center gap-3">
-                <span className="material-symbols-outlined text-referral-text text-[24px]">stars</span>
-                <div>
-                  <p className="text-body-md font-semibold text-referral-text">50% off your next Week Pass</p>
-                  <p className="text-label-sm text-referral-text/70">Referral reward — expires after use</p>
-                </div>
-              </div>
-            )}
-            <div className="bg-primary/5 rounded-xl border border-primary/20 p-4">
-              <p className="text-label-sm text-on-surface-variant mb-2">Your referral code</p>
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-data-md font-bold text-primary tracking-wider">{referralCode || "—"}</span>
-                <button onClick={() => { navigator.clipboard.writeText(referralCode); showSuccess("Code copied!"); }} className="text-primary hover:bg-primary/10 p-1.5 rounded-lg transition-colors">
-                  <span className="material-symbols-outlined text-[18px]">content_copy</span>
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center justify-between text-label-sm">
-              <span className="text-on-surface-variant">People referred</span>
-              <span className="font-mono font-bold text-primary">{referralCount}</span>
-            </div>
-            <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/register?ref=${referralCode}`); showSuccess("Share link copied!"); }} className="w-full bg-primary-container/20 text-primary font-semibold py-2.5 rounded-lg text-label-sm hover:bg-primary-container/40 transition-colors">
-              Copy Share Link
-            </button>
-          </div>
-        )}
-      </section>
-
       {/* Sign Out */}
 
       <button onClick={handleSignOut} className="w-full flex items-center justify-center gap-2 bg-error-container/30 text-error font-semibold py-3 rounded-xl hover:bg-error-container/50 transition-colors text-body-md">
