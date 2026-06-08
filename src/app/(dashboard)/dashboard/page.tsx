@@ -102,6 +102,9 @@ export default function DashboardPage() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showTargetInput, setShowTargetInput] = useState(false);
   const [targetInput, setTargetInput] = useState("");
+  const [studyPlan, setStudyPlan] = useState<any[] | null>(null);
+  const [planLoading, setPlanLoading] = useState(false);
+  const [planMessage, setPlanMessage] = useState("");
   const [activityPage, setActivityPage] = useState(1);
   const ACTIVITY_PAGE_SIZE = 5;
   const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
@@ -193,6 +196,18 @@ export default function DashboardPage() {
   const limit = stats?.daily_eval_limit ?? 4;
   const isUnlimited = limit === -1;
   const evalsPct = !isUnlimited && limit > 0 ? Math.min(100, (used / limit) * 100) : 0;
+
+  const generatePlan = async () => {
+    setPlanLoading(true);
+    try {
+      const result = await apiFetch<{ plan: any[]; message: string }>("/users/me/study-plan", { method: "POST" });
+      setStudyPlan(result.plan);
+      setPlanMessage(result.message);
+    } catch (err) {
+      showError(err instanceof Error ? err.message : "Failed to generate plan");
+    }
+    setPlanLoading(false);
+  };
 
   const recentExams = exams.slice(-10);
   const writingBands = recentExams.filter((e) => e.exam_type === "writing" && e.evaluations?.[0]?.overall_band != null).map((e) => ({ b: e.evaluations[0].overall_band, d: new Date(e.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) }));
@@ -439,6 +454,36 @@ export default function DashboardPage() {
           )
         ))}
       </div>
+
+      {/* Study Plan (Premium) */}
+      {isPremium && (
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-body-md font-semibold text-on-surface">7-Day Study Plan</h3>
+            {!studyPlan && (
+              <button onClick={generatePlan} disabled={planLoading || exams.length === 0}
+                className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50 flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
+                {planLoading ? "Generating..." : "Generate Plan"}
+              </button>
+            )}
+          </div>
+          {planMessage && <p className="text-body-md text-on-surface-variant mb-4">{planMessage}</p>}
+          {studyPlan && studyPlan.length > 0 && (
+            <div className="space-y-2">
+              {studyPlan.map((item: any, i: number) => (
+                <div key={i} className="flex items-start gap-3 p-3 bg-surface-container rounded-lg">
+                  <span className="font-mono text-xs font-bold text-primary bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">{item.day}</span>
+                  <div>
+                    <p className="text-label-sm font-semibold text-on-surface">{item.focus}</p>
+                    <p className="text-label-sm text-on-surface-variant">{item.task}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Recent Activity */}
       <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm">
