@@ -269,10 +269,7 @@ export default function SettingsPage() {
           showError("Could not verify payment. Please refresh.");
         });
     } else if (isCheckoutSuccess) {
-      showSuccess("Payment successful! Refreshing...");
-      useAuthStore.getState().refreshSession().then(() => {
-        setTimeout(() => window.location.href = "/settings", 1500);
-      });
+      useAuthStore.getState().refreshSession();
     }
     Promise.all([
       
@@ -329,6 +326,18 @@ export default function SettingsPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <h1 className="text-headline-md font-bold text-on-surface">Settings</h1>
+
+      {searchParams.get("checkout") === "success" && (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start gap-3">
+          <span className="material-symbols-outlined text-emerald-600 text-[24px] shrink-0">check_circle</span>
+          <div>
+            <p className="text-body-md font-semibold text-emerald-800">Premium activated!</p>
+            <p className="text-label-sm text-emerald-700 mt-0.5">
+              Charged <strong>${searchParams.get("first_charge") || "2.99"}</strong> — next charge will be <strong>${searchParams.get("next_charge") || "14.99"}</strong>/month
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Profile */}
       <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
