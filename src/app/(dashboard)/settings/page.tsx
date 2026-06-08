@@ -166,19 +166,23 @@ function SubscriptionSection() {
           <div className="pt-4 border-t border-outline-variant/30">
             <h4 className="text-label-sm text-on-surface-variant font-semibold mb-3 uppercase tracking-wider">Invoice History</h4>
             <div className="space-y-1.5">
-              {invoices.slice(0, 5).map((inv: any) => (
-                <a key={inv.id} href={inv.hosted_invoice_url || inv.invoice_pdf} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-container transition-colors text-body-md">
-                  <div className="flex items-center gap-3">
-                    <span className="material-symbols-outlined text-on-surface-variant text-[18px]">receipt_long</span>
-                    <div>
-                      <p className="text-body-md text-on-surface">${inv.amount_paid.toFixed(2)}</p>
-                      <p className="text-label-sm text-on-surface-variant">{new Date(inv.created).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</p>
+              {invoices.slice(0, 5).map((inv: any) => {
+                const url = inv.hosted_invoice_url || inv.invoice_pdf;
+                const label = inv.payment_type === "first_charge" ? "First charge" : "Monthly";
+                return (
+                  <div key={inv.id}
+                    className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-container transition-colors text-body-md">
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-on-surface-variant text-[18px]">receipt_long</span>
+                      <div>
+                        <p className="text-body-md text-on-surface">${inv.amount_paid.toFixed(2)}</p>
+                        <p className="text-label-sm text-on-surface-variant">{new Date(inv.created).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} · {label}</p>
+                      </div>
                     </div>
+                    {url && <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary text-label-sm hover:underline">View</a>}
                   </div>
-                  <span className="text-primary text-label-sm hover:underline">View</span>
-                </a>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
