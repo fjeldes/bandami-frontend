@@ -26,7 +26,7 @@ const plans = [
       { text: "History & progress tracking", included: true },
       { text: "Unlimited Full Speaking Tests", included: true },
     ],
-    cta: "Start with $2.99", href: "/register?plan=premium",
+    cta: "Start Free Trial", href: "/register?plan=premium",
   },
 ];
 
@@ -35,9 +35,9 @@ export function Pricing() {
     <section className="py-section-gap px-margin-mobile md:px-gutter bg-surface-container-low" id="pricing">
       <div className="section-container">
         <div className="text-center mb-section-gap">
-          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Try Premium for $2.99</h2>
+          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Try Premium Free for 7 Days</h2>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-            Your first week is just $2.99. Then $14.99/month. Cancel anytime.
+            Start your free trial today. Then $14.99/month. Cancel anytime.
           </p>
         </div>
 
@@ -83,26 +83,26 @@ export function Pricing() {
 
                   <h3 className="font-headline-md text-headline-md text-on-surface mb-1 mt-2">{plan.name}</h3>
 
-                  {/* Price: $2.99 first week + $14.99 struck */}
+                  {/* Price: free trial + $14.99 */}
                   <div className="mb-2">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-display-lg text-display-lg text-primary font-extrabold">$2.99</span>
-                      <span className="font-body-md text-body-md text-on-surface font-semibold">first week</span>
+                      <span className="font-display-lg text-display-lg text-primary font-extrabold">$0</span>
+                      <span className="font-body-md text-body-md text-on-surface font-semibold">for 7 days</span>
                     </div>
                     <div className="flex items-baseline gap-1.5 mt-0.5">
-                      <span className="font-display-sm text-display-sm text-on-surface-variant line-through">$14.99</span>
+                      <span className="font-display-sm text-display-sm text-on-surface-variant">$14.99</span>
                       <span className="font-body-md text-body-md text-on-surface-variant">/month after</span>
                     </div>
                   </div>
 
-                  {/* Saving badge */}
+                  {/* Trial badge */}
                   <div className="inline-flex self-start items-center gap-1.5 bg-primary/10 text-primary font-label-md text-label-sm font-semibold px-3 py-1 rounded-full mb-5">
-                    <span className="material-symbols-outlined text-[16px]">local_offer</span>
-                    Save 80% this week
+                    <span className="material-symbols-outlined text-[16px]">verified</span>
+                    Free Trial
                   </div>
 
                   <p className="font-body-md text-body-md text-on-surface-variant mb-6 pb-6 border-b border-outline-variant/20">
-                    Cancel anytime. You'll be charged $2.99 today, then $14.99/month after 7 days.
+                    Cancel anytime. No charge during trial. Then $14.99/month after 7 days.
                   </p>
 
                   <ul className="space-y-3.5 mb-8 flex-1">

@@ -256,7 +256,9 @@ export default function SettingsPage() {
         });
     } else if (isCheckoutSuccess) {
       showSuccess("Payment successful! Refreshing...");
-      setTimeout(() => window.location.href = "/settings", 2000);
+      useAuthStore.getState().refreshSession().then(() => {
+        setTimeout(() => window.location.href = "/settings", 1500);
+      });
     }
     Promise.all([
       
