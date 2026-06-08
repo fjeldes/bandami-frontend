@@ -13,6 +13,7 @@ function SubscriptionSection() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [switchModal, setSwitchModal] = useState<string | null>(null);
+  const [cancelModal, setCancelModal] = useState(false);
 
   const load = () => {
     Promise.all([
@@ -26,8 +27,8 @@ function SubscriptionSection() {
 
   useEffect(() => { load(); }, []);
 
-  const cancel = async () => {
-    if (!confirm("Your Premium access will continue until the end of the billing period. After that, you'll be switched to the Free plan. Continue?")) return;
+  const doCancel = async () => {
+    setCancelModal(false);
     setActionLoading(true);
     try {
       await apiFetch("/payments/cancel", { method: "POST" });
@@ -144,7 +145,7 @@ function SubscriptionSection() {
               Reactivate Subscription
             </button>
           ) : (
-            <button onClick={cancel} disabled={actionLoading}
+            <button onClick={() => setCancelModal(true)} disabled={actionLoading}
               className="px-4 py-2 rounded-xl border border-error/30 text-error text-label-sm font-semibold hover:bg-error-container/20 transition-colors">
               Cancel Subscription
             </button>
@@ -198,6 +199,24 @@ function SubscriptionSection() {
               <button onClick={() => switchPlan(switchModal)} disabled={actionLoading}
                 className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50">
                 {actionLoading ? "Switching..." : "Confirm Switch"}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+      {cancelModal && createPortal(
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setCancelModal(false)}>
+          <div className="bg-surface-container-lowest rounded-xl shadow-xl p-6 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+            <h3 className="text-body-md font-semibold text-on-surface mb-2">Cancel Subscription</h3>
+            <p className="text-label-sm text-on-surface-variant mb-6">
+              Your Premium access will continue until the end of the billing period. After that, you'll be switched to the Free plan. Continue?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button onClick={() => setCancelModal(false)} className="px-4 py-2 rounded-xl text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">Stay on Premium</button>
+              <button onClick={doCancel} disabled={actionLoading}
+                className="px-4 py-2 rounded-xl bg-error text-on-error text-label-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50">
+                {actionLoading ? "Canceling..." : "Yes, Cancel"}
               </button>
             </div>
           </div>
