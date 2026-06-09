@@ -100,8 +100,8 @@ export default function DashboardPage() {
   const [error, setError] = useState("");
   const [target, setTarget] = useState<number | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  const [showTargetInput, setShowTargetInput] = useState(false);
-  const [targetInput, setTargetInput] = useState("");
+  const [showGoalModal, setShowGoalModal] = useState(false);
+  const [goalInput, setGoalInput] = useState("7.0");
   const [studyPlan, setStudyPlan] = useState<any[] | null>(null);
   const [planLoading, setPlanLoading] = useState(false);
   const [planMessage, setPlanMessage] = useState("");
@@ -145,14 +145,16 @@ export default function DashboardPage() {
     setShowOnboarding(false);
   };
 
-  const saveTarget = () => {
-    const v = parseFloat(targetInput);
-    if (v >= 0 && v <= 9) {
-      setTarget(v);
-      localStorage.setItem("ielts_target", String(v));
-    }
-    setShowTargetInput(false);
+  const cefrInfo: Record<string, { label: string; description: string; color: string }> = {
+    A1: { label: "Beginner", description: "Can understand and use basic phrases.", color: "text-red-500" },
+    A2: { label: "Elementary", description: "Can communicate in simple, routine tasks.", color: "text-orange-500" },
+    B1: { label: "Intermediate", description: "Can handle everyday situations and express opinions.", color: "text-yellow-600" },
+    B2: { label: "Upper Intermediate", description: "Can interact fluently on familiar topics.", color: "text-lime-600" },
+    C1: { label: "Advanced", description: "Can express ideas fluently and spontaneously.", color: "text-emerald-600" },
+    C2: { label: "Proficient", description: "Can understand virtually everything with ease.", color: "text-primary" },
   };
+
+  const bandOptions = [4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0];
 
   const bandHistory = exams
     .filter((e) => e.evaluations?.[0]?.overall_band != null)
@@ -194,10 +196,108 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Skeleton className="h-48 rounded-xl" />
           <Skeleton className="h-48 rounded-xl" />
-        </div>
       </div>
-    );
-  }
+
+      {/* Goal Setting Modal */}
+      {showGoalModal && (
+        <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4" onClick={() => setShowGoalModal(false)}>
+          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/50 p-6 md:p-8 max-w-md w-full text-center" onClick={(e) => e.stopPropagation()}>
+            <div className="w-14 h-14 rounded-full bg-primary-fixed/20 flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-[32px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>flag</span>
+            </div>
+            <h3 className="text-headline-sm font-bold text-on-surface mb-1">Set Your Target Band</h3>
+            <p className="text-body-md text-on-surface-variant mb-6">Choose the IELTS band score you're working toward.</p>
+
+            {latestBand != null && (
+              <div className="bg-surface-container-high rounded-xl px-4 py-3 mb-6 flex items-center justify-between">
+                <span className="text-label-sm text-on-surface-variant">Current band</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-data-md font-bold text-on-surface">{latestBand.toFixed(1)}</span>
+                  <span className="text-label-sm px-2 py-0.5 rounded bg-surface-container text-on-surface-variant">{cefrLevel(latestBand)}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Band Picker */}
+            <div className="flex flex-wrap justify-center gap-2 mb-6">
+              {bandOptions.map((b) => {
+                const selected = parseFloat(goalInput) === b;
+                const isCurrent = latestBand != null && Math.abs(latestBand - b) < 0.1;
+                return (
+                  <button
+                    key={b}
+                    onClick={() => setGoalInput(String(b))}
+                    className={`font-mono text-data-md font-bold px-3 py-2 rounded-lg transition-all border-2 min-w-[52px] ${
+                      selected
+                        ? "bg-primary text-on-primary border-primary shadow-md scale-105"
+                        : isCurrent
+                          ? "bg-surface-container border-outline text-on-surface-variant"
+                          : "bg-surface-container-low border-outline-variant/40 text-on-surface-variant hover:border-primary hover:text-primary"
+                    }`}
+                  >
+                    {b.toFixed(1)}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* CEFR Preview */}
+            {goalInput && (
+              <div className="bg-surface-container-high rounded-xl p-4 mb-6 text-left">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className={`font-bold text-body-md ${cefrInfo[cefrLevel(parseFloat(goalInput))]?.color || ""}`}>
+                    {cefrLevel(parseFloat(goalInput))}
+                  </span>
+                  <span className="text-label-sm text-on-surface-variant">
+                    · {cefrInfo[cefrLevel(parseFloat(goalInput))]?.label || ""}
+                  </span>
+                </div>
+                <p className="text-label-sm text-on-surface-variant leading-relaxed">
+                  {cefrInfo[cefrLevel(parseFloat(goalInput))]?.description || ""}
+                </p>
+              </div>
+            )}
+
+            {latestBand != null && parseFloat(goalInput) > latestBand && (
+              <div className="flex items-center gap-2 justify-center text-label-sm text-on-surface-variant mb-6">
+                <span className="material-symbols-outlined text-[16px]">trending_up</span>
+                <span>{((latestBand / parseFloat(goalInput)) * 100).toFixed(0)}% of the way there · {((parseFloat(goalInput) - latestBand) * 2).toFixed(0)} half-band improvement needed</span>
+              </div>
+            )}
+            {latestBand != null && parseFloat(goalInput) <= latestBand && (
+              <div className="flex items-center gap-2 justify-center text-label-sm text-emerald-600 mb-6">
+                <span className="material-symbols-outlined text-[16px]">celebration</span>
+                <span>You've already reached this band! Aim higher.</span>
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowGoalModal(false)}
+                className="flex-1 py-2.5 rounded-xl border-2 border-outline-variant text-on-surface text-label-sm font-semibold hover:bg-surface-container transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const v = parseFloat(goalInput);
+                  if (v >= 0 && v <= 9) {
+                    setTarget(v);
+                    localStorage.setItem("ielts_target", String(v));
+                  }
+                  setShowGoalModal(false);
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all"
+              >
+                Set Target
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
   if (error) {
     return (
@@ -292,43 +392,46 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {target != null && latestBand != null ? (
-              <div className="flex flex-col items-end gap-1">
-                <div className="flex items-center gap-2 bg-primary-fixed/30 rounded-full px-3 py-1.5">
-                  <span className="text-label-sm text-on-surface-variant">Target:</span>
+            {target != null && (
+              <div className="flex items-center gap-3 bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm px-4 py-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px] text-primary">flag</span>
+                  <span className="text-label-sm text-on-surface-variant">Target</span>
                   <span className="font-mono text-data-md font-bold text-primary">Band {target.toFixed(1)}</span>
-                  <button onClick={() => { setTarget(null); localStorage.removeItem("ielts_target"); }} className="text-on-surface-variant hover:text-error text-[14px] material-symbols-outlined">close</button>
+                  <span className="text-label-sm text-on-surface-variant px-1.5 py-0.5 rounded bg-surface-container-high">{cefrLevel(target)}</span>
                 </div>
-                {target > latestBand ? (
-                  <div className="w-48">
-                    <div className="flex justify-between text-label-sm text-on-surface-variant mb-0.5">
-                      <span>Band {latestBand.toFixed(1)}</span>
-                      <span>{((latestBand / target) * 100).toFixed(0)}% to target</span>
+                {latestBand != null && (
+                  <div className="flex items-center gap-2 pl-3 border-l border-outline-variant/30">
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <span className="text-label-sm text-on-surface-variant">
+                          {target > latestBand ? `${((latestBand / target) * 100).toFixed(0)}%` : "🎯 Goal met!"}
+                        </span>
+                        <span className="text-label-sm text-on-surface-variant">
+                          {target > latestBand ? `Gap: ${(target - latestBand).toFixed(1)}` : ""}
+                        </span>
+                      </div>
+                      <div className="w-24 h-1.5 bg-surface-container rounded-full overflow-hidden">
+                        <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.min(100, (latestBand / target) * 100)}%` }} />
+                      </div>
                     </div>
-                    <div className="h-1.5 bg-surface-container rounded-full overflow-hidden">
-                      <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.min(100, (latestBand / target) * 100)}%` }} />
-                    </div>
+                    <button onClick={() => { setTarget(null); localStorage.removeItem("ielts_target"); }} className="text-on-surface-variant hover:text-error transition-colors">
+                      <span className="material-symbols-outlined text-[16px]">close</span>
+                    </button>
                   </div>
-                ) : (
-                  <span className="text-label-sm text-emerald-600">🎯 Target reached!</span>
+                )}
+                {latestBand == null && (
+                  <button onClick={() => { setTarget(null); localStorage.removeItem("ielts_target"); }} className="text-on-surface-variant hover:text-error transition-colors">
+                    <span className="material-symbols-outlined text-[16px]">close</span>
+                  </button>
                 )}
               </div>
-            ) : target != null ? (
-              <div className="flex items-center gap-2 bg-primary-fixed/30 rounded-full px-3 py-1.5">
-                <span className="text-label-sm text-on-surface-variant">Target:</span>
-                <span className="font-mono text-data-md font-bold text-primary">Band {target.toFixed(1)}</span>
-                <button onClick={() => { setTarget(null); localStorage.removeItem("ielts_target"); }} className="text-on-surface-variant hover:text-error text-[14px] material-symbols-outlined">close</button>
-              </div>
-            ) : showTargetInput ? (
-              <div className="flex items-center gap-1">
-                <input type="number" min={0} max={9} step={0.5} value={targetInput} onChange={(e) => setTargetInput(e.target.value)}
-                  placeholder="7.0" className="w-16 bg-surface-container border border-outline-variant rounded-lg px-2 py-1 text-body-md text-on-surface text-center outline-none focus:border-primary" />
-                <button onClick={saveTarget} className="text-primary text-label-sm font-semibold">Set</button>
-                <button onClick={() => setShowTargetInput(false)} className="text-on-surface-variant text-[16px] material-symbols-outlined">close</button>
-              </div>
-            ) : (
-              <button onClick={() => setShowTargetInput(true)} className="flex items-center gap-1.5 text-label-sm text-primary hover:underline">
-                <span className="material-symbols-outlined text-[16px]">flag</span> Set Goal
+            )}
+            {target == null && (
+              <button onClick={() => { setGoalInput(latestBand ? String(Math.min(9, latestBand + 1)) : "7.0"); setShowGoalModal(true); }}
+                className="flex items-center gap-1.5 text-label-sm text-primary bg-primary-fixed/20 hover:bg-primary-fixed/40 px-3 py-2 rounded-lg transition-all font-semibold">
+                <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>flag</span>
+                Set Goal
               </button>
             )}
           </div>
