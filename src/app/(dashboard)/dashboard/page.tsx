@@ -105,6 +105,9 @@ export default function DashboardPage() {
   const [studyPlan, setStudyPlan] = useState<any[] | null>(null);
   const [planLoading, setPlanLoading] = useState(false);
   const [planMessage, setPlanMessage] = useState("");
+  const [planId, setPlanId] = useState<string | null>(null);
+  const [remainingThisMonth, setRemainingThisMonth] = useState(4);
+  const [canGenerate, setCanGenerate] = useState(true);
   const [activityPage, setActivityPage] = useState(1);
   const ACTIVITY_PAGE_SIZE = 5;
   const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
@@ -114,6 +117,19 @@ export default function DashboardPage() {
       .then(([s, result]) => { setStats(s); setExams(result.exams.reverse()); })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
       .finally(() => setLoading(false));
+
+    // Load existing study plan
+    apiFetch<{ plan: any[] | null; message: string; can_generate: boolean; remaining_this_month: number; id?: string }>("/users/me/study-plan")
+      .then((res) => {
+        if (res.plan && res.plan.length > 0) {
+          setStudyPlan(res.plan);
+          setPlanMessage(res.message);
+          if (res.id) setPlanId(res.id);
+        }
+        setCanGenerate(res.can_generate);
+        setRemainingThisMonth(res.remaining_this_month);
+      })
+      .catch(() => {});
 
     const stored = typeof window !== "undefined" ? localStorage.getItem("ielts_target") : null;
     if (stored) setTarget(parseFloat(stored));
@@ -197,14 +213,35 @@ export default function DashboardPage() {
   const isUnlimited = limit === -1;
   const evalsPct = !isUnlimited && limit > 0 ? Math.min(100, (used / limit) * 100) : 0;
 
+  const toggleDay = async (day: number) => {
+    if (!planId || !studyPlan) return;
+    const item = studyPlan.find((d: any) => d.day === day);
+    if (!item) return;
+    const newCompleted = !item.completed;
+    try {
+      await apiFetch(`/users/me/study-plan/${planId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ day, completed: newCompleted }),
+      });
+      setStudyPlan(studyPlan.map((d: any) => d.day === day ? { ...d, completed: newCompleted } : d));
+    } catch (err) {
+      showError("Failed to update");
+    }
+  };
+
   const generatePlan = async () => {
     setPlanLoading(true);
     try {
-      const result = await apiFetch<{ plan: any[]; message: string }>("/users/me/study-plan", { method: "POST" });
+      const result = await apiFetch<{ plan: any[]; message: string; id: string; can_generate: boolean; remaining_this_month: number }>("/users/me/study-plan", { method: "POST" });
       setStudyPlan(result.plan);
       setPlanMessage(result.message);
+      if (result.id) setPlanId(result.id);
+      setCanGenerate(result.can_generate);
+      setRemainingThisMonth(result.remaining_this_month);
     } catch (err) {
-      showError(err instanceof Error ? err.message : "Failed to generate plan");
+      const msg = err instanceof Error ? err.message : "Failed to generate plan";
+      if (msg.includes("429") || msg.includes("all")) showError("You've used all your plans this month. New plans unlock next month.");
+      else showError(msg);
     }
     setPlanLoading(false);
   };
@@ -459,28 +496,88 @@ export default function DashboardPage() {
       {isPremium && (
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-body-md font-semibold text-on-surface">7-Day Study Plan</h3>
-            {!studyPlan && (
-              <button onClick={generatePlan} disabled={planLoading || exams.length === 0}
-                className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50 flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
-                {planLoading ? "Generating..." : "Generate Plan"}
-              </button>
-            )}
+            <div>
+              <h3 className="text-body-md font-semibold text-on-surface">7-Day Study Plan</h3>
+              {studyPlan && (
+                <p className="text-label-sm text-on-surface-variant mt-0.5">
+                  {studyPlan.filter((d: any) => d.completed).length}/{studyPlan.length} days completed
+                  <span className="mx-2">·</span>
+                  {remainingThisMonth}/4 plans this month
+                </p>
+              )}
+              {!studyPlan && remainingThisMonth < 4 && (
+                <p className="text-label-sm text-on-surface-variant mt-0.5">{remainingThisMonth}/4 plans remaining this month</p>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {!studyPlan && remainingThisMonth > 0 && exams.length > 0 && (
+                <button onClick={generatePlan} disabled={planLoading}
+                  className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
+                  {planLoading ? "Generating..." : "Generate Plan"}
+                </button>
+              )}
+              {studyPlan && remainingThisMonth > 0 && exams.length > 0 && (
+                <button onClick={generatePlan} disabled={planLoading}
+                  className="bg-surface-container-high text-on-surface px-3 py-2 rounded-xl text-label-sm font-semibold hover:bg-surface-container transition-all disabled:opacity-50 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px]">refresh</span>
+                  Regenerate
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* Progress bar */}
+          {studyPlan && studyPlan.length > 0 && (
+            <div className="w-full h-2 bg-surface-container-high rounded-full overflow-hidden mb-4">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-500"
+                style={{ width: `${(studyPlan.filter((d: any) => d.completed).length / studyPlan.length) * 100}%` }}
+              />
+            </div>
+          )}
+
           {planMessage && <p className="text-body-md text-on-surface-variant mb-4">{planMessage}</p>}
           {studyPlan && studyPlan.length > 0 && (
             <div className="space-y-2">
               {studyPlan.map((item: any, i: number) => (
-                <div key={i} className="flex items-start gap-3 p-3 bg-surface-container rounded-lg">
-                  <span className="font-mono text-xs font-bold text-primary bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5">{item.day}</span>
-                  <div>
-                    <p className="text-label-sm font-semibold text-on-surface">{item.focus}</p>
-                    <p className="text-label-sm text-on-surface-variant">{item.task}</p>
+                <div key={i} className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
+                  item.completed ? "bg-primary-container/20 border border-primary/20" : "bg-surface-container"
+                }`}>
+                  <button
+                    onClick={() => toggleDay(item.day)}
+                    className={`w-6 h-6 rounded-full shrink-0 mt-0.5 flex items-center justify-center transition-all border-2 ${
+                      item.completed
+                        ? "bg-primary border-primary text-on-primary"
+                        : "border-outline-variant hover:border-primary"
+                    }`}
+                  >
+                    {item.completed && (
+                      <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>check</span>
+                    )}
+                  </button>
+                  <div className={item.completed ? "opacity-50" : ""}>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-primary bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center shrink-0">{
+                        item.day
+                      }</span>
+                      <p className="text-label-sm font-semibold text-on-surface">{item.focus}</p>
+                    </div>
+                    <p className="text-label-sm text-on-surface-variant mt-1 ml-8">{item.task}</p>
                   </div>
                 </div>
               ))}
             </div>
+          )}
+          {!studyPlan && remainingThisMonth <= 0 && (
+            <p className="text-label-sm text-on-surface-variant text-center py-4">
+              You've used all 4 plans this month. New plans unlock next month.
+            </p>
+          )}
+          {!studyPlan && exams.length === 0 && (
+            <p className="text-label-sm text-on-surface-variant text-center py-4">
+              Complete at least one exam to generate a study plan.
+            </p>
           )}
         </div>
       )}
