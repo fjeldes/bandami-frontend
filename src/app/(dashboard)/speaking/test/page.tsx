@@ -6,10 +6,11 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { getQuestions, createSpeakingExam, submitSpeakingEvaluation } from "@/lib/api";
 import type { Question, Exam } from "@/lib/types";
 
-type Phase = "load" | "mic-test" | "ready" | "intro" | "part1-speak" | "part2-prep" | "part2-speak" | "part3-speak" | "preview" | "submitting";
+type Phase = "load" | "mic-test" | "ready" | "single-prep" | "intro" | "part1-speak" | "part2-prep" | "part2-speak" | "part3-speak" | "preview" | "submitting";
 
 const PART_TIMERS: Record<string, number> = {
   "part1": 120,
+  "single-prep": 60,
   "part2-prep": 60,
   "part2-speak": 120,
   "part3": 180,
@@ -211,9 +212,23 @@ export default function SpeakingTestPage() {
   };
 
   // ---- Single-mode handlers ----
+  const beginSingleRecordingAfterPrep = () => {
+    timerRef.current && clearInterval(timerRef.current);
+    setTimeLeft(0);
+    speakText("Start speaking now.");
+    startTimer(PART_TIMERS["single"], () => stopSingleRecording());
+    startRecording();
+  };
+
   const startSingleTest = () => {
-    setPhase("ready");
-    setTimeout(() => { if (targetQuestion) speakText(targetQuestion.prompt_text); }, 400);
+    if (targetQuestion?.module === "part2") {
+      setPhase("single-prep");
+      setTimeout(() => { if (targetQuestion) speakText(targetQuestion.prompt_text); }, 400);
+      startTimer(PART_TIMERS["single-prep"], beginSingleRecordingAfterPrep);
+    } else {
+      setPhase("ready");
+      setTimeout(() => { if (targetQuestion) speakText(targetQuestion.prompt_text); }, 400);
+    }
   };
 
   const beginSingleRecording = () => {
@@ -536,6 +551,49 @@ export default function SpeakingTestPage() {
                 <span className="material-symbols-outlined text-[18px]">fiber_manual_record</span> Start Recording
               </button>
             </div>
+          </div>
+        )}
+
+        {phase === "single-prep" && !recordingActive && targetQuestion && (
+          <div className="space-y-6 text-center">
+            <div className="flex items-center justify-between">
+              <span className="px-3 py-1 rounded-full bg-primary-container/30 text-primary text-label-sm font-semibold">Part 2 · Long Turn</span>
+              <span className={`font-mono font-bold transition-all duration-300 ${
+                timeLeft <= 10
+                  ? "text-display-lg text-error animate-pulse"
+                  : "text-display-md text-on-surface"
+              }`}>
+                {fmt(timeLeft)}
+              </span>
+            </div>
+            <div className="bg-surface-container-lowest rounded-2xl border-2 border-primary/20 p-6 text-left shadow-md">
+              <h3 className="text-label-sm font-semibold text-primary mb-3 uppercase tracking-widest">Topic Card</h3>
+              <p className="text-body-lg text-on-surface leading-relaxed whitespace-pre-wrap">{targetQuestion.prompt_text}</p>
+            </div>
+            <div className="w-full max-w-md mx-auto space-y-3">
+              <div className="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-1000 ${
+                    timeLeft <= 10 ? "bg-error" : "bg-primary"
+                  }`}
+                  style={{ width: `${((PART_TIMERS["single-prep"] - timeLeft) / PART_TIMERS["single-prep"]) * 100}%` }}
+                />
+              </div>
+              <p className={`text-body-md flex items-center justify-center gap-2 ${
+                timeLeft <= 10 ? "text-error font-semibold animate-pulse" : "text-on-surface-variant"
+              }`}>
+                <span className="material-symbols-outlined text-[18px]">
+                  {timeLeft <= 10 ? "alarm" : "hourglass_bottom"}
+                </span>
+                {timeLeft <= 10 ? "Start speaking shortly!" : "Prepare your response. Do not speak yet."}
+              </p>
+            </div>
+            <button
+              onClick={beginSingleRecordingAfterPrep}
+              className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity"
+            >
+              Skip Timer · Start Speaking
+            </button>
           </div>
         )}
 
@@ -894,7 +952,7 @@ export default function SpeakingTestPage() {
       )}
 
       {/* Fallback start */}
-      {!["load", "submitting", "mic-test", "intro", "part1-speak", "part2-prep", "part2-speak", "part3-speak", "preview", "ready"].includes(phase) && allQuestions.length > 0 && (
+      {!["load", "submitting", "mic-test", "intro", "part1-speak", "part2-prep", "part2-speak", "part3-speak", "preview", "ready", "single-prep"].includes(phase) && allQuestions.length > 0 && (
         <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-8 text-center">
           <span className="material-symbols-outlined text-[56px] text-primary mb-4">record_voice_over</span>
           <h2 className="text-headline-md font-bold text-on-surface mb-2">Speaking Test</h2>

@@ -77,6 +77,7 @@ export default function SpeakingResultsPage() {
   const [error, setError] = useState("");
   const [showTranscription, setShowTranscription] = useState(false);
   const [expandedCriterion, setExpandedCriterion] = useState<string | null>(null);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
 
   useEffect(() => {
@@ -114,6 +115,22 @@ export default function SpeakingResultsPage() {
     poll();
     return () => { cancelled = true; };
   }, [examId]);
+
+  useEffect(() => {
+    if (!examId || !isPremium) return;
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+    const token = sessionStorage.getItem("access_token");
+    if (!token) return;
+    fetch(`${API_BASE}/evaluate/speaking/${examId}/audio`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.blob())
+      .then((blob) => setAudioUrl(URL.createObjectURL(blob)))
+      .catch(() => {});
+    return () => {
+      if (audioUrl) URL.revokeObjectURL(audioUrl);
+    };
+  }, [examId, isPremium]);
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-16 gap-3">
@@ -417,9 +434,13 @@ export default function SpeakingResultsPage() {
                     </div>
                     <span className="text-label-sm font-semibold text-on-surface">Your Recording</span>
                   </div>
-                  <audio controls className="w-full h-8" src={`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/evaluate/speaking/${examId}/audio`}>
-                    Your browser does not support audio playback.
-                  </audio>
+                  {audioUrl ? (
+                    <audio controls className="w-full h-8" src={audioUrl}>
+                      Your browser does not support audio playback.
+                    </audio>
+                  ) : (
+                    <p className="text-label-sm text-on-surface-variant/60">Loading audio...</p>
+                  )}
                 </div>
               )}
               {transcription && (
