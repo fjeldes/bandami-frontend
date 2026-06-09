@@ -108,6 +108,7 @@ export default function DashboardPage() {
   const [planId, setPlanId] = useState<string | null>(null);
   const [remainingThisMonth, setRemainingThisMonth] = useState(4);
   const [canGenerate, setCanGenerate] = useState(true);
+  const [showRegenModal, setShowRegenModal] = useState(false);
   const [activityPage, setActivityPage] = useState(1);
   const ACTIVITY_PAGE_SIZE = 5;
   const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
@@ -518,7 +519,7 @@ export default function DashboardPage() {
                 </button>
               )}
               {studyPlan && remainingThisMonth > 0 && exams.length > 0 && (
-                <button onClick={generatePlan} disabled={planLoading}
+                <button onClick={() => setShowRegenModal(true)} disabled={planLoading}
                   className="bg-surface-container-high text-on-surface px-3 py-2 rounded-xl text-label-sm font-semibold hover:bg-surface-container transition-all disabled:opacity-50 flex items-center gap-1.5">
                   <span className="material-symbols-outlined text-[16px]">refresh</span>
                   Regenerate
@@ -579,6 +580,38 @@ export default function DashboardPage() {
               Complete at least one exam to generate a study plan.
             </p>
           )}
+        </div>
+      )}
+
+      {/* Regenerate Confirmation Modal */}
+      {showRegenModal && (
+        <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/50 p-6 max-w-sm w-full text-center">
+            <div className="w-14 h-14 rounded-full bg-warning-container/20 flex items-center justify-center mx-auto mb-4">
+              <span className="material-symbols-outlined text-[32px] text-warning" style={{ fontVariationSettings: "'FILL' 1" }}>refresh</span>
+            </div>
+            <h3 className="text-headline-sm font-bold text-on-surface mb-2">Regenerate Study Plan?</h3>
+            <p className="text-body-md text-on-surface-variant mb-1">
+              You have <strong>{remainingThisMonth} of 4 plans</strong> remaining this month.
+            </p>
+            <p className="text-body-md text-on-surface-variant mb-6">
+              Your current plan will be replaced.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowRegenModal(false)}
+                className="flex-1 py-2.5 rounded-xl border-2 border-outline-variant text-on-surface text-label-sm font-semibold hover:bg-surface-container transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { setShowRegenModal(false); generatePlan(); }}
+                className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all"
+              >
+                Yes, Regenerate
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
