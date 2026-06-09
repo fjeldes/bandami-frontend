@@ -52,9 +52,9 @@ export default function LoginPage() {
       <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-gutter md:p-[32px] z-10 relative animate-scale-in">
         <header className="text-center mb-8">
           <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority />
-          <p className="text-body-md text-on-surface-variant mt-2">
+          <h1 className="text-body-md text-on-surface-variant mt-2">
             Welcome back
-          </p>
+          </h1>
         </header>
 
         <button

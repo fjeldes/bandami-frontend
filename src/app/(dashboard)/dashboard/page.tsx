@@ -197,104 +197,6 @@ export default function DashboardPage() {
           <Skeleton className="h-48 rounded-xl" />
           <Skeleton className="h-48 rounded-xl" />
       </div>
-
-      {/* Goal Setting Modal */}
-      {showGoalModal && (
-        <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4" onClick={() => setShowGoalModal(false)}>
-          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/50 p-6 md:p-8 max-w-md w-full text-center" onClick={(e) => e.stopPropagation()}>
-            <div className="w-14 h-14 rounded-full bg-primary-fixed/20 flex items-center justify-center mx-auto mb-4">
-              <span className="material-symbols-outlined text-[32px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>flag</span>
-            </div>
-            <h3 className="text-headline-sm font-bold text-on-surface mb-1">Set Your Target Band</h3>
-            <p className="text-body-md text-on-surface-variant mb-6">Choose the IELTS band score you're working toward.</p>
-
-            {latestBand != null && (
-              <div className="bg-surface-container-high rounded-xl px-4 py-3 mb-6 flex items-center justify-between">
-                <span className="text-label-sm text-on-surface-variant">Current band</span>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-data-md font-bold text-on-surface">{latestBand.toFixed(1)}</span>
-                  <span className="text-label-sm px-2 py-0.5 rounded bg-surface-container text-on-surface-variant">{cefrLevel(latestBand)}</span>
-                </div>
-              </div>
-            )}
-
-            {/* Band Picker */}
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              {bandOptions.map((b) => {
-                const selected = parseFloat(goalInput) === b;
-                const isCurrent = latestBand != null && Math.abs(latestBand - b) < 0.1;
-                return (
-                  <button
-                    key={b}
-                    onClick={() => setGoalInput(String(b))}
-                    className={`font-mono text-data-md font-bold px-3 py-2 rounded-lg transition-all border-2 min-w-[52px] ${
-                      selected
-                        ? "bg-primary text-on-primary border-primary shadow-md scale-105"
-                        : isCurrent
-                          ? "bg-surface-container border-outline text-on-surface-variant"
-                          : "bg-surface-container-low border-outline-variant/40 text-on-surface-variant hover:border-primary hover:text-primary"
-                    }`}
-                  >
-                    {b.toFixed(1)}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* CEFR Preview */}
-            {goalInput && (
-              <div className="bg-surface-container-high rounded-xl p-4 mb-6 text-left">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`font-bold text-body-md ${cefrInfo[cefrLevel(parseFloat(goalInput))]?.color || ""}`}>
-                    {cefrLevel(parseFloat(goalInput))}
-                  </span>
-                  <span className="text-label-sm text-on-surface-variant">
-                    · {cefrInfo[cefrLevel(parseFloat(goalInput))]?.label || ""}
-                  </span>
-                </div>
-                <p className="text-label-sm text-on-surface-variant leading-relaxed">
-                  {cefrInfo[cefrLevel(parseFloat(goalInput))]?.description || ""}
-                </p>
-              </div>
-            )}
-
-            {latestBand != null && parseFloat(goalInput) > latestBand && (
-              <div className="flex items-center gap-2 justify-center text-label-sm text-on-surface-variant mb-6">
-                <span className="material-symbols-outlined text-[16px]">trending_up</span>
-                <span>{((latestBand / parseFloat(goalInput)) * 100).toFixed(0)}% of the way there · {((parseFloat(goalInput) - latestBand) * 2).toFixed(0)} half-band improvement needed</span>
-              </div>
-            )}
-            {latestBand != null && parseFloat(goalInput) <= latestBand && (
-              <div className="flex items-center gap-2 justify-center text-label-sm text-emerald-600 mb-6">
-                <span className="material-symbols-outlined text-[16px]">celebration</span>
-                <span>You've already reached this band! Aim higher.</span>
-              </div>
-            )}
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowGoalModal(false)}
-                className="flex-1 py-2.5 rounded-xl border-2 border-outline-variant text-on-surface text-label-sm font-semibold hover:bg-surface-container transition-all"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => {
-                  const v = parseFloat(goalInput);
-                  if (v >= 0 && v <= 9) {
-                    setTarget(v);
-                    localStorage.setItem("ielts_target", String(v));
-                  }
-                  setShowGoalModal(false);
-                }}
-                className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all"
-              >
-                Set Target
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -781,6 +683,104 @@ export default function DashboardPage() {
                 </div>
               </div>
             )}
+
+          {/* Goal Setting Modal */}
+          {showGoalModal && (
+            <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4" onClick={() => setShowGoalModal(false)}>
+              <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/50 p-6 md:p-8 max-w-md w-full text-center" onClick={(e) => e.stopPropagation()}>
+                <div className="w-14 h-14 rounded-full bg-primary-fixed/20 flex items-center justify-center mx-auto mb-4">
+                  <span className="material-symbols-outlined text-[32px] text-primary" style={{ fontVariationSettings: "'FILL' 1" }}>flag</span>
+                </div>
+                <h3 className="text-headline-sm font-bold text-on-surface mb-1">Set Your Target Band</h3>
+                <p className="text-body-md text-on-surface-variant mb-6">Choose the IELTS band score you're working toward.</p>
+
+                {latestBand != null && (
+                  <div className="bg-surface-container-high rounded-xl px-4 py-3 mb-6 flex items-center justify-between">
+                    <span className="text-label-sm text-on-surface-variant">Current band</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-data-md font-bold text-on-surface">{latestBand.toFixed(1)}</span>
+                      <span className="text-label-sm px-2 py-0.5 rounded bg-surface-container text-on-surface-variant">{cefrLevel(latestBand)}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Band Picker */}
+                <div className="flex flex-wrap justify-center gap-2 mb-6">
+                  {bandOptions.map((b) => {
+                    const selected = parseFloat(goalInput) === b;
+                    const isCurrent = latestBand != null && Math.abs(latestBand - b) < 0.1;
+                    return (
+                      <button
+                        key={b}
+                        onClick={() => setGoalInput(String(b))}
+                        className={`font-mono text-data-md font-bold px-3 py-2 rounded-lg transition-all border-2 min-w-[52px] ${
+                          selected
+                            ? "bg-primary text-on-primary border-primary shadow-md scale-105"
+                            : isCurrent
+                              ? "bg-surface-container border-outline text-on-surface-variant"
+                              : "bg-surface-container-low border-outline-variant/40 text-on-surface-variant hover:border-primary hover:text-primary"
+                        }`}
+                      >
+                        {b.toFixed(1)}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* CEFR Preview */}
+                {goalInput && (
+                  <div className="bg-surface-container-high rounded-xl p-4 mb-6 text-left">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`font-bold text-body-md ${cefrInfo[cefrLevel(parseFloat(goalInput))]?.color || ""}`}>
+                        {cefrLevel(parseFloat(goalInput))}
+                      </span>
+                      <span className="text-label-sm text-on-surface-variant">
+                        · {cefrInfo[cefrLevel(parseFloat(goalInput))]?.label || ""}
+                      </span>
+                    </div>
+                    <p className="text-label-sm text-on-surface-variant leading-relaxed">
+                      {cefrInfo[cefrLevel(parseFloat(goalInput))]?.description || ""}
+                    </p>
+                  </div>
+                )}
+
+                {latestBand != null && parseFloat(goalInput) > latestBand && (
+                  <div className="flex items-center gap-2 justify-center text-label-sm text-on-surface-variant mb-6">
+                    <span className="material-symbols-outlined text-[16px]">trending_up</span>
+                    <span>{((latestBand / parseFloat(goalInput)) * 100).toFixed(0)}% of the way there · {((parseFloat(goalInput) - latestBand) * 2).toFixed(0)} half-band improvement needed</span>
+                  </div>
+                )}
+                {latestBand != null && parseFloat(goalInput) <= latestBand && (
+                  <div className="flex items-center gap-2 justify-center text-label-sm text-emerald-600 mb-6">
+                    <span className="material-symbols-outlined text-[16px]">celebration</span>
+                    <span>You've already reached this band! Aim higher.</span>
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowGoalModal(false)}
+                    className="flex-1 py-2.5 rounded-xl border-2 border-outline-variant text-on-surface text-label-sm font-semibold hover:bg-surface-container transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      const v = parseFloat(goalInput);
+                      if (v >= 0 && v <= 9) {
+                        setTarget(v);
+                        localStorage.setItem("ielts_target", String(v));
+                      }
+                      setShowGoalModal(false);
+                    }}
+                    className="flex-1 py-2.5 rounded-xl bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all"
+                  >
+                    Set Target
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           </>
         )}
       </div>

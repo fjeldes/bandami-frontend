@@ -7,9 +7,23 @@ const faqs = [
   { q: "Which payment methods do you accept?", a: "We accept all major credit and debit cards via Stripe. Payments are secure and encrypted. You can cancel your subscription anytime from your account settings." },
 ];
 
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
 export function FAQ() {
   return (
     <section className="py-section-gap px-margin-mobile md:px-gutter bg-surface" id="faq">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Frequently Asked Questions</h2>

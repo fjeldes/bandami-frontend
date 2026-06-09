@@ -18,6 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://bandami.com"),
   title: {
     default: "Bandami — IELTS Preparation",
     template: "%s | Bandami",
@@ -28,6 +29,18 @@ export const metadata = {
     title: "Bandami — IELTS Preparation",
     description: "AI-powered IELTS preparation. Practice Writing, Speaking, Reading, and Listening with instant evaluation.",
     type: "website",
+    url: "/",
+    siteName: "Bandami",
+    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bandami — IELTS Preparation",
+    description: "AI-powered IELTS preparation. Practice Writing, Speaking, Reading, and Listening with instant evaluation.",
+    images: ["/og-image.png"],
+  },
+  alternates: {
+    canonical: "/",
   },
   icons: {
     icon: "/bandami.png",
