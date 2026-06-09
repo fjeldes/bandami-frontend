@@ -71,7 +71,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <ErrorBoundary>{children}</ErrorBoundary>
           </Suspense>
         ) : (
-          <main className="flex-1 p-4 md:px-8 md:py-6 lg:px-12 lg:py-8 max-w-container-max mx-auto w-full pb-20 md:pb-0 animate-fade-in-up">
+          <main className="flex-1 p-4 md:px-8 md:py-6 lg:px-12 lg:py-8 max-w-container-max mx-auto w-full pb-20 md:pb-0">
             <ErrorBoundary>{children}</ErrorBoundary>
           </main>
         )}
