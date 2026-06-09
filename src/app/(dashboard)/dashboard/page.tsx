@@ -502,7 +502,7 @@ export default function DashboardPage() {
                 <p className="text-label-sm text-on-surface-variant">No activity yet this week. Start practicing!</p>
               </div>
             ) : (
-              <div className="flex items-end gap-1.5 h-16 overflow-hidden px-1">
+              <div className="flex items-end gap-1.5 h-20 px-1">
                 {daysThisWeek.map((d, i) => {
                   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
                   const today = new Date();
@@ -513,7 +513,7 @@ export default function DashboardPage() {
                   <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
                     <div className={`w-full rounded-sm transition-all ${d.count > 0 ? "bg-primary" : "bg-surface-variant"} ${d.count > 1 ? "opacity-100" : d.count > 0 ? "opacity-70" : "opacity-30"}`}
                       style={{ height: `${Math.min(Math.max(4, d.count * 20), 64)}px` }} />
-                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] font-semibold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-on-surface text-surface text-[10px] font-semibold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                       {d.count} {d.count === 1 ? "eval" : "evals"} · {month} {dayNum}
                     </span>
                     <span className="text-[10px] text-on-surface-variant">{d.day}</span>
