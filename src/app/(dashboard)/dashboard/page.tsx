@@ -45,10 +45,10 @@ function Sparkline({ points, height = 80 }: { points: number[]; height?: number 
 function OnboardingOverlay({ onDismiss }: { onDismiss: () => void }) {
   const [step, setStep] = useState(0);
   const steps = [
-    { icon: "edit_note", title: "Writing Practice", desc: "Submit essays and get AI-evaluated band scores with detailed feedback on all 4 criteria." },
-    { icon: "record_voice_over", title: "Speaking Practice", desc: "Record your voice answering IELTS-style questions. AI evaluates pronunciation, fluency, and more." },
+    { icon: "edit_note", title: "Writing Practice", desc: "Submit essays and get band scores with detailed feedback on all 4 marking criteria." },
+    { icon: "record_voice_over", title: "Speaking Practice", desc: "Record your voice answering IELTS-style questions. Get evaluated on fluency, pronunciation, and more." },
     { icon: "history", title: "Track Progress", desc: "Your history shows every exam with band scores. Watch your improvement over time." },
-    { icon: "bolt", title: "4 Free Evaluations Daily", desc: "You get 4 free AI evaluations every day. Upgrade for unlimited access and instant detailed feedback." },
+    { icon: "bolt", title: "3 Free Evaluations Daily", desc: "You get 3 free evaluations every day. Upgrade to Pro for unlimited practice and detailed feedback." },
   ];
 
   const s = steps[step];
@@ -455,10 +455,10 @@ export default function DashboardPage() {
             <span className="material-symbols-outlined text-primary text-[24px]">bolt</span>
             <div>
               <p className="text-body-md font-semibold text-on-surface">Daily limit reached</p>
-              <p className="text-label-sm text-on-surface-variant">You've used all {limit} free evaluations today. Upgrade to continue practicing.</p>
+              <p className="text-label-sm text-on-surface-variant">You've used all {limit} free evaluations today. Upgrade to Pro for unlimited practice.</p>
             </div>
           </div>
-          <Link href="/pricing" className="px-4 py-2 bg-primary text-on-primary rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity whitespace-nowrap">Upgrade</Link>
+          <Link href="/pricing" className="px-4 py-2 bg-primary text-on-primary rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity whitespace-nowrap">Upgrade to Pro</Link>
         </div>
       )}
 
@@ -498,7 +498,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Study Plan (Premium) */}
+          {/* Study Plan (Pro) */}
       {isPremium && (
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-6">
           <div className="flex items-center justify-between mb-4">

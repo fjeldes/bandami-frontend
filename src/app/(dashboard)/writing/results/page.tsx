@@ -44,7 +44,7 @@ function LockedPeek({ text }: { text: string }) {
         <span className="material-symbols-outlined text-outline text-[20px] mb-1">lock</span>
         <span className="text-label-sm text-on-surface-variant mb-2">Full detailed feedback is locked</span>
         <Link href="/pricing" className="bg-primary text-on-primary font-semibold px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
-          Unlock · $14.99/mo
+          Unlock Pro · $14.99/mo
         </Link>
       </div>
     </div>

@@ -142,13 +142,13 @@ export function Sidebar() {
         <div className="mt-auto pt-4 border-t border-outline-variant/30 space-y-1.5 mb-3">
           {!isAdmin && !isPremium && (
             <Link href="/pricing" className="w-full py-2 px-3 rounded-full bg-primary-container text-on-primary text-label-sm hover:bg-primary hover:text-on-primary transition-colors text-center block">
-              Upgrade to Premium
+              Upgrade to Pro
             </Link>
           )}
           {isPremium && (
             <div className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-primary-fixed/30 text-primary-fixed text-label-sm">
               <span className="material-symbols-outlined text-[16px]">verified</span>
-              Premium
+              Pro
             </div>
           )}
           <button onClick={handleSignOut} className="flex items-center px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-200 w-full text-left">

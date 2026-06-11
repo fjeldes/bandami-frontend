@@ -5,26 +5,28 @@ const plans = [
     slug: "free", name: "Free",
     featured: false, badge: null,
     features: [
-      { text: "3 daily evaluations", included: true },
+      { text: "3 evaluations per day", included: true },
       { text: "Writing (all tasks)", included: true },
-      { text: "Speaking Part 1 only", included: true },
+      { text: "Speaking Part 1", included: true },
       { text: "Instant band score", included: true },
-      { text: "AI-powered evaluation", included: true },
+      { text: "Basic feedback & strengths", included: true },
       { text: "Full criteria breakdown", included: false },
       { text: "Grammar corrections", included: false },
     ],
     cta: "Get Started Free", href: "/register",
   },
   {
-    slug: "premium", name: "Premium",
+    slug: "premium", name: "Pro",
     featured: true, badge: "MOST POPULAR",
     features: [
-      { text: "30 evaluations/day", included: true },
-      { text: "Advanced AI evaluation", included: true },
-      { text: "Full detailed feedback", included: true },
-      { text: "Grammar with explanations", included: true },
-      { text: "History & progress tracking", included: true },
-      { text: "Unlimited Full Speaking Tests", included: true },
+      { text: "Unlimited practice", included: true },
+      { text: "Detailed IELTS analysis", included: true },
+      { text: "Personalized study plans", included: true },
+      { text: "Progress tracking & history", included: true },
+      { text: "Full criteria breakdown", included: true },
+      { text: "Grammar corrections with explanations", included: true },
+      { text: "All Speaking Parts (1, 2 & 3)", included: true },
+      { text: "Personalized recommendations", included: true },
     ],
     cta: "Start with $2.99", href: "/register?plan=premium",
   },
@@ -35,7 +37,7 @@ export function Pricing() {
     <section className="py-section-gap px-margin-mobile md:px-gutter bg-surface-container-low" id="pricing">
       <div className="section-container">
         <div className="text-center mb-section-gap">
-          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Try Premium for $2.99</h2>
+          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Try Pro for $2.99</h2>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
             Your first week is just $2.99. Then $14.99/month. Cancel anytime.
           </p>
@@ -54,7 +56,7 @@ export function Pricing() {
                   <h3 className="font-headline-md text-headline-md text-on-surface mb-1">{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-6">
                     <span className="font-display-md text-display-md text-on-surface font-bold">$0</span>
-                    <span className="font-body-md text-body-md text-on-surface-variant">/forever</span>
+                    <span className="font-body-md text-body-md text-on-surface-variant">/day</span>
                   </div>
 
                   <ul className="space-y-3 mb-8 flex-1">

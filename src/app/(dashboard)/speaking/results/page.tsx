@@ -44,7 +44,7 @@ function LockedPeek({ text }: { text: string }) {
         <span className="material-symbols-outlined text-outline text-[20px] mb-1">lock</span>
         <span className="text-label-sm text-on-surface-variant mb-2">Full detailed feedback is locked</span>
         <button onClick={() => redirectToCheckout("premium")} className="bg-primary text-on-primary font-semibold px-4 py-2 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all">
-          Unlock · $14.99/mo
+          Unlock Pro · $14.99/mo
         </button>
       </div>
     </div>
@@ -278,10 +278,10 @@ export default function SpeakingResultsPage() {
               <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/40 relative overflow-hidden">
                 <div className="absolute inset-0 bg-surface-container-lowest/70 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center gap-2">
                   <span className="material-symbols-outlined text-[28px] text-outline">lock</span>
-                  <span className="text-label-md font-semibold text-on-surface-variant">Detailed Scoring (Premium)</span>
-                  <p className="text-label-sm text-on-surface-variant/70 text-center max-w-[280px]">Unlock detailed scoring for all 8 sub-criteria: fluency, coherence, vocabulary range, precision, paraphrasing, grammar range & accuracy, and pronunciation clarity.</p>
+                  <span className="text-label-md font-semibold text-on-surface-variant">Detailed Scoring (Pro)</span>
+                  <p className="text-label-sm text-on-surface-variant/70 text-center max-w-[280px]">Get detailed scoring for all sub-criteria: fluency, coherence, vocabulary, grammar, and pronunciation.</p>
                   <button onClick={() => redirectToCheckout("premium")} className="mt-2 bg-primary text-on-primary font-semibold px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
-                    Unlock · $14.99/mo
+                    Unlock Pro · $14.99/mo
                   </button>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 opacity-30 select-none pointer-events-none">

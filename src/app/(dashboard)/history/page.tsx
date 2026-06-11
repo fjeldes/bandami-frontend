@@ -208,7 +208,7 @@ export default function ReportsPage() {
                             <h4 className="text-body-md font-semibold text-on-surface capitalize">{exam.exam_type}{exam.task_type ? ` Task ${exam.task_type.replace("task", "")}` : ""}</h4>
                             <div className="flex items-center gap-2 text-label-sm text-on-surface-variant flex-wrap mt-0.5">
                               <span>{formatDate(exam.created_at)}</span>
-                              {eval_?.provider_used && <><span className="opacity-30">·</span><span className="px-1.5 py-0.5 rounded text-[10px] border border-outline-variant/30">{eval_.provider_used === "openai" ? "Advanced" : "Standard"}</span></>}
+                              
                             </div>
                           </div>
                         </div>

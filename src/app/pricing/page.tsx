@@ -10,18 +10,18 @@ const plans = [
     slug: "free",
     name: "Free",
     price: "$0",
-    period: "forever",
+    period: "day",
     badge: "",
-    features: ["3 evaluations/day", "Writing (all tasks)", "Speaking Part 1 only", "Instant band score", "AI-powered evaluation"],
+    features: ["3 evaluations/day", "Writing (all tasks)", "Speaking Part 1", "Instant band score", "Basic feedback & strengths"],
     featured: false,
   },
   {
     slug: "premium",
-    name: "Premium",
+    name: "Pro",
     price: "$14.99",
     period: "month",
     badge: "",
-    features: ["30 evaluations/day", "All modules included", "Advanced AI evaluation", "Full detailed feedback", "Grammar corrections with explanations", "History & progress tracking", "Unlimited Full Speaking Tests", "Cancel anytime"],
+    features: ["Unlimited practice", "Detailed IELTS analysis", "Personalized study plans", "Progress tracking & history", "Full criteria breakdown", "Grammar corrections with explanations", "All Speaking Parts (1, 2 & 3)", "Personalized recommendations"],
     featured: true,
   },
 ];
@@ -49,12 +49,12 @@ function PricingContent() {
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-16 md:py-24">
         <div className="text-center mb-16">
-          <h1 className="text-headline-lg font-bold text-on-surface mb-4">Try Premium for $2.99</h1>
+          <h1 className="text-headline-lg font-bold text-on-surface mb-4">Try Pro for $2.99</h1>
           <p className="text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-            Your first week of Premium is just $2.99. After 7 days, it's $14.99/month. Cancel anytime.
+            Your first week of Pro is just $2.99. After 7 days, it's $14.99/month. Cancel anytime.
           </p>
           {isPremium && (
-            <p className="text-label-sm text-primary font-semibold mt-3">You're currently on the Premium plan</p>
+            <p className="text-label-sm text-primary font-semibold mt-3">You're currently on the Pro plan</p>
           )}
         </div>
 
@@ -87,8 +87,8 @@ function PricingContent() {
                   <div className="h-full bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 flex flex-col shadow-sm">
                     <h3 className="text-headline-md font-bold text-on-surface mb-1">{plan.name}</h3>
                     <div className="flex items-baseline gap-1 mb-6">
-                      <span className="font-mono text-display-md font-extrabold text-primary">$0</span>
-                      <span className="text-label-sm text-on-surface-variant">/forever</span>
+                    <span className="font-mono text-display-md font-extrabold text-primary">$0</span>
+                    <span className="text-label-sm text-on-surface-variant">/day</span>
                     </div>
 
                     <ul className="space-y-3 mb-8 flex-1">

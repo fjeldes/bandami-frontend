@@ -61,7 +61,7 @@ function SubscriptionSection() {
         window.location.href = result.url;
         return;
       }
-      showSuccess(`Switched to Premium Monthly!`);
+      showSuccess(`Switched to Pro Monthly!`);
       load();
     } catch (err) {
       showError(err instanceof Error ? err.message : "Failed to switch plan");
@@ -119,17 +119,17 @@ function SubscriptionSection() {
           )}
         </div>
 
-        {/* Upgrade to monthly Premium */}
+        {/* Upgrade to monthly Pro */}
         {isOneTime && (
           <div className="bg-surface-container rounded-xl p-4">
-            <p className="text-label-sm font-semibold text-on-surface-variant mb-3">Convert to Premium</p>
+            <p className="text-label-sm font-semibold text-on-surface-variant mb-3">Convert to Pro</p>
             <div className="grid grid-cols-1 gap-2">
               <button
                 onClick={() => setSwitchModal("premium")}
                 disabled={actionLoading}
                 className="p-3 rounded-lg border border-outline-variant/30 hover:border-primary/50 text-left transition-colors"
               >
-                <p className="text-body-md font-semibold text-on-surface">Premium Monthly</p>
+                <p className="text-body-md font-semibold text-on-surface">Pro Monthly</p>
                 <p className="text-label-sm text-on-surface-variant">$14.99/month — cancel anytime</p>
               </button>
             </div>
@@ -195,8 +195,8 @@ function SubscriptionSection() {
             <h4 className="text-headline-md font-bold text-on-surface mb-2">Switch Plan</h4>
             <p className="text-body-md text-on-surface-variant mb-6">
               {isOneTime
-                ? "Premium is a monthly subscription. You'll be redirected to our secure checkout to set up your recurring payment."
-                : "Switch to Premium Monthly ($14.99/month). Your billing period will be adjusted automatically."}
+                ? "Pro is a monthly subscription. You'll be redirected to our secure checkout to set up your recurring payment."
+                : "Switch to Pro Monthly ($14.99/month). Your billing period will be adjusted automatically."}
             </p>
             <div className="flex gap-3 justify-end">
               <button onClick={() => setSwitchModal(null)} className="px-4 py-2 rounded-xl text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">Cancel</button>
@@ -214,10 +214,10 @@ function SubscriptionSection() {
           <div className="bg-surface-container-lowest rounded-xl shadow-xl p-6 max-w-sm w-full" onClick={e => e.stopPropagation()}>
             <h3 className="text-body-md font-semibold text-on-surface mb-2">Cancel Subscription</h3>
             <p className="text-label-sm text-on-surface-variant mb-6">
-              Your Premium access will continue until the end of the billing period. After that, you'll be switched to the Free plan. Continue?
+              Your Pro access will continue until the end of the billing period. After that, you'll be switched to the Free plan. Continue?
             </p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setCancelModal(false)} className="px-4 py-2 rounded-xl text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">Stay on Premium</button>
+              <button onClick={() => setCancelModal(false)} className="px-4 py-2 rounded-xl text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">Stay on Pro</button>
               <button onClick={doCancel} disabled={actionLoading}
                 className="px-4 py-2 rounded-xl bg-error text-on-error text-label-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50">
                 {actionLoading ? "Canceling..." : "Yes, Cancel"}
@@ -335,7 +335,7 @@ export default function SettingsPage() {
         <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start gap-3">
           <span className="material-symbols-outlined text-emerald-600 text-[24px] shrink-0">check_circle</span>
           <div>
-            <p className="text-body-md font-semibold text-emerald-800">Premium activated!</p>
+            <p className="text-body-md font-semibold text-emerald-800">Pro activated!</p>
             <p className="text-label-sm text-emerald-700 mt-0.5">
               Charged <strong>${searchParams.get("first_charge") || "2.99"}</strong> — next charge will be <strong>${searchParams.get("next_charge") || "14.99"}</strong>/month
             </p>

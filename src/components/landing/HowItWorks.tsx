@@ -1,7 +1,7 @@
 const steps = [
   { icon: "library_books", title: "1. Choose Task", description: "Select from a wide range of Writing and Speaking prompts based on recent exams." },
   { icon: "keyboard", title: "2. Practice", description: "Complete the exercise under real-time conditions using our distraction-free interface." },
-  { icon: "insights", title: "3. Receive Feedback", description: "Get an instant Band Score, grammar corrections, and advanced vocabulary suggestions." },
+  { icon: "insights", title: "3. Receive Feedback", description: "Get an instant Band Score, grammar corrections, and personalized suggestions to improve your vocabulary." },
 ];
 
 export function HowItWorks() {

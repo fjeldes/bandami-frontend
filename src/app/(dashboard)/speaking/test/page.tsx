@@ -431,12 +431,12 @@ export default function SpeakingTestPage() {
               <span className="material-symbols-outlined text-amber-600 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
               <p className="text-body-md font-semibold text-amber-800">Daily limit reached</p>
             </div>
-            <p className="text-body-md text-amber-700 mb-3">You've used all your free evaluations for today. Upgrade to Premium for unlimited access.</p>
-            <Link href="/pricing" className="inline-block bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity">Upgrade →</Link>
+            <p className="text-body-md text-amber-700 mb-3">You've used all your free evaluations for today. Upgrade to Pro for unlimited practice.</p>
+            <Link href="/pricing" className="inline-block bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity">Upgrade to Pro →</Link>
           </div>
         ) : error === "provider_overloaded" ? (
           <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
-            <p className="text-body-md text-error mb-3">Our AI agent is currently experiencing high demand. Please try again later.</p>
+            <p className="text-body-md text-error mb-3">We're currently experiencing high demand. Please try again later.</p>
             <button onClick={handleSubmit} className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold">Retry</button>
           </div>
         ) : error ? (

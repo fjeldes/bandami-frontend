@@ -23,8 +23,8 @@ export const metadata = {
     default: "Bandami — IELTS Preparation",
     template: "%s | Bandami",
   },
-  description: "AI-powered IELTS preparation. Practice Writing, Speaking, Reading, and Listening with instant evaluation.",
-  keywords: ["IELTS", "AI", "writing", "speaking", "reading", "listening", "band score", "practice", "evaluation"],
+  description: "IELTS preparation with detailed feedback and personalized study guidance. Practice Writing, Speaking, Reading, and Listening with instant band scores.",
+  keywords: ["IELTS", "writing", "speaking", "reading", "listening", "band score", "practice", "evaluation", "study", "feedback"],
   openGraph: {
     title: "Bandami — IELTS Preparation",
     description: "AI-powered IELTS preparation. Practice Writing, Speaking, Reading, and Listening with instant evaluation.",
@@ -36,7 +36,7 @@ export const metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Bandami — IELTS Preparation",
-    description: "AI-powered IELTS preparation. Practice Writing, Speaking, Reading, and Listening with instant evaluation.",
+    description: "IELTS preparation with detailed feedback and personalized study guidance. Practice Writing, Speaking, Reading, and Listening with instant band scores.",
     images: ["/og-image.png"],
   },
   alternates: {

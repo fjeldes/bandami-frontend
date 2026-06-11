@@ -13,15 +13,15 @@ export function Hero() {
         </div>
 
         <h1 className="font-display-lg text-3xl sm:text-4xl md:text-display-lg text-on-surface max-w-4xl mx-auto mb-6 text-balance leading-tight">
-          Prepare for Your IELTS Exam with AI.
+          Prepare for Your IELTS Exam.
           <br />
           <span className="text-primary">Real results, no waiting.</span>
         </h1>
 
         <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-12">
-          4 free evaluations daily. No credit card required. Get instant,
-          accurate feedback designed to maximize your Band Score under real exam
-          conditions.
+          3 free evaluations daily. No credit card required. Practice with real IELTS
+          tasks and get instant band scores with feedback on your strengths and
+          areas for improvement.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

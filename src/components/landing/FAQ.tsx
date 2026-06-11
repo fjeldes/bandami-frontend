@@ -1,9 +1,9 @@
 const faqs = [
-  { q: "How does the AI evaluation compare to a real IELTS examiner?", a: "Our AI has been trained on a vast dataset of IELTS responses to provide accurate scoring aligned with the official band descriptors. While it's not a replacement for a human examiner, it offers reliable guidance for your preparation." },
-  { q: "What do I get on the Free plan?", a: "The Free plan gives you 3 evaluations per day with instant band scores. You get full access to Writing and Speaking Part 1. To unlock Speaking Part 2 & 3, grammar corrections, and detailed feedback, try the Week Pass ($2.99) or subscribe to Premium ($14.99/month)." },
+  { q: "How accurate is the evaluation?", a: "Our scoring system is calibrated against official IELTS band descriptors to provide reliable feedback aligned with what examiners look for. It's designed to give you a clear understanding of your current level and what to improve." },
+  { q: "What do I get on the Free plan?", a: "The Free plan gives you 3 evaluations per day with instant band scores, basic feedback, and identification of your main strengths and weaknesses. You get full access to Writing and Speaking Part 1. To unlock Speaking Part 2 & 3, grammar corrections, and detailed feedback, try Pro ($14.99/month — first week $2.99)." },
   { q: "How does the free daily evaluation limit work?", a: "The free plan includes 3 evaluations daily that reset every 24 hours. You can use them for Writing or Speaking tasks. No credit card is required." },
-  { q: "How does the Premium trial work?", a: "Your first week of Premium costs just $2.99. You get full access to everything — 30 evaluations/day, advanced AI evaluation, detailed feedback, and all modules. After 7 days, it's $14.99/month. Cancel anytime before day 8 to avoid being charged." },
-  { q: "Can I track my progress over time?", a: "Yes. Premium subscribers get access to full history and progress tracking. Your exam history, band scores, and performance trends are stored in your dashboard." },
+  { q: "How does the Pro trial work?", a: "Your first week of Pro costs just $2.99. You get full access to everything — unlimited practice, detailed analysis, personalized recommendations, study plans, and all exam modules. After 7 days, it's $14.99/month. Cancel anytime." },
+  { q: "Can I track my progress over time?", a: "Yes. Pro subscribers get access to full history and progress tracking. Your exam history, band scores, and performance trends are stored in your dashboard so you can see your improvement over time." },
   { q: "Which payment methods do you accept?", a: "We accept all major credit and debit cards via Stripe. Payments are secure and encrypted. You can cancel your subscription anytime from your account settings." },
 ];
 
