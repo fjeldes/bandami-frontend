@@ -254,13 +254,15 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const sessionId = searchParams.get("session_id");
+    const transactionId = searchParams.get("transaction_id");
     const isCheckoutSuccess = searchParams.get("checkout") === "success";
 
-    if (isCheckoutSuccess && sessionId) {
+    if (isCheckoutSuccess && (sessionId || transactionId)) {
+      const id = sessionId || transactionId!;
       showSuccess("Verifying payment...");
-      apiFetch<{ status: string; tier?: string }>(`/payments/verify-session?session_id=${sessionId}`)
+      apiFetch<{ status: string; tier?: string }>(`/payments/verify-session?session_id=${id}`)
         .then((r) => {
-          if (r.status === "ok") {
+          if (r.status === "ok" || r.status === "already_processed") {
             useAuthStore.getState().refreshSession().then(() => {
               showSuccess("Payment confirmed! Your plan is now active.");
               setTimeout(() => window.location.href = "/settings", 1500);
