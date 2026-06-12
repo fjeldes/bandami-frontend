@@ -28,6 +28,18 @@ export async function redirectToCheckout(planSlug: string, discountPercent?: num
     throw new Error(err.detail || "Failed to create checkout session");
   }
 
-  const { url } = await res.json();
-  window.location.href = url;
+  const data = await res.json();
+
+  // Paddle: use overlay checkout
+  if (data.transaction_id) {
+    const { openPaddleCheckout } = await import("./paddle");
+    await openPaddleCheckout(
+      data.transaction_id,
+      `${window.location.origin}/settings?checkout=success`,
+    );
+    return;
+  }
+
+  // Fallback: redirect-based checkout (Flow, Stripe)
+  window.location.href = data.url;
 }
