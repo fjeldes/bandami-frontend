@@ -1,6 +1,6 @@
 import type { Environments, Paddle } from "@paddle/paddle-js";
 
-const PADDLE_SELLER = 76754;
+const PADDLE_SELLER = 76754; // Paddle seller ID from dashboard
 
 let paddle: Paddle | null = null;
 
