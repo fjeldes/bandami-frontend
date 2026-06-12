@@ -338,9 +338,9 @@ export default function DashboardPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
-          { icon: "analytics", label: "Average Band", value: stats?.average_band ? stats.average_band.toFixed(1) : "--", sub: `CEFR ${cefrLevel(stats?.average_band || 0)}`, color: "text-secondary-container" },
-          { icon: "trending_up", label: "Best", value: bestBand ? bestBand.toFixed(1) : "--", sub: "highest score", color: "text-emerald-600" },
-          { icon: "auto_awesome", label: "Progress", value: target && latestBand ? `${((latestBand / target) * 100).toFixed(0)}%` : "--", sub: target ? `to Band ${target.toFixed(1)}` : "set goal ↑", color: "text-primary" },
+          { icon: "analytics", label: "Average Band", value: stats?.average_band ? stats.average_band.toFixed(1) : "--", sub: stats?.average_band ? `CEFR ${cefrLevel(stats.average_band)}` : "--", color: "text-secondary-container" },
+          { icon: "trending_up", label: "Best", value: bestBand ? bestBand.toFixed(1) : "--", sub: "Highest score", color: "text-emerald-600" },
+          { icon: "auto_awesome", label: "Progress", value: target && latestBand ? `${((latestBand / target) * 100).toFixed(0)}%` : "--", sub: target ? `to Band ${target.toFixed(1)}` : "Set goal ↑", color: "text-primary" },
         ].map((c, idx) => (
           <div key={c.label} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 animate-fade-in-up" style={{ animationDelay: `${0.1 + idx * 0.08}s` }}>
             <div className="flex items-center gap-2 mb-3">
