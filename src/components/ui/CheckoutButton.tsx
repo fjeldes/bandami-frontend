@@ -9,13 +9,11 @@ export function CheckoutButton({
   label,
   featured,
   href,
-  discountPercent,
 }: {
   planSlug: string;
   label: string;
   featured?: boolean;
   href: string;
-  discountPercent?: number;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -39,7 +37,7 @@ export function CheckoutButton({
       onClick={async () => {
         setLoading(true);
         try {
-          await redirectToCheckout(planSlug, discountPercent);
+          await redirectToCheckout(planSlug);
         } catch (e) {
           setLoading(false);
           showError(e instanceof Error ? e.message : "Payment error. Please try again.");

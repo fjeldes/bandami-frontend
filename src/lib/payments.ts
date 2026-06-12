@@ -1,6 +1,6 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
-export async function redirectToCheckout(planSlug: string, discountPercent?: number) {
+export async function redirectToCheckout(planSlug: string) {
   const accessToken = sessionStorage.getItem("access_token");
   if (!accessToken) {
     window.location.href = `/register?plan=${planSlug}`;
@@ -12,7 +12,6 @@ export async function redirectToCheckout(planSlug: string, discountPercent?: num
     success_url: `${window.location.origin}/settings?checkout=success`,
     cancel_url: `${window.location.origin}/pricing`,
   };
-  if (discountPercent) body.discount_percent = discountPercent;
 
   const res = await fetch(`${API_BASE}/payments/create-checkout`, {
     method: "POST",

@@ -94,7 +94,7 @@ export default function SpeakingListPage() {
       {isFree && (
         <div className="mb-6 p-3 rounded-xl bg-secondary-container/20 border border-secondary-container/30 flex items-center gap-2 text-label-sm text-on-surface-variant">
           <span className="material-symbols-outlined text-[18px] text-primary">lock</span>
-          <span>Unlock Speaking Part 2 &amp; 3 with <a href="/pricing" className="text-primary font-semibold underline">Pro ($14.99/month — first week $2.99)</a></span>
+          <span>Unlock Speaking Part 2 &amp; 3 with <a href="/pricing" className="text-primary font-semibold underline">Pro (3-day free trial — then $14.99/month + tax)</a></span>
         </div>
       )}
 

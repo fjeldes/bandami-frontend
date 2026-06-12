@@ -48,7 +48,7 @@ function OnboardingOverlay({ onDismiss }: { onDismiss: () => void }) {
     { icon: "edit_note", title: "Writing Practice", desc: "Submit essays and get band scores with detailed feedback on all 4 marking criteria." },
     { icon: "record_voice_over", title: "Speaking Practice", desc: "Record your voice answering IELTS-style questions. Get evaluated on fluency, pronunciation, and more." },
     { icon: "history", title: "Track Progress", desc: "Your history shows every exam with band scores. Watch your improvement over time." },
-    { icon: "bolt", title: "3 Free Evaluations Daily", desc: "You get 3 free evaluations every day. Upgrade to Pro for unlimited practice and detailed feedback." },
+    { icon: "bolt", title: "Unlimited Practice", desc: "Practice as much as you want. Upgrade to Pro for detailed feedback and full access." },
   ];
 
   const s = steps[step];
@@ -210,11 +210,6 @@ export default function DashboardPage() {
       </div>
     );
   }
-
-  const used = stats?.daily_evals_used ?? 0;
-  const limit = stats?.daily_eval_limit ?? 4;
-  const isUnlimited = limit === -1;
-  const evalsPct = !isUnlimited && limit > 0 ? Math.min(100, (used / limit) * 100) : 0;
 
   const toggleDay = async (day: number) => {
     if (!planId || !studyPlan) return;
@@ -447,20 +442,6 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
-
-      {/* Quick Actions */}
-      {limit !== -1 && used >= limit && (
-        <div className="bg-primary/5 rounded-xl border border-primary/20 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary text-[24px]">bolt</span>
-            <div>
-              <p className="text-body-md font-semibold text-on-surface">Daily limit reached</p>
-              <p className="text-label-sm text-on-surface-variant">You've used all {limit} free evaluations today. Upgrade to Pro for unlimited practice.</p>
-            </div>
-          </div>
-          <Link href="/pricing" className="px-4 py-2 bg-primary text-on-primary rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity whitespace-nowrap">Upgrade to Pro</Link>
-        </div>
-      )}
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">

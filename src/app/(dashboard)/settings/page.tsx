@@ -152,8 +152,13 @@ function SubscriptionSection() {
             )}
             <button onClick={async () => {
               try {
-                const { url } = await apiFetch<{ url: string }>("/payments/create-portal", { method: "POST" });
-                window.location.href = url;
+                const result = await apiFetch<{ url?: string; transaction_id?: string }>("/payments/create-portal", { method: "POST" });
+                if (result.transaction_id) {
+                  const { openPaddleCheckout } = await import("@/lib/paddle");
+                  await openPaddleCheckout(result.transaction_id, `${window.location.origin}/settings`);
+                } else if (result.url) {
+                  window.location.href = result.url;
+                }
               } catch { showError("Could not open billing settings"); }
           }} className="px-4 py-2 rounded-xl border border-outline-variant text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">
             Update Payment Method
@@ -337,9 +342,9 @@ export default function SettingsPage() {
         <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start gap-3">
           <span className="material-symbols-outlined text-emerald-600 text-[24px] shrink-0">check_circle</span>
           <div>
-            <p className="text-body-md font-semibold text-emerald-800">Pro activated!</p>
+            <p className="text-body-md font-semibold text-emerald-800">Your 3-day free trial has started!</p>
             <p className="text-label-sm text-emerald-700 mt-0.5">
-              Charged <strong>${searchParams.get("first_charge") || "2.99"}</strong> — next charge will be <strong>${searchParams.get("next_charge") || "14.99"}</strong>/month
+              No charge today. You'll be charged <strong>$14.99/month + tax</strong> after the trial. Cancel anytime.
             </p>
           </div>
         </div>

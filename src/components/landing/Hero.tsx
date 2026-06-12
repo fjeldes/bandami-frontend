@@ -19,7 +19,7 @@ export function Hero() {
         </h1>
 
         <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-12">
-          3 free evaluations daily. No credit card required. Practice with real IELTS
+          Practice with real IELTS
           tasks and get instant band scores with feedback on your strengths and
           areas for improvement.
         </p>

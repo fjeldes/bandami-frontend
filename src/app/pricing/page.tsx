@@ -10,9 +10,9 @@ const plans = [
     slug: "free",
     name: "Free",
     price: "$0",
-    period: "day",
+    period: "",
     badge: "",
-    features: ["3 evaluations/day", "Writing (all tasks)", "Speaking Part 1", "Instant band score", "Basic feedback & strengths"],
+    features: ["Writing (all tasks)", "Speaking Part 1", "Instant band score", "Basic feedback & strengths"],
     featured: false,
   },
   {
@@ -49,9 +49,9 @@ function PricingContent() {
       <Navbar />
       <div className="max-w-4xl mx-auto px-4 py-16 md:py-24">
         <div className="text-center mb-16">
-          <h1 className="text-headline-lg font-bold text-on-surface mb-4">Try Pro for $2.99</h1>
+          <h1 className="text-headline-lg font-bold text-on-surface mb-4">Start your 3-day free trial</h1>
           <p className="text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-            Your first week of Pro is just $2.99. After 7 days, it's $14.99/month. Cancel anytime.
+            No charge today. Then $14.99/month + tax. Cancel anytime.
           </p>
           {isPremium && (
             <p className="text-label-sm text-primary font-semibold mt-3">You're currently on the Pro plan</p>
@@ -88,7 +88,6 @@ function PricingContent() {
                     <h3 className="text-headline-md font-bold text-on-surface mb-1">{plan.name}</h3>
                     <div className="flex items-baseline gap-1 mb-6">
                     <span className="font-mono text-display-md font-extrabold text-primary">$0</span>
-                    <span className="text-label-sm text-on-surface-variant">/day</span>
                     </div>
 
                     <ul className="space-y-3 mb-8 flex-1">
@@ -139,22 +138,17 @@ function PricingContent() {
 
                         <div className="mb-2">
                           <div className="flex items-baseline gap-2">
-                            <span className="font-mono text-display-lg font-extrabold text-primary">$2.99</span>
-                            <span className="text-body-md text-on-surface font-semibold">first week</span>
+                            <span className="font-mono text-display-lg font-extrabold text-primary">Free</span>
+                            <span className="text-body-md text-on-surface font-semibold">for 3 days</span>
                           </div>
                           <div className="flex items-baseline gap-1.5 mt-0.5">
-                            <span className="font-mono text-display-sm text-on-surface-variant line-through">$14.99</span>
-                            <span className="text-body-md text-on-surface-variant">/month after</span>
+                            <span className="font-mono text-display-sm text-on-surface font-bold">$14.99</span>
+                            <span className="text-body-md text-on-surface-variant">/month + tax after</span>
                           </div>
-                        </div>
-
-                        <div className="inline-flex self-start items-center gap-1.5 bg-primary/10 text-primary text-label-sm font-semibold px-3 py-1 rounded-full mb-5">
-                          <span className="material-symbols-outlined text-[16px]">local_offer</span>
-                          Save 80% this week
                         </div>
 
                         <p className="text-body-md text-on-surface-variant mb-6 pb-6 border-b border-outline-variant/20">
-                          Cancel anytime. Charged $2.99 today, then $14.99/month after 7 days.
+                          No charge during trial. Cancel anytime.
                         </p>
 
                         <ul className="space-y-3 mb-8 flex-1">
@@ -168,7 +162,7 @@ function PricingContent() {
 
                         <CheckoutButton
                           planSlug={plan.slug}
-                          label="Start with $2.99"
+                          label="Start your free trial"
                           featured={true}
                           href="/register"
                         />
@@ -184,7 +178,7 @@ function PricingContent() {
         {!isPremium && (
           <div className="mt-12 text-center">
             <p className="text-body-md text-on-surface-variant max-w-lg mx-auto">
-              <span className="font-semibold text-on-surface">Cancel anytime.</span> You'll be charged $2.99 today for your first week. After 7 days, $14.99/month. No commitment.
+              <span className="font-semibold text-on-surface">No charge today.</span> Start your 3-day free trial. Then $14.99/month + tax. Cancel anytime.
             </p>
           </div>
         )}

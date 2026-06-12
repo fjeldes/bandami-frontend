@@ -5,7 +5,6 @@ const plans = [
     slug: "free", name: "Free",
     featured: false, badge: null,
     features: [
-      { text: "3 evaluations per day", included: true },
       { text: "Writing (all tasks)", included: true },
       { text: "Speaking Part 1", included: true },
       { text: "Instant band score", included: true },
@@ -28,7 +27,7 @@ const plans = [
       { text: "All Speaking Parts (1, 2 & 3)", included: true },
       { text: "Personalized recommendations", included: true },
     ],
-    cta: "Start with $2.99", href: "/register?plan=premium",
+    cta: "Start your free trial", href: "/register?plan=premium",
   },
 ];
 
@@ -37,9 +36,9 @@ export function Pricing() {
     <section className="py-section-gap px-margin-mobile md:px-gutter bg-surface-container-low" id="pricing">
       <div className="section-container">
         <div className="text-center mb-section-gap">
-          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Try Pro for $2.99</h2>
+          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Start your 3-day free trial</h2>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-            Your first week is just $2.99. Then $14.99/month. Cancel anytime.
+            No charge today. Then $14.99/month + tax. Cancel anytime.
           </p>
         </div>
 
@@ -56,7 +55,6 @@ export function Pricing() {
                   <h3 className="font-headline-md text-headline-md text-on-surface mb-1">{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-6">
                     <span className="font-display-md text-display-md text-on-surface font-bold">$0</span>
-                    <span className="font-body-md text-body-md text-on-surface-variant">/day</span>
                   </div>
 
                   <ul className="space-y-3 mb-8 flex-1">
@@ -85,26 +83,20 @@ export function Pricing() {
 
                   <h3 className="font-headline-md text-headline-md text-on-surface mb-1 mt-2">{plan.name}</h3>
 
-                  {/* Price: $2.99 first week + $14.99 struck */}
+                  {/* Price: Free for 3 days → $14.99/month */}
                   <div className="mb-2">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-display-lg text-display-lg text-primary font-extrabold">$2.99</span>
-                      <span className="font-body-md text-body-md text-on-surface font-semibold">first week</span>
+                      <span className="font-display-lg text-display-lg text-primary font-extrabold">Free</span>
+                      <span className="font-body-md text-body-md text-on-surface font-semibold">for 3 days</span>
                     </div>
                     <div className="flex items-baseline gap-1.5 mt-0.5">
-                      <span className="font-display-sm text-display-sm text-on-surface-variant line-through">$14.99</span>
-                      <span className="font-body-md text-body-md text-on-surface-variant">/month after</span>
+                      <span className="font-display-sm text-display-sm text-on-surface font-bold">$14.99</span>
+                      <span className="font-body-md text-body-md text-on-surface-variant">/month + tax after</span>
                     </div>
-                  </div>
-
-                  {/* Saving badge */}
-                  <div className="inline-flex self-start items-center gap-1.5 bg-primary/10 text-primary font-label-md text-label-sm font-semibold px-3 py-1 rounded-full mb-5">
-                    <span className="material-symbols-outlined text-[16px]">local_offer</span>
-                    Save 80% this week
                   </div>
 
                   <p className="font-body-md text-body-md text-on-surface-variant mb-6 pb-6 border-b border-outline-variant/20">
-                    Cancel anytime. You'll be charged $2.99 today, then $14.99/month after 7 days.
+                    No charge during trial. Cancel anytime.
                   </p>
 
                   <ul className="space-y-3.5 mb-8 flex-1">

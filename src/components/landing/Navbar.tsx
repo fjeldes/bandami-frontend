@@ -1,24 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthStore } from "@/hooks/useAuth";
-import { getDashboardStats } from "@/lib/api";
-import type { DashboardStats } from "@/lib/types";
 
 export function Navbar() {
   const user = useAuthStore((s) => s.user);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      getDashboardStats().then(setStats).catch(() => {});
-    } else {
-      setStats(null);
-    }
-  }, [user]);
 
   return (
     <nav className="flex justify-between items-center w-full px-gutter py-4 sticky top-0 z-50 bg-surface border-b border-surface-container-high">
@@ -36,19 +25,6 @@ export function Navbar() {
       <div className="hidden md:flex items-center gap-4">
         {user ? (
           <>
-            <div className="flex items-center text-on-surface-variant font-label-md text-label-md gap-2">
-              <span className="material-symbols-outlined text-[18px]">bolt</span>
-              {stats ? (
-                stats.daily_eval_limit === -1 ? (
-                  <span className="flex items-center gap-1 text-primary">
-                    <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
-                    Unlimited access
-                  </span>
-                ) : `Daily: ${stats.daily_evals_used}/${stats.daily_eval_limit}`
-              ) : (
-                <span className="w-16 h-4 bg-surface-container-high rounded animate-pulse" />
-              )}
-            </div>
             <Link href="/dashboard" className="bg-primary-container text-on-primary font-label-md text-label-md px-5 py-2 rounded-xl hover:scale-[0.98] active:scale-[0.97] transition-all">
               Dashboard
             </Link>

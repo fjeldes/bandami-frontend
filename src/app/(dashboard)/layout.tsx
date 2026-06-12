@@ -1,14 +1,12 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "@/components/ui/Sidebar";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
-import { getDashboardStats } from "@/lib/api";
-import type { DashboardStats } from "@/lib/types";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user);
@@ -16,15 +14,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { dark, toggle: toggleTheme } = useTheme();
   const router = useRouter();
   const pathname = usePathname();
-  const [stats, setStats] = useState<DashboardStats | null>(null);
 
   useEffect(() => {
     if (!isLoading && !user) {
       router.push("/login");
     }
   }, [isLoading, user, router]);
-
-  useEffect(() => { getDashboardStats().then(setStats).catch(() => {}); }, []);
 
   if (isLoading || !user) {
     return (
@@ -43,19 +38,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {!isFullScreen && (
           <header className="flex justify-end items-center w-full h-14 px-gutter bg-surface sticky top-0 z-40 md:border-none">
             <div className="flex items-center gap-4">
-              <div className="flex items-center text-on-surface-variant text-label-sm gap-2">
-                <span className="material-symbols-outlined text-[16px]">bolt</span>
-                {stats ? (
-                  stats.daily_eval_limit === -1 ? (
-                    <span className="flex items-center gap-1 text-primary">
-                      <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>stars</span>
-                      Unlimited access
-                    </span>
-                  ) : `${stats.daily_evals_used}/${stats.daily_eval_limit} today`
-                ) : (
-                  <span className="w-16 h-4 bg-surface-container-high rounded animate-pulse" />
-                )}
-              </div>
+
               <button onClick={toggleTheme} className="text-on-surface-variant hover:text-primary transition-colors p-1" aria-label="Toggle dark mode">
                 <span className="material-symbols-outlined text-[20px]">{dark ? "light_mode" : "dark_mode"}</span>
               </button>
