@@ -13,8 +13,11 @@ export async function getPaddle(): Promise<Paddle> {
     seller: PADDLE_SELLER,
     environment: env,
   });
-  paddle = instance ?? null;
-  return paddle!;
+  if (!instance) {
+    throw new Error("Failed to load Paddle.js. Check CSP and network.");
+  }
+  paddle = instance;
+  return paddle;
 }
 
 export async function openPaddleCheckout(
