@@ -26,15 +26,15 @@ export function Navbar() {
       <div className="hidden md:flex items-center gap-4">
         {user ? (
           <>
-            <Link href="/dashboard" className="bg-primary-container text-on-primary font-label-md text-label-md px-5 py-2 rounded-xl hover:scale-[0.98] active:scale-[0.97] transition-all">
-              Dashboard
-            </Link>
             {isPremium && (
-              <div className="flex items-center gap-1 py-1.5 px-3 rounded-full bg-primary-fixed/30 text-primary-fixed text-label-sm">
-                <span className="material-symbols-outlined text-[16px]">verified</span>
+              <div className="flex items-center gap-1 py-1 px-3 rounded-full bg-primary text-on-primary text-label-xs font-bold tracking-wide uppercase shadow-sm">
+                <span className="material-symbols-outlined text-[14px]">verified</span>
                 Pro
               </div>
             )}
+            <Link href="/dashboard" className="bg-primary-container text-on-primary font-label-md text-label-md px-5 py-2 rounded-xl hover:scale-[0.98] active:scale-[0.97] transition-all">
+              Dashboard
+            </Link>
           </>
         ) : (
           <>
@@ -82,13 +82,13 @@ export function Navbar() {
               <div className="border-t border-outline-variant/30 my-2" />
                 {user ? (
                 <div className="flex items-center gap-2">
-                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="text-primary font-semibold text-label-md py-2">Dashboard</Link>
                   {isPremium && (
-                    <div className="flex items-center gap-1 py-0.5 px-2 rounded-full bg-primary-fixed/30 text-primary-fixed text-label-xs">
-                      <span className="material-symbols-outlined text-[14px]">verified</span>
+                    <div className="flex items-center gap-0.5 py-0.5 px-2 rounded-full bg-primary text-on-primary text-[10px] font-bold tracking-wide uppercase shadow-sm">
+                      <span className="material-symbols-outlined text-[12px]">verified</span>
                       Pro
                     </div>
                   )}
+                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="text-primary font-semibold text-label-md py-2">Dashboard</Link>
                 </div>
               ) : (
                 <Link href="/login" onClick={() => setMobileOpen(false)} className="text-on-surface font-semibold text-label-md py-2">Sign In</Link>
