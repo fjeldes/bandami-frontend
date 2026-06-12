@@ -8,6 +8,7 @@ import { useAuthStore } from "@/hooks/useAuth";
 export function Navbar() {
   const user = useAuthStore((s) => s.user);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
 
   return (
     <nav className="flex justify-between items-center w-full px-gutter py-4 sticky top-0 z-50 bg-surface border-b border-surface-container-high">
@@ -28,6 +29,12 @@ export function Navbar() {
             <Link href="/dashboard" className="bg-primary-container text-on-primary font-label-md text-label-md px-5 py-2 rounded-xl hover:scale-[0.98] active:scale-[0.97] transition-all">
               Dashboard
             </Link>
+            {isPremium && (
+              <div className="flex items-center gap-1 py-1.5 px-3 rounded-full bg-primary-fixed/30 text-primary-fixed text-label-sm">
+                <span className="material-symbols-outlined text-[16px]">verified</span>
+                Pro
+              </div>
+            )}
           </>
         ) : (
           <>
@@ -74,7 +81,15 @@ export function Navbar() {
               <a href="#faq" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">FAQ</a>
               <div className="border-t border-outline-variant/30 my-2" />
                 {user ? (
-                <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="text-primary font-semibold text-label-md py-2">Dashboard</Link>
+                <div className="flex items-center gap-2">
+                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="text-primary font-semibold text-label-md py-2">Dashboard</Link>
+                  {isPremium && (
+                    <div className="flex items-center gap-1 py-0.5 px-2 rounded-full bg-primary-fixed/30 text-primary-fixed text-label-xs">
+                      <span className="material-symbols-outlined text-[14px]">verified</span>
+                      Pro
+                    </div>
+                  )}
+                </div>
               ) : (
                 <Link href="/login" onClick={() => setMobileOpen(false)} className="text-on-surface font-semibold text-label-md py-2">Sign In</Link>
               )}
