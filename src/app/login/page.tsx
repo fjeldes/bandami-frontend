@@ -13,8 +13,25 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const login = useAuthStore((s) => s.login);
+  const user = useAuthStore((s) => s.user);
   const router = useRouter();
+
+  useEffect(() => {
+    if (user) {
+      setRedirecting(true);
+      router.push("/dashboard");
+    }
+  }, [user, router]);
+
+  if (redirecting || user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <span className="material-symbols-outlined text-[40px] text-primary animate-spin">progress_activity</span>
+      </div>
+    );
+  }
 
   const handleSubmit = async () => {
     if (loading) return;

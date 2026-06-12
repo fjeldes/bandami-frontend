@@ -23,9 +23,22 @@ function RegisterForm() {
   const user = useAuthStore((s) => s.user);
   const router = useRouter();
 
+  const [redirecting, setRedirecting] = useState(false);
+
   useEffect(() => {
-    if (user) router.push("/dashboard");
+    if (user) {
+      setRedirecting(true);
+      router.push("/dashboard");
+    }
   }, [user, router]);
+
+  if (redirecting || user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-surface">
+        <span className="material-symbols-outlined text-[40px] text-primary animate-spin">progress_activity</span>
+      </div>
+    );
+  }
 
   const handleSubmit = async () => {
     if (loading) return;
