@@ -338,7 +338,6 @@ export default function DashboardPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
-          { icon: "today", label: "Today", value: limit === -1 ? "Unlimited" : `${used}/${limit}`, sub: limit === -1 ? "free access" : "evaluations", color: "text-primary" },
           { icon: "analytics", label: "Average Band", value: stats?.average_band ? stats.average_band.toFixed(1) : "--", sub: `CEFR ${cefrLevel(stats?.average_band || 0)}`, color: "text-secondary-container" },
           { icon: "trending_up", label: "Best", value: bestBand ? bestBand.toFixed(1) : "--", sub: "highest score", color: "text-emerald-600" },
           { icon: "auto_awesome", label: "Progress", value: target && latestBand ? `${((latestBand / target) * 100).toFixed(0)}%` : "--", sub: target ? `to Band ${target.toFixed(1)}` : "set goal ↑", color: "text-primary" },
