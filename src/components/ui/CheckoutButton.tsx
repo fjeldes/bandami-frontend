@@ -52,7 +52,7 @@ export function CheckoutButton({
           : "bg-surface text-on-surface border border-outline-variant hover:bg-surface-container-high"
       }`}
     >
-      {loading ? "Redirecting..." : label}
+      {loading ? "Opening checkout..." : label}
     </button>
   );
 }
