@@ -146,7 +146,7 @@ export function Sidebar() {
             </Link>
           )}
           {isPremium && (
-            <div className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-primary-fixed/30 text-primary-fixed text-label-sm">
+            <div className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-primary text-on-primary text-label-sm font-semibold tracking-wide uppercase shadow-sm">
               <span className="material-symbols-outlined text-[16px]">verified</span>
               Pro
             </div>
