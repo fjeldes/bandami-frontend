@@ -240,20 +240,6 @@ export default function WritingResultsPage() {
         </div>
       </div>
 
-      {/* Your Essay */}
-      {evaluation.user_submission && (
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-[20px] text-primary">article</span>
-            <h3 className="text-body-md font-semibold text-on-surface">Your Essay</h3>
-          </div>
-          <p className="text-body-md text-on-surface-variant whitespace-pre-wrap leading-relaxed">{evaluation.user_submission}</p>
-          <p className="text-label-sm text-on-surface-variant mt-2">{evaluation.user_submission.trim().split(/\s+/).filter(Boolean).length} words</p>
-        </div>
-      )}
-
-      <EssayUpgrade evaluation={evaluation} isPremium={isPremium} />
-
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Score Card */}
         <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl shadow-sm p-5 flex flex-col items-center justify-center border border-outline-variant/40 relative">
@@ -505,6 +491,20 @@ export default function WritingResultsPage() {
           </div>
         </div>
       )}
+
+      {/* Your Essay */}
+      {evaluation.user_submission && (
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-5 mt-5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="material-symbols-outlined text-[20px] text-primary">article</span>
+            <h3 className="text-body-md font-semibold text-on-surface">Your Essay</h3>
+          </div>
+          <p className="text-body-md text-on-surface-variant whitespace-pre-wrap leading-relaxed">{evaluation.user_submission}</p>
+          <p className="text-label-sm text-on-surface-variant mt-2">{evaluation.user_submission.trim().split(/\s+/).filter(Boolean).length} words</p>
+        </div>
+      )}
+
+      <EssayUpgrade evaluation={evaluation} isPremium={isPremium} />
 
     </div>
   );
