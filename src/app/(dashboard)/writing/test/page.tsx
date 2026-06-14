@@ -107,7 +107,7 @@ export default function WritingTestPage() {
   // === SUBMITTING SCREEN ===
   if (phase === "submitting") {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6 max-w-[720px] mx-auto">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6 max-w-[720px] mx-auto pt-8 md:pt-12">
         <div className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 p-10 md:p-14 flex flex-col items-center w-full">
           <div className="relative w-[120px] h-[120px] mb-10">
             <div className="absolute inset-0 rounded-full bg-primary-container animate-pulse-ring" style={{ animationDelay: "0s" }} />
@@ -144,7 +144,7 @@ export default function WritingTestPage() {
 
   // === WRITING SCREEN ===
   return (
-    <div>
+    <div className="pt-4 md:pt-6">
       {showInterruptedBanner && (
         <div className="mb-4 bg-warning-container/30 border border-warning/30 rounded-xl p-4 flex items-start gap-3 animate-fade-in-up">
           <span className="material-symbols-outlined text-warning shrink-0 mt-0.5">warning</span>
