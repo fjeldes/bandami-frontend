@@ -453,6 +453,10 @@ export default function SpeakingResultsPage() {
                   )}
                 </div>
               )}
-              {audioUrl ? (
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
