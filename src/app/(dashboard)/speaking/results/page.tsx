@@ -315,7 +315,7 @@ export default function SpeakingResultsPage() {
                 const hasSubData = subs.some((s) => criteria[s.key] != null);
 
                 return (
-                  <div key={c.key} className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/40 hover:shadow-md transition-shadow overflow-hidden">
+                  <div key={c.key} className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/40 hover:shadow-md transition-shadow">
                     {/* Main criterion header */}
                     <div className="p-3.5">
                       <div className="flex items-center gap-2 mb-2">
@@ -341,7 +341,7 @@ export default function SpeakingResultsPage() {
                     {subs.length > 0 && (
                       <>
                         <button
-                          onClick={() => setExpandedCriterion(isExpanded ? null : c.key)}
+                          onClick={(e) => { e.stopPropagation(); setExpandedCriterion(isExpanded ? null : c.key); }}
                           className="w-full flex items-center gap-1.5 px-3.5 py-2 border-t border-outline-variant/30 text-label-sm text-primary-tint hover:bg-primary/5 transition-colors"
                         >
                           <span className="material-symbols-outlined text-[16px]">{hasSubData ? "analytics" : "visibility"}</span>
