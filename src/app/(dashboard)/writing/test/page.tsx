@@ -7,7 +7,8 @@ import { getQuestions, createWritingExam, submitWritingEvaluation } from "@/lib/
 import { showError } from "@/components/ui/Toast";
 import type { Question, Exam } from "@/lib/types";
 
-const DEFAULT_TIME = 40 * 60;
+const TASK_TIMES: Record<string, number> = { task1: 15 * 60, task2: 40 * 60 };
+const TIMER_DEFAULT = 40 * 60;
 
 type Phase = "writing" | "submitting" | "done";
 
@@ -19,10 +20,18 @@ export default function WritingTestPage() {
   const [question, setQuestion] = useState<Question | null>(null);
   const [exam, setExam] = useState<Exam | null>(null);
   const [text, setText] = useState("");
-  const [timeLeft, setTimeLeft] = useState(DEFAULT_TIME);
+  const [timeLeft, setTimeLeft] = useState(TIMER_DEFAULT);
   const [phase, setPhase] = useState<Phase>("writing");
   const [error, setError] = useState("");
+  const [showInterruptedBanner, setShowInterruptedBanner] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    // Check for interrupted previous session
+    if (typeof window !== "undefined" && localStorage.getItem("writing_test_in_progress")) {
+      setShowInterruptedBanner(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (!questionId) return;
@@ -31,9 +40,15 @@ export default function WritingTestPage() {
         const found = questions.find((q) => q.id === questionId);
         if (!found) throw new Error("Question not found");
         setQuestion(found);
+        setTimeLeft(TASK_TIMES[found.task_type || ""] || TIMER_DEFAULT);
         return createWritingExam({ exam_type: "writing", task_type: found.task_type, question_id: found.id });
       })
-      .then(setExam)
+      .then((newExam) => {
+        setExam(newExam);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("writing_test_in_progress", JSON.stringify({ examId: newExam.id, startedAt: Date.now() }));
+        }
+      })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
   }, [questionId]);
 
@@ -55,6 +70,7 @@ export default function WritingTestPage() {
 
     try {
       await submitWritingEvaluation({ exam_id: exam.id, text: text.trim() });
+      if (typeof window !== "undefined") localStorage.removeItem("writing_test_in_progress");
       router.push(`/writing/results?examId=${exam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
@@ -128,7 +144,23 @@ export default function WritingTestPage() {
 
   // === WRITING SCREEN ===
   return (
-    <div className="flex flex-col lg:flex-row gap-6 min-h-[60vh] md:h-[calc(100dvh-9rem)]">
+    <div>
+      {showInterruptedBanner && (
+        <div className="mb-4 bg-warning-container/30 border border-warning/30 rounded-xl p-4 flex items-start gap-3 animate-fade-in-up">
+          <span className="material-symbols-outlined text-warning shrink-0 mt-0.5">warning</span>
+          <div className="flex-1">
+            <p className="text-body-md text-on-surface font-semibold">Previous session interrupted</p>
+            <p className="text-label-sm text-on-surface-variant">Your last writing test didn&apos;t finish. A new session has been created.</p>
+          </div>
+          <button
+            onClick={() => { setShowInterruptedBanner(false); if (typeof window !== "undefined") localStorage.removeItem("writing_test_in_progress"); }}
+            className="p-1 hover:bg-surface-container rounded-lg transition-colors shrink-0"
+          >
+            <span className="material-symbols-outlined text-on-surface-variant">close</span>
+          </button>
+        </div>
+      )}
+      <div className="flex flex-col lg:flex-row gap-6 min-h-[60vh] md:h-[calc(100dvh-9rem)]">
       <div className="lg:w-2/5 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 overflow-y-auto ghost-shadow">
         <div className="flex items-center justify-between mb-4">
           <div className="flex gap-2">
@@ -177,6 +209,7 @@ export default function WritingTestPage() {
           Submit for Evaluation
         </button>
       </div>
+    </div>
     </div>
   );
 }

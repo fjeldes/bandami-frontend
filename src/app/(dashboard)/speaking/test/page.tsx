@@ -78,6 +78,7 @@ export default function SpeakingTestPage() {
   const [exam, setExam] = useState<Exam | null>(null);
   const [phase, setPhase] = useState<Phase>("load");
   const [error, setError] = useState("");
+  const [showInterruptedBanner, setShowInterruptedBanner] = useState(false);
 
   const [micOk, setMicOk] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
@@ -107,6 +108,10 @@ export default function SpeakingTestPage() {
 
   useEffect(() => {
     if (exam) return;
+    // Check for interrupted previous session
+    if (typeof window !== "undefined" && localStorage.getItem("speaking_test_in_progress")) {
+      setShowInterruptedBanner(true);
+    }
     getQuestions({ exam_type: "speaking" })
       .then((qs) => {
         if (!qs.length) throw new Error("No speaking questions available");
@@ -118,7 +123,12 @@ export default function SpeakingTestPage() {
         }
         return createSpeakingExam({ exam_type: "speaking", question_id: questionId || undefined });
       })
-      .then(setExam)
+      .then((newExam) => {
+        setExam(newExam);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("speaking_test_in_progress", JSON.stringify({ examId: newExam.id, startedAt: Date.now() }));
+        }
+      })
       .then(() => setPhase("mic-test"))
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
   }, [questionId]);
@@ -248,6 +258,7 @@ export default function SpeakingTestPage() {
     setError("");
     try {
       await submitSpeakingEvaluation(exam.id, audioBlob);
+      if (typeof window !== "undefined") localStorage.removeItem("speaking_test_in_progress");
       router.push(`/speaking/results?examId=${exam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
@@ -350,6 +361,7 @@ export default function SpeakingTestPage() {
     setError("");
     try {
       await submitSpeakingEvaluation(exam.id, audioBlob);
+      if (typeof window !== "undefined") localStorage.removeItem("speaking_test_in_progress");
       router.push(`/speaking/results?examId=${exam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
@@ -440,6 +452,19 @@ export default function SpeakingTestPage() {
   if (isSingleMode && targetQuestion) {
     return (
       <div className="max-w-3xl mx-auto">
+        {showInterruptedBanner && (
+          <div className="mb-4 bg-warning-container/30 border border-warning/30 rounded-xl p-4 flex items-start gap-3 animate-fade-in-up">
+            <span className="material-symbols-outlined text-warning shrink-0 mt-0.5">warning</span>
+            <div className="flex-1">
+              <p className="text-body-md text-on-surface font-semibold">Previous session interrupted</p>
+              <p className="text-label-sm text-on-surface-variant">Your last speaking test didn&apos;t finish. A new session has been created.</p>
+            </div>
+            <button onClick={() => { setShowInterruptedBanner(false); if (typeof window !== "undefined") localStorage.removeItem("speaking_test_in_progress"); }}
+              className="p-1 hover:bg-surface-container rounded-lg transition-colors shrink-0">
+              <span className="material-symbols-outlined text-on-surface-variant">close</span>
+            </button>
+          </div>
+        )}
         {phase === "mic-test" && (
         <div className="max-w-2xl mx-auto mt-8 md:mt-12">
             <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-8 md:p-10 relative overflow-hidden">
@@ -691,6 +716,19 @@ export default function SpeakingTestPage() {
   // ===== FULL IELTS TEST MODE =====
   return (
     <div className="max-w-3xl mx-auto">
+      {showInterruptedBanner && (
+        <div className="mb-4 bg-warning-container/30 border border-warning/30 rounded-xl p-4 flex items-start gap-3 animate-fade-in-up">
+          <span className="material-symbols-outlined text-warning shrink-0 mt-0.5">warning</span>
+          <div className="flex-1">
+            <p className="text-body-md text-on-surface font-semibold">Previous session interrupted</p>
+            <p className="text-label-sm text-on-surface-variant">Your last speaking test didn&apos;t finish. A new session has been created.</p>
+          </div>
+          <button onClick={() => { setShowInterruptedBanner(false); if (typeof window !== "undefined") localStorage.removeItem("speaking_test_in_progress"); }}
+            className="p-1 hover:bg-surface-container rounded-lg transition-colors shrink-0">
+            <span className="material-symbols-outlined text-on-surface-variant">close</span>
+          </button>
+        </div>
+      )}
       {/* Mic Test */}
       {phase === "mic-test" && (
         <div className="max-w-2xl mx-auto mt-8 md:mt-12">
