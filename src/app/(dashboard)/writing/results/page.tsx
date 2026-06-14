@@ -252,6 +252,8 @@ export default function WritingResultsPage() {
         </div>
       )}
 
+      <EssayUpgrade evaluation={evaluation} isPremium={isPremium} />
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Score Card */}
         <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl shadow-sm p-5 flex flex-col items-center justify-center border border-outline-variant/40 relative">
@@ -504,8 +506,6 @@ export default function WritingResultsPage() {
         </div>
       )}
 
-      {/* Upgrade Your Essay */}
-      <EssayUpgrade evaluation={evaluation} isPremium={isPremium} />
     </div>
   );
 }
