@@ -45,11 +45,11 @@ export default function ReportsPage() {
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<"all" | "writing" | "speaking">("all");
   const [listPage, setListPage] = useState(1);
-  const PAGE_SIZE = 8;
+  const PAGE_SIZE = 10;
 
   const fetchExams = () => {
     Promise.all([
-      getUserExams({ limit: 50 }),
+      getUserExams({ limit: 100 }),
       isPremium ? apiFetch<{ patterns: any[] }>("/users/me/error-patterns").catch(() => ({ patterns: [] })) : Promise.resolve({ patterns: [] }),
     ]).then(([examResult, patternsResult]) => {
       setExams(examResult.exams);
