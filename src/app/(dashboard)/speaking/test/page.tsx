@@ -713,7 +713,23 @@ export default function SpeakingTestPage() {
     );
   }
 
-  // ===== FULL IELTS TEST MODE =====
+  // ===== FULL IELTS TEST MODE (temporarily hidden) =====
+  if (!isSingleMode) {
+    return (
+      <div className="max-w-2xl mx-auto mt-16 text-center">
+        <span className="material-symbols-outlined text-[56px] text-outline mb-4">construction</span>
+        <h2 className="text-headline-md font-bold text-on-surface mb-2">Full IELTS Test</h2>
+        <p className="text-body-md text-on-surface-variant mb-6">Coming soon. Practice individual questions below.</p>
+        <button onClick={() => router.push("/speaking")}
+          className="bg-primary text-on-primary px-6 py-3 rounded-full text-label-sm font-semibold hover:opacity-90 transition-opacity">
+          Back to Speaking
+        </button>
+      </div>
+    );
+  }
+
+  // ===== FULL IELTS TEST MODE (code preserved for future) =====
+  /* eslint-disable no-unreachable */
   return (
     <div className="max-w-3xl mx-auto">
       {showInterruptedBanner && (
