@@ -155,11 +155,13 @@ export async function getQuestions(params?: {
   exam_type?: string;
   difficulty?: number;
   limit?: number;
+  module?: string;
 }): Promise<Question[]> {
   const searchParams = new URLSearchParams();
   if (params?.exam_type) searchParams.set("exam_type", params.exam_type);
   if (params?.difficulty) searchParams.set("difficulty", String(params.difficulty));
   if (params?.limit) searchParams.set("limit", String(params.limit));
+  if (params?.module) searchParams.set("module", params.module);
   const qs = searchParams.toString();
   return apiFetch<Question[]>(`/users/questions${qs ? `?${qs}` : ""}`);
 }

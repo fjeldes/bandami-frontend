@@ -12,6 +12,7 @@ export default function WritingListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [filter, setFilter] = useState<"all" | "task1" | "task2">("all");
+  const [moduleFilter, setModuleFilter] = useState<"all" | "general" | "academic">("all");
 
   useEffect(() => {
     Promise.all([getQuestions({ exam_type: "writing" }), getUserExams({ limit: 100 })])
@@ -36,7 +37,11 @@ export default function WritingListPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered = filter === "all" ? questions : questions.filter((q) => q.task_type === filter);
+  const filtered = questions.filter((q) => {
+    if (filter !== "all" && q.task_type !== filter) return false;
+    if (moduleFilter !== "all" && q.module !== moduleFilter) return false;
+    return true;
+  });
 
   return (
     <div>
@@ -54,6 +59,17 @@ export default function WritingListPage() {
               filter === f ? "text-primary border-b-2 border-primary" : "text-on-surface-variant hover:text-primary hover:bg-surface-container-lowest"
             }`}>
             {f === "all" ? "All Tasks" : f === "task1" ? "Task 1 (Report)" : "Task 2 (Essay)"}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-10">
+        {(["all", "general", "academic"] as const).map((m) => (
+          <button key={m} onClick={() => setModuleFilter(m)}
+            className={`px-4 py-1.5 rounded-full text-label-sm font-semibold transition-colors ${
+              moduleFilter === m ? "bg-primary text-on-primary" : "bg-surface-container-low text-on-surface-variant hover:bg-surface-container"
+            }`}>
+            {m === "all" ? "All" : m === "general" ? "General Training" : "Academic"}
           </button>
         ))}
       </div>
