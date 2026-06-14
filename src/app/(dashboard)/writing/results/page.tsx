@@ -113,23 +113,23 @@ function EssayUpgrade({ evaluation, isPremium }: { evaluation: Evaluation; isPre
         </div>
 
         {/* Upgraded */}
-        <div className="bg-emerald-50/50 rounded-xl border border-emerald-200 p-5">
+        <div className="bg-primary-fixed/10 rounded-xl border border-primary/20 p-5">
           <div className="flex items-center gap-2 mb-3">
-            <span className="material-symbols-outlined text-[20px] text-emerald-700">auto_awesome</span>
-            <h3 className="text-body-md font-semibold text-emerald-900">Upgraded Version · {targetCefr} Level</h3>
+            <span className="material-symbols-outlined text-[20px] text-primary">auto_awesome</span>
+            <h3 className="text-body-md font-semibold text-on-surface">Upgraded Version · {targetCefr} Level</h3>
           </div>
-          <p className="text-body-md text-on-surface whitespace-pre-wrap leading-relaxed bg-white rounded-lg p-4 border border-emerald-100">{upgraded}</p>
-          <p className="text-label-sm text-emerald-700 mt-2">{upgraded.split(/\s+/).filter(Boolean).length} words</p>
+          <p className="text-body-md text-on-surface whitespace-pre-wrap leading-relaxed bg-surface-container rounded-lg p-4 border border-outline-variant/30">{upgraded}</p>
+          <p className="text-label-sm text-on-surface-variant mt-2">{upgraded.split(/\s+/).filter(Boolean).length} words</p>
           {changesSummary && (
-            <div className="mt-3 bg-emerald-100/50 rounded-lg p-3 border border-emerald-200">
-              <p className="text-label-sm font-semibold text-emerald-800 mb-1">What was improved:</p>
-              <p className="text-label-sm text-emerald-700">{changesSummary}</p>
+            <div className="mt-3 bg-surface-container-low rounded-lg p-3 border border-outline-variant/20">
+              <p className="text-label-sm font-semibold text-on-surface mb-1">What was improved:</p>
+              <p className="text-label-sm text-on-surface-variant">{changesSummary}</p>
             </div>
           )}
           {keyVocab.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
               {keyVocab.map((w, i) => (
-                <span key={i} className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-label-sm font-medium">{w}</span>
+                <span key={i} className="px-2.5 py-0.5 rounded-full bg-primary-container/20 text-on-primary-container text-label-sm font-medium">{w}</span>
               ))}
             </div>
           )}
@@ -505,8 +505,8 @@ export default function WritingResultsPage() {
         </div>
       )}
 
-      {/* Your Essay */}
-      {evaluation.user_submission && (
+      {/* Your Essay — hidden if already showing in upgrade section */}
+      {evaluation.user_submission && !evaluation.upgraded_text && (
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-5 mt-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-[20px] text-primary">article</span>
