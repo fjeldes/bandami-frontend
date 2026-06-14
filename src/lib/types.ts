@@ -74,6 +74,7 @@ export interface Evaluation {
   processing_time_ms?: number;
   feedback_unlocks_at: string;
   is_feedback_visible: boolean;
+  upgraded_text?: string;
   created_at: string;
 }
 

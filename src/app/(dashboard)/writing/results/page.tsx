@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { getWritingEvaluation } from "@/lib/api";
+import { getWritingEvaluation, apiFetch } from "@/lib/api";
 import type { Evaluation } from "@/lib/types";
 import { useAuthStore } from "@/hooks/useAuth";
 import { redirectToCheckout } from "@/lib/payments";
@@ -58,6 +58,110 @@ function cefrLevel(band: number) {
   if (band >= 4.0) return "B1";
   if (band >= 3.0) return "A2";
   return "A1";
+}
+
+function nextCefrLevel(band: number) {
+  if (band >= 8.5) return null;
+  if (band >= 7.0) return "C2";
+  if (band >= 5.5) return "C1";
+  if (band >= 4.0) return "B2";
+  if (band >= 3.0) return "B1";
+  return "A2";
+}
+
+function EssayUpgrade({ evaluation, isPremium }: { evaluation: Evaluation; isPremium: boolean }) {
+  const [upgrading, setUpgrading] = useState(false);
+  const [upgraded, setUpgraded] = useState<string | null>(evaluation.upgraded_text || null);
+  const [changesSummary, setChangesSummary] = useState("");
+  const [keyVocab, setKeyVocab] = useState<string[]>([]);
+  const [upgradeError, setUpgradeError] = useState("");
+
+  const currentBand = evaluation.overall_band ?? 0;
+  const currentCefr = cefrLevel(currentBand);
+  const targetCefr = nextCefrLevel(currentBand);
+
+  if (!targetCefr) return null; // already at max level C2
+
+  const handleUpgrade = async () => {
+    setUpgrading(true);
+    setUpgradeError("");
+    try {
+      const data = await apiFetch<{ upgraded_text: string; changes_summary?: string; key_vocabulary?: string[] }>(
+        `/evaluate/writing/${evaluation.exam_id}/upgrade`,
+        { method: "POST", body: JSON.stringify({ target_cefr: targetCefr }) }
+      );
+      setUpgraded(data.upgraded_text);
+      setChangesSummary(data.changes_summary || "");
+      setKeyVocab(data.key_vocabulary || []);
+    } catch (err) {
+      setUpgradeError(err instanceof Error ? err.message : "Upgrade failed");
+    }
+    setUpgrading(false);
+  };
+
+  if (upgraded) {
+    return (
+      <div className="mt-5 bg-emerald-50/50 rounded-xl border border-emerald-200 p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="material-symbols-outlined text-[20px] text-emerald-700">auto_awesome</span>
+          <h3 className="text-body-md font-semibold text-emerald-900">Your Essay · Rewritten at {targetCefr} Level</h3>
+        </div>
+        <p className="text-body-md text-on-surface whitespace-pre-wrap leading-relaxed bg-white rounded-lg p-4 border border-emerald-100">{upgraded}</p>
+        <p className="text-label-sm text-emerald-700 mt-2">{upgraded.split(/\s+/).filter(Boolean).length} words</p>
+        {changesSummary && (
+          <div className="mt-3 bg-emerald-100/50 rounded-lg p-3 border border-emerald-200">
+            <p className="text-label-sm font-semibold text-emerald-800 mb-1">What was improved:</p>
+            <p className="text-label-sm text-emerald-700">{changesSummary}</p>
+          </div>
+        )}
+        {keyVocab.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {keyVocab.map((w, i) => (
+              <span key={i} className="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-label-sm font-medium">{w}</span>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (!isPremium) {
+    return (
+      <div className="mt-5 bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 text-center">
+        <span className="material-symbols-outlined text-[32px] text-outline mb-2">lock</span>
+        <h3 className="text-body-md font-semibold text-on-surface mb-1">Upgrade Your Essay to {targetCefr} Level</h3>
+        <p className="text-label-sm text-on-surface-variant mb-4">Get your essay rewritten at {targetCefr} with improved vocabulary and structure.</p>
+        <Link href="/pricing" className="inline-block bg-primary text-on-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:opacity-90 transition-opacity">
+          Unlock Pro · $14.99/mo
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-5 bg-primary-fixed/5 rounded-xl border border-primary/20 p-5">
+      <div className="flex items-center gap-2 mb-3">
+        <span className="material-symbols-outlined text-[20px] text-primary">auto_awesome</span>
+        <h3 className="text-body-md font-semibold text-on-surface">Upgrade Your Essay</h3>
+      </div>
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <span className="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-label-sm">Current: {currentCefr} (Band {currentBand.toFixed(1)})</span>
+        <span className="material-symbols-outlined text-primary text-[20px]">arrow_forward</span>
+        <span className="px-3 py-1 rounded-full bg-primary text-on-primary text-label-sm font-semibold">Target: {targetCefr} (Band 7.0+)</span>
+      </div>
+      <p className="text-label-sm text-on-surface-variant mb-4">Our AI will rewrite your essay at {targetCefr} level — improving vocabulary, grammar, and cohesion while keeping your original ideas.</p>
+      {upgradeError && (
+        <div className="bg-error-container/30 border border-error/20 rounded-lg px-4 py-2 mb-4 text-label-sm text-error">{upgradeError}</div>
+      )}
+      <button
+        onClick={handleUpgrade}
+        disabled={upgrading}
+        className="flex items-center gap-2 bg-primary text-on-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
+        <span className={`material-symbols-outlined text-[16px] ${upgrading ? "animate-spin" : ""}`}>{upgrading ? "progress_activity" : "auto_awesome"}</span>
+        {upgrading ? "Rewriting your essay..." : `Rewrite at ${targetCefr} Level`}
+      </button>
+    </div>
+  );
 }
 
 function scoreColor(score: number) {
@@ -135,6 +239,18 @@ export default function WritingResultsPage() {
           <Link href="/writing" className="px-4 py-1.5 bg-primary-container text-on-primary-container rounded-lg text-label-sm font-semibold hover:opacity-90 transition-colors">Try Another</Link>
         </div>
       </div>
+
+      {/* Your Essay */}
+      {evaluation.user_submission && (
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="material-symbols-outlined text-[20px] text-primary">article</span>
+            <h3 className="text-body-md font-semibold text-on-surface">Your Essay</h3>
+          </div>
+          <p className="text-body-md text-on-surface-variant whitespace-pre-wrap leading-relaxed">{evaluation.user_submission}</p>
+          <p className="text-label-sm text-on-surface-variant mt-2">{evaluation.user_submission.trim().split(/\s+/).filter(Boolean).length} words</p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Score Card */}
@@ -387,6 +503,9 @@ export default function WritingResultsPage() {
           </div>
         </div>
       )}
+
+      {/* Upgrade Your Essay */}
+      <EssayUpgrade evaluation={evaluation} isPremium={isPremium} />
     </div>
   );
 }

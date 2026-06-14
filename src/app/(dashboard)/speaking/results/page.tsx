@@ -392,20 +392,30 @@ export default function SpeakingResultsPage() {
             </div>
           )}
 
-          {/* Detailed Feedback + Transcription */}
-          {!transcription && !detailedFeedback && !locked ? null : locked ? (
-            <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 border border-outline-variant/40">
-              {transcription && (
-                <div className="mb-5 pb-5 border-b border-outline-variant/40">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="bg-surface-variant p-2 rounded-lg text-on-surface-variant shadow-sm">
-                      <span className="material-symbols-outlined text-[20px]">closed_caption</span>
-                    </div>
-                    <h3 className="text-body-md font-semibold text-on-surface">Transcription</h3>
-                  </div>
-                  <p className="text-body-md text-on-surface leading-relaxed line-clamp-3">{transcription}</p>
+          {/* Transcription — always visible */}
+          {transcription && (
+            <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 border border-outline-variant/40 mb-5">
+              <button
+                onClick={() => setShowTranscription(!showTranscription)}
+                className="w-full flex items-center gap-2 text-label-sm text-on-surface-variant hover:text-on-surface transition-colors"
+              >
+                <div className="bg-surface-variant p-1.5 rounded-lg text-on-surface-variant">
+                  <span className="material-symbols-outlined text-[16px]">closed_caption</span>
                 </div>
+                <span className="font-semibold text-on-surface">Transcription</span>
+                <span className="material-symbols-outlined text-[16px] ml-auto transition-transform duration-200" style={{ transform: showTranscription ? "rotate(180deg)" : "rotate(0deg)" }}>
+                  expand_more
+                </span>
+              </button>
+              {showTranscription && (
+                <p className="text-body-sm text-on-surface-variant leading-relaxed mt-3 pl-9 border-l-2 border-outline-variant/30 ml-1.5 whitespace-pre-wrap">{transcription}</p>
               )}
+            </div>
+          )}
+
+          {/* Detailed Feedback + Audio */}
+          {!detailedFeedback && !locked ? null : locked ? (
+            <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 border border-outline-variant/40">
               <div className="flex items-center gap-2 mb-3">
                 <span className="material-symbols-outlined text-primary-tint text-[20px]">lightbulb</span>
                 <h3 className="text-body-md font-semibold text-on-surface">Detailed Feedback</h3>
@@ -443,29 +453,6 @@ export default function SpeakingResultsPage() {
                   )}
                 </div>
               )}
-              {transcription && (
-                <div>
-                  <button
-                    onClick={() => setShowTranscription(!showTranscription)}
-                    className="w-full flex items-center gap-2 text-label-sm text-on-surface-variant hover:text-on-surface transition-colors"
-                  >
-                    <div className="bg-surface-variant p-1.5 rounded-lg text-on-surface-variant">
-                      <span className="material-symbols-outlined text-[18px]">closed_caption</span>
-                    </div>
-                    <span className="font-semibold">Transcription</span>
-                    <span className="material-symbols-outlined text-[16px] ml-auto transition-transform duration-200" style={{ transform: showTranscription ? "rotate(180deg)" : "rotate(0deg)" }}>
-                      expand_more
-                    </span>
-                  </button>
-                  {showTranscription && (
-                    <p className="text-body-sm text-on-surface-variant leading-relaxed mt-3 pl-9 border-l-2 border-outline-variant/30 ml-1.5">{transcription}</p>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+              {audioUrl ? (
   );
 }
