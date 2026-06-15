@@ -55,26 +55,9 @@ export default function SpeakingListPage() {
           <div>
             <h1 className="text-headline-md font-bold text-on-surface mb-1">Speaking Practice</h1>
             <p className="text-body-md text-on-surface-variant max-w-3xl">
-              Practice individual speaking topics or take the full IELTS test.
+              Practice individual speaking topics to improve your fluency.
             </p>
           </div>
-          {isPremium ? (
-            <Link
-              href="/speaking/test"
-              className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shrink-0"
-            >
-              <span className="material-symbols-outlined text-[18px]">play_arrow</span>
-              Full IELTS Test
-            </Link>
-          ) : (
-            <Link
-              href="/pricing"
-              className="px-5 py-2.5 rounded-full bg-secondary-container text-on-secondary-container text-label-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 whitespace-nowrap shrink-0"
-            >
-              <span className="material-symbols-outlined text-[18px]">lock</span>
-              Full Test — Pro
-            </Link>
-          )}
         </div>
       </div>
 
