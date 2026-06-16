@@ -27,6 +27,6 @@ export function openLemonCheckout(checkoutUrl: string) {
     LS.Url.Open(checkoutUrl);
     return;
   }
-  // Fallback: redirect to hosted checkout page
-  window.open(checkoutUrl, "_blank");
+  // Fallback: same-window redirect to hosted checkout
+  window.location.href = checkoutUrl;
 }

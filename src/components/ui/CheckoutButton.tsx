@@ -38,6 +38,9 @@ export function CheckoutButton({
         setLoading(true);
         try {
           await redirectToCheckout(planSlug);
+          // If checkout opens as overlay, reset button after a moment
+          // If it redirects the page, this never runs (page is gone)
+          setTimeout(() => setLoading(false), 3000);
         } catch (e) {
           setLoading(false);
           showError(e instanceof Error ? e.message : "Payment error. Please try again.");
