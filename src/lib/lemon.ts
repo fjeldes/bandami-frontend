@@ -12,7 +12,7 @@ function loadLemonJS(): Promise<void> {
         return;
       }
       const script = document.createElement("script");
-      script.src = "https://app.lemonsqueezy.com/js/lemon.js";
+      script.src = "https://assets.lemonsqueezy.com/lemon.js";
       script.onload = () => resolve();
       document.head.appendChild(script);
     });
