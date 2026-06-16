@@ -39,6 +39,13 @@ export async function redirectToCheckout(planSlug: string) {
     return;
   }
 
+  // LemonSqueezy: use Lemon.js overlay checkout
+  if (data.url && data.checkout_id) {
+    const { openLemonCheckout } = await import("./lemon");
+    await openLemonCheckout(data.url);
+    return;
+  }
+
   // Fallback: redirect-based checkout (Flow, Stripe)
   window.location.href = data.url;
 }
