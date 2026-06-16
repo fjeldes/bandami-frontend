@@ -4,13 +4,14 @@ const isProd = vercelEnv === "production";
 const apiHost = process.env.NEXT_PUBLIC_API_URL ? new URL(process.env.NEXT_PUBLIC_API_URL).origin : "http://localhost:8000";
 
 const gf = "https://docs.google.com";
+const lsOrigin = "https://app.lemonsqueezy.com";
 const frameSrc = isProd
-  ? `'self' ${gf} https://*.paddle.com`
-  : `'self' ${gf} https://vercel.live https://*.paddle.com`;
+  ? `'self' ${gf} https://*.paddle.com ${lsOrigin}`
+  : `'self' ${gf} https://vercel.live https://*.paddle.com ${lsOrigin}`;
 
 const csp = isProd
-  ? `default-src 'self'; script-src 'self' https://cdn.paddle.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://*.paddle.com ${apiHost}; img-src 'self' data: https:; media-src 'self' blob:; frame-src ${frameSrc}`
-  : `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://cdn.paddle.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://*.paddle.com ${apiHost} https://vercel.live; img-src 'self' data: https:; media-src 'self' blob:; frame-src ${frameSrc}`;
+  ? `default-src 'self'; script-src 'self' https://cdn.paddle.com ${lsOrigin}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://*.paddle.com ${apiHost}; img-src 'self' data: https:; media-src 'self' blob:; frame-src ${frameSrc}`
+  : `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://cdn.paddle.com ${lsOrigin}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.supabase.co https://*.paddle.com ${apiHost} https://vercel.live; img-src 'self' data: https:; media-src 'self' blob:; frame-src ${frameSrc}`;
 
 const nextConfig = {
   output: "standalone",
