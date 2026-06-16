@@ -34,14 +34,15 @@ function PricingContent() {
 
   let visiblePlans = plans;
   if (user) {
-    visiblePlans = plans
-      .filter((p) => p.slug !== "free")
-      .map((p) => {
-        if (isPremium && p.slug === "premium") {
-          return { ...p, price: "Active", period: "", badge: "Your Plan ✓", featured: true };
-        }
-        return p;
-      });
+    visiblePlans = plans.map((p) => {
+      if (isPremium && p.slug === "premium") {
+        return { ...p, price: "Active", period: "", badge: "Your Plan ✓", featured: true };
+      }
+      if (p.slug === "free") {
+        return { ...p, badge: "Current Plan" };
+      }
+      return p;
+    });
   }
 
   return (
