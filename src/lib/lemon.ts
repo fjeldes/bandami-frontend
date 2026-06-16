@@ -1,28 +1,32 @@
 /**
- * LemonSqueezy.js — open checkout overlay.
- * Uses Lemon.js CDN script (no npm package needed, 2.3kB).
+ * LemonSqueezy checkout — opens hosted checkout page via overlay or redirect.
  */
-let lemonReady: Promise<void> | null = null;
+let lemonLoaded = false;
 
-function loadLemonJS(): Promise<void> {
-  if (!lemonReady) {
-    lemonReady = new Promise((resolve) => {
-      if (typeof window !== "undefined" && (window as any).LemonSqueezy) {
-        resolve();
-        return;
-      }
-      const script = document.createElement("script");
-      script.src = "https://assets.lemonsqueezy.com/lemon.js";
-      script.onload = () => resolve();
-      document.head.appendChild(script);
-    });
-  }
-  return lemonReady;
+function loadLemonJS(): void {
+  if (lemonLoaded || typeof window === "undefined") return;
+  lemonLoaded = true;
+  const script = document.createElement("script");
+  script.src = "https://assets.lemonsqueezy.com/lemon.js";
+  script.onload = () => {
+    // Lemon.js is loaded — future calls to openLemonCheckout will use overlay
+  };
+  script.onerror = () => {
+    lemonLoaded = false;
+  };
+  document.head.appendChild(script);
 }
 
-export async function openLemonCheckout(checkoutUrl: string) {
-  await loadLemonJS();
-  if (typeof window !== "undefined") {
-    (window as any).LemonSqueezy?.Url?.Open(checkoutUrl);
+// Preload Lemon.js early (non-blocking)
+loadLemonJS();
+
+export function openLemonCheckout(checkoutUrl: string) {
+  if (typeof window === "undefined") return;
+  const LS = (window as any).LemonSqueezy;
+  if (LS?.Url?.Open) {
+    LS.Url.Open(checkoutUrl);
+    return;
   }
+  // Fallback: redirect to hosted checkout page
+  window.open(checkoutUrl, "_blank");
 }
