@@ -41,6 +41,7 @@ export async function redirectToCheckout(planSlug: string) {
 
   // LemonSqueezy: use Lemon.js overlay checkout
   if (data.url && data.checkout_id) {
+    sessionStorage.setItem("pending_checkout_id", data.checkout_id);
     const { openLemonCheckout } = await import("./lemon");
     await openLemonCheckout(data.url);
     return;

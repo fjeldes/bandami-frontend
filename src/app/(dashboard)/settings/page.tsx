@@ -261,11 +261,13 @@ export default function SettingsPage() {
     const sessionId = searchParams.get("session_id");
     const transactionId = searchParams.get("transaction_id");
     const isCheckoutSuccess = searchParams.get("checkout") === "success";
+    const storedCheckoutId = typeof window !== "undefined" ? sessionStorage.getItem("pending_checkout_id") : null;
+    const checkoutId = sessionId || transactionId || storedCheckoutId;
 
-    if (isCheckoutSuccess && (sessionId || transactionId)) {
-      const id = sessionId || transactionId!;
+    if (isCheckoutSuccess && checkoutId) {
+      if (storedCheckoutId) sessionStorage.removeItem("pending_checkout_id");
       showSuccess("Verifying payment...");
-      apiFetch<{ status: string; tier?: string }>(`/payments/verify-session?session_id=${id}`)
+      apiFetch<{ status: string; tier?: string }>(`/payments/verify-session?session_id=${checkoutId}`)
         .then((r) => {
           if (r.status === "ok" || r.status === "already_processed") {
             useAuthStore.getState().refreshSession().then(() => {
