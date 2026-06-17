@@ -157,7 +157,8 @@ function SubscriptionSection() {
                   const { openPaddleCheckout } = await import("@/lib/paddle");
                   await openPaddleCheckout(result.transaction_id, `${window.location.origin}/settings`);
                 } else if (result.url) {
-                  window.location.href = result.url;
+                  const { openLemonCheckout } = await import("@/lib/lemon");
+                  await openLemonCheckout(result.url);
                 }
               } catch { showError("Could not open billing settings"); }
           }} className="px-4 py-2 rounded-xl border border-outline-variant text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">
