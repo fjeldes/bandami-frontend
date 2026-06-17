@@ -266,7 +266,6 @@ export default function SettingsPage() {
 
     if (isCheckoutSuccess && checkoutId) {
       if (storedCheckoutId) sessionStorage.removeItem("pending_checkout_id");
-      showSuccess("Verifying payment...");
       apiFetch<{ status: string; tier?: string }>(`/payments/verify-session?session_id=${checkoutId}`)
         .then((r) => {
           if (r.status === "ok" || r.status === "already_processed") {
