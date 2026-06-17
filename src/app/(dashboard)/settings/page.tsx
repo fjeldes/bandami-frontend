@@ -15,14 +15,14 @@ function SubscriptionSection() {
   const [switchModal, setSwitchModal] = useState<string | null>(null);
   const [cancelModal, setCancelModal] = useState(false);
 
-  const load = () => {
-    Promise.all([
+  const load = async () => {
+    const [sub, inv] = await Promise.all([
       apiFetch("/payments/subscription").catch(() => null),
       apiFetch<{ invoices: any[] }>("/payments/invoices").catch(() => ({ invoices: [] })),
-    ]).then(([sub, inv]) => {
-      setSubData(sub);
-      setInvoices(inv.invoices || []);
-    }).finally(() => setLoading(false));
+    ]);
+    setSubData(sub);
+    setInvoices(inv.invoices || []);
+    setLoading(false);
   };
 
   useEffect(() => { load(); }, []);
@@ -32,8 +32,8 @@ function SubscriptionSection() {
     setActionLoading(true);
     try {
       await apiFetch("/payments/cancel", { method: "POST" });
+      await load();
       showSuccess("Subscription will be canceled at period end.");
-      load();
     } catch (err) {
       showError(err instanceof Error ? err.message : "Failed to cancel");
     }
@@ -44,8 +44,8 @@ function SubscriptionSection() {
     setActionLoading(true);
     try {
       await apiFetch("/payments/reactivate", { method: "POST" });
+      await load();
       showSuccess("Subscription reactivated!");
-      load();
     } catch (err) {
       showError(err instanceof Error ? err.message : "Failed to reactivate");
     }
