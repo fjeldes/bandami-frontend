@@ -126,7 +126,7 @@ export function Sidebar() {
       )}
 
       <nav className="hidden md:flex h-screen w-60 fixed left-0 top-0 border-r border-outline-variant/30 bg-surface-container-lowest flex-col px-3 z-50">
-        <div className="my-6 px-2">
+        <div className="my-6 px-2 flex justify-center">
           <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-20 w-auto" priority />
         </div>
         <div className="flex-1 space-y-0.5">
