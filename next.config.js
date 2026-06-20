@@ -28,6 +28,7 @@ const nextConfig = {
       { source: "/api/:path*", destination: `${apiOrigin}/api/:path*` },
       { source: "/terms", destination: `${apiV1.replace("/api/v1", "")}/legal/terms` },
       { source: "/privacy", destination: `${apiV1.replace("/api/v1", "")}/legal/privacy` },
+      { source: "/refund", destination: `${apiV1.replace("/api/v1", "")}/legal/refund` },
     ];
   },
 
