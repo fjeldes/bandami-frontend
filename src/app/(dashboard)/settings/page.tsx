@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
@@ -259,6 +259,9 @@ export default function SettingsPage() {
   const [savingPw, setSavingPw] = useState(false);
 
   useEffect(() => {
+    const mounted = { current: true };
+    const controller = new AbortController();
+
     const sessionId = searchParams.get("session_id");
     const transactionId = searchParams.get("transaction_id");
     const isCheckoutSuccess = searchParams.get("checkout") === "success";
@@ -267,33 +270,47 @@ export default function SettingsPage() {
 
     if (isCheckoutSuccess && checkoutId) {
       if (storedCheckoutId) sessionStorage.removeItem("pending_checkout_id");
-      apiFetch<{ status: string; tier?: string }>(`/payments/verify-session?session_id=${checkoutId}`)
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/payments/verify-session?session_id=${checkoutId}`, {
+        signal: controller.signal,
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((r) => r.json())
         .then((r) => {
+          if (!mounted.current) return;
           if (r.status === "ok" || r.status === "already_processed") {
             useAuthStore.getState().refreshSession().then(() => {
+              if (!mounted.current) return;
               showSuccess("Payment confirmed! Your plan is now active.");
-              setTimeout(() => window.location.href = "/settings", 1500);
+              router.replace("/settings");
             });
-          } else {
+          } else if (r.status === "pending") {
+            if (!mounted.current) return;
             showError("Payment still processing. It may take a few moments.");
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          if (err.name === "AbortError") return;
+          if (!mounted.current) return;
           showError("Could not verify payment. Please refresh.");
         });
     } else if (isCheckoutSuccess) {
       useAuthStore.getState().refreshSession();
     }
+
     Promise.all([
-      
       getUserSubscription().catch(() => null),
       getDashboardStats().catch(() => null),
     ]).then(([sub, s]) => {
+      if (!mounted.current) return;
       setSubscription(sub);
       setStats(s);
       setLoading(false);
     });
 
+    return () => {
+      mounted.current = false;
+      controller.abort();
+    };
   }, []);
 
   const saveName = async () => {
