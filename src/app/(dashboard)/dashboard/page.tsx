@@ -3,10 +3,8 @@
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/hooks/useAuth";
-import { getDashboardStats, getUserExams, apiFetch } from "@/lib/api";
-import { useDashboardStats, useExams, useStudyPlan } from "@/hooks/useApi";
+import { useDashboardStats, useExams, useStudyPlan, useGenerateStudyPlan, useToggleStudyPlanDay } from "@/hooks/useApi";
 import { showSuccess, showError } from "@/components/ui/Toast";
-import type { DashboardStats, ExamWithEvaluation } from "@/lib/types";
 
 function Skeleton({ className = "" }: { className?: string }) {
   return <div className={`animate-pulse bg-surface-container-high rounded-lg ${className}`} />;
@@ -108,6 +106,9 @@ export default function DashboardPage() {
   const canGenerate = studyPlanData?.can_generate ?? true;
   const remainingThisMonth = studyPlanData?.remaining_this_month ?? 4;
 
+  const generatePlanMutation = useGenerateStudyPlan();
+  const togglePlanDay = useToggleStudyPlanDay();
+
   const [target, setTarget] = useState<number | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGoalModal, setShowGoalModal] = useState(false);
@@ -201,32 +202,23 @@ export default function DashboardPage() {
     const item = studyPlan.find((d: any) => d.day === day);
     if (!item) return;
     const newCompleted = !item.completed;
-    try {
-      await apiFetch(`/users/me/study-plan/${planId}`, {
-        method: "PATCH",
-        body: JSON.stringify({ day, completed: newCompleted }),
-      });
-      setStudyPlan(studyPlan.map((d: any) => d.day === day ? { ...d, completed: newCompleted } : d));
-    } catch (err) {
-      showError("Failed to update");
-    }
+    togglePlanDay.mutate(
+      { planId, day, completed: newCompleted },
+      { onError: () => showError("Failed to update") }
+    );
   };
 
   const generatePlan = async () => {
     setPlanLoading(true);
-    try {
-      const result = await apiFetch<{ plan: any[]; message: string; id: string; can_generate: boolean; remaining_this_month: number }>("/users/me/study-plan", { method: "POST" });
-      setStudyPlan(result.plan);
-      setPlanMessage(result.message);
-      if (result.id) setPlanId(result.id);
-      setCanGenerate(result.can_generate);
-      setRemainingThisMonth(result.remaining_this_month);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to generate plan";
-      if (msg.includes("429") || msg.includes("all")) showError("You've used all your plans this month. New plans unlock next month.");
-      else showError(msg);
-    }
-    setPlanLoading(false);
+    generatePlanMutation.mutate(undefined, {
+      onError: (err) => {
+        const msg = err instanceof Error ? err.message : "Failed to generate plan";
+        if (msg.includes("429") || msg.includes("all")) showError("You've used all your plans this month. New plans unlock next month.");
+        else showError(msg);
+        setPlanLoading(false);
+      },
+      onSuccess: () => setPlanLoading(false),
+    });
   };
 
   const recentExams = exams.slice(-10);
