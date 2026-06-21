@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { API_ORIGIN as API_BASE } from "@/lib/config";
 import { getSpeakingEvaluation } from "@/lib/api";
 import type { Evaluation } from "@/lib/types";
 import { useAuthStore } from "@/hooks/useAuth";
@@ -118,7 +119,6 @@ export default function SpeakingResultsPage() {
 
   useEffect(() => {
     if (!examId || !isPremium) return;
-    const API_BASE = (() => { const u = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"; return u.endsWith("/api/v1") ? u : u.replace(/\/+$/, "") + "/api/v1"; })();
     const token = sessionStorage.getItem("access_token");
     if (!token) return;
     fetch(`${API_BASE}/evaluate/speaking/${examId}/audio`, {

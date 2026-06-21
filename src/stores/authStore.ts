@@ -1,6 +1,5 @@
 import { create } from "zustand";
-
-const API_BASE = (() => { const u = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"; return u.endsWith("/api/v1") ? u : u.replace(/\/+$/, "") + "/api/v1"; })();
+import { API_ORIGIN as API_BASE } from "@/lib/config";
 
 export interface User {
   id: string;

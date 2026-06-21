@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/hooks/useAuth";
 import { getDashboardStats, getUserExams, apiFetch } from "@/lib/api";
+import { useDashboardStats, useExams, useStudyPlan } from "@/hooks/useApi";
 import { showSuccess, showError } from "@/components/ui/Toast";
 import type { DashboardStats, ExamWithEvaluation } from "@/lib/types";
 
@@ -94,50 +95,34 @@ function cefrLevel(band: number) {
 
 export default function DashboardPage() {
   const user = useAuthStore((s) => s.user);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [exams, setExams] = useState<ExamWithEvaluation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const { data: stats, isLoading: statsLoading, error: statsError } = useDashboardStats();
+  const { data: examsData, isLoading: examsLoading } = useExams(30);
+  const { data: studyPlanData } = useStudyPlan();
+  const exams = examsData?.exams ? [...examsData.exams].reverse() : [];
+  const loading = statsLoading || examsLoading;
+  const error = statsError ? (statsError instanceof Error ? statsError.message : "Failed to load") : "";
+
+  const studyPlan = studyPlanData?.plan || null;
+  const planMessage = studyPlanData?.message || "";
+  const planId = studyPlanData?.id || null;
+  const canGenerate = studyPlanData?.can_generate ?? true;
+  const remainingThisMonth = studyPlanData?.remaining_this_month ?? 4;
+
   const [target, setTarget] = useState<number | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [showGoalModal, setShowGoalModal] = useState(false);
   const [goalInput, setGoalInput] = useState("7.0");
-  const [studyPlan, setStudyPlan] = useState<any[] | null>(null);
   const [planLoading, setPlanLoading] = useState(false);
-  const [planMessage, setPlanMessage] = useState("");
-  const [planId, setPlanId] = useState<string | null>(null);
-  const [remainingThisMonth, setRemainingThisMonth] = useState(4);
-  const [canGenerate, setCanGenerate] = useState(true);
   const [showRegenModal, setShowRegenModal] = useState(false);
   const [activityPage, setActivityPage] = useState(1);
   const ACTIVITY_PAGE_SIZE = 5;
   const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
 
   useEffect(() => {
-    Promise.all([getDashboardStats(), getUserExams({ limit: 30 })])
-      .then(([s, result]) => { setStats(s); setExams(result.exams.reverse()); })
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"))
-      .finally(() => setLoading(false));
-
-    // Load existing study plan
-    apiFetch<{ plan: any[] | null; message: string; can_generate: boolean; remaining_this_month: number; id?: string }>("/users/me/study-plan")
-      .then((res) => {
-        if (res.plan && res.plan.length > 0) {
-          setStudyPlan(res.plan);
-          setPlanMessage(res.message);
-          if (res.id) setPlanId(res.id);
-        }
-        setCanGenerate(res.can_generate);
-        setRemainingThisMonth(res.remaining_this_month);
-      })
-      .catch(() => {});
-
     const stored = typeof window !== "undefined" ? localStorage.getItem("ielts_target") : null;
     if (stored) setTarget(parseFloat(stored));
-
     const onboarded = typeof window !== "undefined" ? localStorage.getItem("ielts_onboarded") : "1";
     if (!onboarded) setShowOnboarding(true);
-
   }, []);
 
   const dismissOnboarding = () => {

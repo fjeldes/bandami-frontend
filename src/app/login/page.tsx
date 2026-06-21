@@ -5,8 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
-
-const API_BASE = (() => { const u = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"; return u.endsWith("/api/v1") ? u : u.replace(/\/+$/, "") + "/api/v1"; })();
+import { API_ORIGIN as API_BASE } from "@/lib/config";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");

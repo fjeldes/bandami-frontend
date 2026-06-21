@@ -4,6 +4,7 @@ import { AppInitializer } from "@/components/ui/AppInitializer";
 import { ToastContainer } from "@/components/ui/Toast";
 import { CookieConsent } from "@/components/ui/CookieConsent";
 import FeedbackButton from "@/components/ui/FeedbackButton";
+import QueryProvider from "@/components/ui/QueryProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -61,12 +62,14 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-surface text-on-surface font-body text-body-md antialiased min-h-screen">
+        <QueryProvider>
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[9999] focus:bg-primary focus:text-on-primary focus:px-4 focus:py-2 focus:rounded-lg focus:font-semibold">Skip to main content</a>
         <FeedbackButton />
         <AppInitializer>
           <ToastContainer>{children}</ToastContainer>
         </AppInitializer>
         <CookieConsent />
+        </QueryProvider>
       </body>
     </html>
   );

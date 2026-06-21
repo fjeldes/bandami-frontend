@@ -6,8 +6,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/hooks/useAuth";
 
-const API_BASE = (() => { const u = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"; return u.endsWith("/api/v1") ? u : u.replace(/\/+$/, "") + "/api/v1"; })();
-
 function AuthCallbackInner() {
   const searchParams = useSearchParams();
   const router = useRouter();

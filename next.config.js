@@ -20,12 +20,8 @@ const nextConfig = {
   poweredByHeader: false,
 
   async rewrites() {
-    const apiOrigin = process.env.NEXT_PUBLIC_API_URL
-      ? new URL(process.env.NEXT_PUBLIC_API_URL).origin
-      : "http://localhost:8000";
-    const apiV1 = `${apiOrigin}/api/v1`;
     return [
-      { source: "/api/:path*", destination: `${apiOrigin}/api/:path*` },
+      { source: "/api/:path*", destination: `${apiHost}/api/:path*` },
     ];
   },
 
