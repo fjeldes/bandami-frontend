@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const API_BASE = (() => { const u = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"; return u.endsWith("/api/v1") ? u : u.replace(/\/+$/, "") + "/api/v1"; })();
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
