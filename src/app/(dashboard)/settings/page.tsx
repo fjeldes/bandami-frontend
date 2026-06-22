@@ -136,33 +136,18 @@ function SubscriptionSection() {
           </div>
         )}
 
-        {/* Actions — only for subscription-based plans */}
+        {/* Actions — single Manage button that opens provider's billing portal */}
         {!isOneTime && (
           <div className="flex flex-wrap gap-2">
-            {willCancel ? (
-            <button onClick={reactivate} disabled={actionLoading}
-              className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50">
-              Reactivate Subscription
-            </button>
-          ) : (
-            <button onClick={() => setCancelModal(true)} disabled={actionLoading}
-              className="px-4 py-2 rounded-xl border border-error/30 text-error text-label-sm font-semibold hover:bg-error-container/20 transition-colors">
-              Cancel Subscription
-            </button>
-            )}
             <button onClick={async () => {
               try {
-                const result = await apiFetch<{ url?: string; transaction_id?: string }>("/payments/create-portal", { method: "POST" });
-                if (result.transaction_id) {
-                  const { openPaddleCheckout } = await import("@/lib/paddle");
-                  await openPaddleCheckout(result.transaction_id, `${window.location.origin}/settings`);
-                } else if (result.url) {
-                  const { openLemonCheckout } = await import("@/lib/lemon");
-                  await openLemonCheckout(result.url);
+                const result = await apiFetch<{ url?: string }>("/payments/create-portal", { method: "POST" });
+                if (result.url) {
+                  window.open(result.url, "_blank");
                 }
-              } catch { showError("Could not open billing settings"); }
-          }} className="px-4 py-2 rounded-xl border border-outline-variant text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">
-            Update Payment Method
+              } catch { showError("Could not open billing portal"); }
+            }} className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all">
+              Manage Subscription
             </button>
           </div>
         )}
