@@ -280,6 +280,8 @@ export default function WritingResultsPage() {
 
           <span className="text-data-md font-semibold text-primary bg-primary-fixed px-2.5 py-1 rounded-md mb-3">{cefrLevel(band)}</span>
 
+          <p className="text-label-sm text-on-surface-variant/50 text-center mb-3">AI estimate — not an official IELTS score</p>
+
           <p className="text-label-sm text-center text-on-surface-variant max-w-[220px]">
             {band >= 7.5 ? "Strong performance!" : band >= 6 ? "Good effort." : "Keep practicing."}
           </p>
