@@ -5,8 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 
 export function Sidebar() {
+  const { dark } = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const user = useAuthStore((s) => s.user);
@@ -100,7 +102,7 @@ export function Sidebar() {
           <nav className="absolute left-0 top-0 bottom-0 w-64 max-w-[80vw] bg-surface shadow-xl flex flex-col">
             <div className="p-6 border-b border-outline-variant/30">
               <div className="flex items-center justify-between">
-                <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-48 w-auto" priority />
+                <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-48 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
                 <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="w-8 h-8 hover:bg-surface-container-high rounded-lg flex items-center justify-center">
                   <span className="material-symbols-outlined">close</span>
                 </button>
@@ -127,7 +129,7 @@ export function Sidebar() {
 
       <nav className="hidden md:flex h-screen w-60 fixed left-0 top-0 border-r border-outline-variant/30 bg-surface-container-lowest flex-col px-3 z-50">
         <div className="my-6 px-2 flex justify-center">
-          <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-20 w-auto" priority />
+          <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-20 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
         </div>
         <div className="flex-1 space-y-0.5">
           {navLinks}
