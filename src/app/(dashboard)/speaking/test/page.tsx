@@ -435,7 +435,7 @@ export default function SpeakingTestPage() {
 
         {error === "provider_overloaded" ? (
           <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
-            <p className="text-body-md text-error mb-3">We're currently experiencing high demand. Please try again later.</p>
+            <p className="text-body-md text-error mb-3">The AI evaluation service is temporarily unavailable. This happens when many users are practicing at the same time. Your work is safe — please try again in a moment.</p>
             <button onClick={handleSubmit} className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold">Retry</button>
           </div>
         ) : error ? (
