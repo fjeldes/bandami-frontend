@@ -401,6 +401,7 @@ export default function SettingsPage() {
       )}
 
       {/* Password */}
+      {!user?.google_id && (
       <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
         <h3 className="text-body-md font-semibold text-on-surface mb-4">Password</h3>
         {changePw ? (
@@ -426,6 +427,7 @@ export default function SettingsPage() {
           <button onClick={() => setChangePw(true)} className="text-primary text-label-sm font-semibold hover:underline">Change password</button>
         )}
       </section>
+      )}
       {/* Sign Out */}
 
       <button onClick={handleSignOut} className="w-full flex items-center justify-center gap-2 bg-error-container/30 text-error font-semibold py-3 rounded-xl hover:bg-error-container/50 transition-colors text-body-md">

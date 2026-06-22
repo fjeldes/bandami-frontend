@@ -9,6 +9,7 @@ export interface User {
   role?: string;
   referral_code?: string;
   referral_discounts?: number;
+  google_id?: string;
 }
 
 interface AuthState {
