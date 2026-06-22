@@ -15,6 +15,7 @@ export default function LoginPage() {
   const [redirecting, setRedirecting] = useState(false);
   const login = useAuthStore((s) => s.login);
   const user = useAuthStore((s) => s.user);
+  const isLoading = useAuthStore((s) => s.isLoading);
   const router = useRouter();
 
   useEffect(() => {
@@ -24,7 +25,7 @@ export default function LoginPage() {
     }
   }, [user, router]);
 
-  if (redirecting || user) {
+  if (isLoading || redirecting || user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface">
         <span className="material-symbols-outlined text-[40px] text-primary animate-spin">progress_activity</span>

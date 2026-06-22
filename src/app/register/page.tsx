@@ -20,6 +20,7 @@ function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const register = useAuthStore((s) => s.register);
   const user = useAuthStore((s) => s.user);
+  const isLoading = useAuthStore((s) => s.isLoading);
   const router = useRouter();
 
   const [redirecting, setRedirecting] = useState(false);
@@ -33,7 +34,7 @@ function RegisterForm() {
     }
   }, [user, router]);
 
-  if (redirecting || user) {
+  if (isLoading || redirecting || user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface">
         <span className="material-symbols-outlined text-[40px] text-primary animate-spin">progress_activity</span>
