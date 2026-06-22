@@ -4,16 +4,18 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthStore } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 
 export function Navbar() {
   const user = useAuthStore((s) => s.user);
+  const { dark } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
 
   return (
     <nav className="flex justify-between items-center w-full px-gutter py-4 sticky top-0 z-50 bg-surface border-b border-surface-container-high">
       <Link href="/" className="flex items-center shrink-0">
-        <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-12 sm:h-16 w-auto" priority />
+        <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-12 sm:h-16 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
       </Link>
 
       {/* Desktop nav links */}
