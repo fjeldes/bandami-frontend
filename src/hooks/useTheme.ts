@@ -30,7 +30,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  return <ThemeContext.Provider value={{ dark, toggle }}>{children}</ThemeContext.Provider>;
+  const value = { dark, toggle };
+
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {
