@@ -1,8 +1,15 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from "react";
 
-export function useTheme() {
+interface ThemeContextType {
+  dark: boolean;
+  toggle: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextType>({ dark: false, toggle: () => {} });
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
@@ -14,11 +21,17 @@ export function useTheme() {
   }, []);
 
   const toggle = useCallback(() => {
-    const next = !dark;
-    setDark(next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-    document.documentElement.classList.toggle("dark", next);
-  }, [dark]);
+    setDark((prev) => {
+      const next = !prev;
+      localStorage.setItem("theme", next ? "dark" : "light");
+      document.documentElement.classList.toggle("dark", next);
+      return next;
+    });
+  }, []);
 
-  return { dark, toggle };
+  return <ThemeContext.Provider value={{ dark, toggle }}>{children}</ThemeContext.Provider>;
+}
+
+export function useTheme() {
+  return useContext(ThemeContext);
 }
