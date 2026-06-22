@@ -50,7 +50,7 @@ export function Sidebar() {
         isActive && !item.comingSoon
           ? "text-primary font-semibold border-r-2 border-primary bg-surface-container-low"
           : item.comingSoon
-          ? "text-on-surface-variant/40 cursor-default"
+          ? "text-on-surface-variant/25 cursor-default opacity-50"
           : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
       }`}>
         <span className="material-symbols-outlined mr-2.5 text-[20px]" aria-hidden="true" style={isActive && !item.comingSoon ? { fontVariationSettings: "'FILL' 1" } : undefined}>{item.icon}</span>
