@@ -66,6 +66,10 @@ export default function LoginPage() {
       />
 
       <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-gutter md:p-[32px] z-10 relative animate-scale-in">
+        <Link href="/" className="inline-flex items-center gap-1 text-label-sm text-on-surface-variant hover:text-on-surface transition-colors mb-6">
+          <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+          Back to Home
+        </Link>
         <header className="text-center mb-8">
           <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority />
           <h1 className="text-body-md text-on-surface-variant mt-2">
