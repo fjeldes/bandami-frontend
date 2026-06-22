@@ -23,6 +23,8 @@ function RegisterForm() {
   const router = useRouter();
 
   const [redirecting, setRedirecting] = useState(false);
+  const [acceptTos, setAcceptTos] = useState(false);
+  const [acceptAI, setAcceptAI] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -50,6 +52,16 @@ function RegisterForm() {
 
     if (password.length < 8) {
       setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    if (!acceptTos) {
+      setError("You must accept the Terms of Service.");
+      return;
+    }
+
+    if (!acceptAI) {
+      setError("You must authorize AI processing of your submissions.");
       return;
     }
 
@@ -205,6 +217,33 @@ function RegisterForm() {
               />
             </div>
           </div>
+
+          <label className="flex items-start gap-2 mt-4 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={acceptTos}
+              onChange={(e) => setAcceptTos(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
+            />
+            <span className="text-label-sm text-on-surface-variant">
+              I accept the{" "}
+              <Link href="/terms" target="_blank" className="text-primary underline">Terms of Service</Link>
+              {" "}and{" "}
+              <Link href="/privacy" target="_blank" className="text-primary underline">Privacy Policy</Link>
+            </span>
+          </label>
+
+          <label className="flex items-start gap-2 mt-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={acceptAI}
+              onChange={(e) => setAcceptAI(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-outline-variant text-primary focus:ring-primary"
+            />
+            <span className="text-label-sm text-on-surface-variant">
+              I authorize Bandami to process my essays and voice recordings using AI for evaluation purposes
+            </span>
+          </label>
 
           <button
             type="button"

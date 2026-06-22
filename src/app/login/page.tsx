@@ -86,6 +86,14 @@ export default function LoginPage() {
           </span>
         </button>
 
+        <p className="text-center mt-3 text-xs text-on-surface-variant/50 leading-relaxed">
+          By continuing with Google, you agree to our{" "}
+          <Link href="/terms" target="_blank" className="underline">Terms</Link>
+          {" "}and{" "}
+          <Link href="/privacy" target="_blank" className="underline">Privacy</Link>
+          , and authorize AI processing of your submissions.
+        </p>
+
         <div className="flex items-center my-6">
           <div className="flex-grow border-t border-outline-variant" />
           <span className="mx-4 text-label-sm text-on-surface-variant uppercase tracking-wider">
