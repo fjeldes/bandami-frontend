@@ -63,6 +63,7 @@ export interface Evaluation {
   id: string;
   exam_id: string;
   user_submission: string;
+  prompt_text?: string | null;
   overall_band: number;
   criteria_scores: Record<string, CriterionScore>;
   general_feedback: string | null;

@@ -253,6 +253,17 @@ export default function WritingResultsPage() {
         </div>
       </div>
 
+      {/* Question Prompt */}
+      {evaluation.prompt_text && (
+        <div className="mb-6 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="material-symbols-outlined text-primary text-[20px]">quiz</span>
+            <h2 className="text-body-md font-semibold text-on-surface">Question</h2>
+          </div>
+          <p className="text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">{evaluation.prompt_text}</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Score Card */}
         <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl shadow-sm p-5 flex flex-col items-center justify-center border border-outline-variant/40 relative">
