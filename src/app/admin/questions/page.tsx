@@ -14,32 +14,52 @@ interface Question {
   is_active: boolean;
 }
 
+interface QuestionsResponse {
+  questions: Question[];
+  total: number;
+  page: number;
+  per_page: number;
+  total_pages: number;
+  counts: { writing: number; speaking: number };
+}
+
 export default function AdminQuestionsPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
   const [filterType, setFilterType] = useState<string>("all");
-
-  const filteredQuestions = filterType === "all" 
-    ? questions 
-    : questions.filter(q => q.exam_type === filterType);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [counts, setCounts] = useState({ writing: 0, speaking: 0 });
 
   const [form, setForm] = useState({ exam_type: "speaking", task_type: "", difficulty: 1, prompt_text: "", title: "", module: "general" });
 
-  const fetchQuestions = () => {
-    apiFetch<Question[]>("/admin/questions")
-      .then(setQuestions)
+  const fetchQuestions = (pageNum: number = 1) => {
+    setLoading(true);
+    const params = new URLSearchParams({ page: String(pageNum), per_page: "10" });
+    if (filterType !== "all") params.set("exam_type", filterType);
+    apiFetch<QuestionsResponse>(`/admin/questions?${params}`)
+      .then((data) => {
+        setQuestions(data.questions);
+        setTotalPages(data.total_pages);
+        setCounts(data.counts);
+      })
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchQuestions(); }, []);
+  useEffect(() => { fetchQuestions(page); }, [filterType]);
+
+  const handleFilterChange = (type: string) => {
+    setFilterType(type);
+    setPage(1);
+  };
 
   const handleCreate = async () => {
     await apiFetch("/admin/questions", { method: "POST", body: JSON.stringify(form) });
     setShowNew(false);
     setForm({ exam_type: "speaking", task_type: "", difficulty: 1, prompt_text: "", title: "", module: "general" });
-    fetchQuestions();
+    fetchQuestions(1);
   };
 
   const handleUpdate = async (id: string) => {
@@ -50,13 +70,13 @@ export default function AdminQuestionsPage() {
       body: JSON.stringify({ prompt_text: q.prompt_text, title: q.title, module: q.module, difficulty: q.difficulty, task_type: q.task_type, is_active: q.is_active }),
     });
     setEditing(null);
-    fetchQuestions();
+    fetchQuestions(page);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this question?")) return;
     await apiFetch(`/admin/questions/${id}`, { method: "DELETE" });
-    fetchQuestions();
+    fetchQuestions(page);
   };
 
   const toggleActive = async (q: Question) => {
@@ -64,7 +84,7 @@ export default function AdminQuestionsPage() {
       method: "PATCH",
       body: JSON.stringify({ is_active: !q.is_active }),
     });
-    fetchQuestions();
+    fetchQuestions(page);
   };
 
   if (loading) {
@@ -76,7 +96,7 @@ export default function AdminQuestionsPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="font-heading text-display-md text-on-surface mb-1">Questions</h1>
-          <p className="text-body-md text-on-surface-variant">{filteredQuestions.length} questions{filterType !== "all" ? ` (${filterType})` : ""}</p>
+          <p className="text-body-md text-on-surface-variant">{questions.length} questions{filterType !== "all" ? ` (${filterType})` : ""}</p>
         </div>
         <button onClick={() => setShowNew(true)} className="bg-primary text-on-primary font-bold px-4 py-2.5 rounded-xl hover:opacity-90 flex items-center gap-2">
           <span className="material-symbols-outlined text-[18px]">add</span> New Question
@@ -122,13 +142,13 @@ export default function AdminQuestionsPage() {
       )}
 
       <div className="flex gap-2 mb-6">
-        <button onClick={() => setFilterType("all")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "all" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>All ({questions.length})</button>
-        <button onClick={() => setFilterType("writing")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "writing" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Writing ({questions.filter(q => q.exam_type === "writing").length})</button>
-        <button onClick={() => setFilterType("speaking")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "speaking" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Speaking ({questions.filter(q => q.exam_type === "speaking").length})</button>
+        <button onClick={() => handleFilterChange("all")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "all" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>All ({counts.writing + counts.speaking})</button>
+        <button onClick={() => handleFilterChange("writing")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "writing" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Writing ({counts.writing})</button>
+        <button onClick={() => handleFilterChange("speaking")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "speaking" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Speaking ({counts.speaking})</button>
       </div>
 
       <div className="space-y-3">
-        {filteredQuestions.map((q) => (
+        {questions.map((q) => (
           <div key={q.id} className={`bg-surface-container-lowest rounded-xl border p-5 shadow-sm ${q.is_active ? "border-outline-variant" : "border-outline-variant/30 opacity-50"}`}>
             {editing === q.id ? (
               <div className="space-y-3">
@@ -168,6 +188,26 @@ export default function AdminQuestionsPage() {
           </div>
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={() => { setPage(page - 1); fetchQuestions(page - 1); }}
+            disabled={page <= 1}
+            className="px-4 py-2 rounded-lg text-label-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Previous
+          </button>
+          <span className="text-body-md text-on-surface-variant">Page {page} of {totalPages}</span>
+          <button
+            onClick={() => { setPage(page + 1); fetchQuestions(page + 1); }}
+            disabled={page >= totalPages}
+            className="px-4 py-2 rounded-lg text-label-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 }
