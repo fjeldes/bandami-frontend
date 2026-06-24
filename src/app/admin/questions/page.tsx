@@ -19,6 +19,11 @@ export default function AdminQuestionsPage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
+  const [filterType, setFilterType] = useState<string>("all");
+
+  const filteredQuestions = filterType === "all" 
+    ? questions 
+    : questions.filter(q => q.exam_type === filterType);
 
   const [form, setForm] = useState({ exam_type: "speaking", task_type: "", difficulty: 1, prompt_text: "", title: "", module: "general" });
 
@@ -71,7 +76,7 @@ export default function AdminQuestionsPage() {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="font-heading text-display-md text-on-surface mb-1">Questions</h1>
-          <p className="text-body-md text-on-surface-variant">{questions.length} questions in bank</p>
+          <p className="text-body-md text-on-surface-variant">{filteredQuestions.length} questions{filterType !== "all" ? ` (${filterType})` : ""}</p>
         </div>
         <button onClick={() => setShowNew(true)} className="bg-primary text-on-primary font-bold px-4 py-2.5 rounded-xl hover:opacity-90 flex items-center gap-2">
           <span className="material-symbols-outlined text-[18px]">add</span> New Question
@@ -116,8 +121,14 @@ export default function AdminQuestionsPage() {
         </div>
       )}
 
+      <div className="flex gap-2 mb-6">
+        <button onClick={() => setFilterType("all")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "all" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>All ({questions.length})</button>
+        <button onClick={() => setFilterType("writing")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "writing" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Writing ({questions.filter(q => q.exam_type === "writing").length})</button>
+        <button onClick={() => setFilterType("speaking")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "speaking" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Speaking ({questions.filter(q => q.exam_type === "speaking").length})</button>
+      </div>
+
       <div className="space-y-3">
-        {questions.map((q) => (
+        {filteredQuestions.map((q) => (
           <div key={q.id} className={`bg-surface-container-lowest rounded-xl border p-5 shadow-sm ${q.is_active ? "border-outline-variant" : "border-outline-variant/30 opacity-50"}`}>
             {editing === q.id ? (
               <div className="space-y-3">

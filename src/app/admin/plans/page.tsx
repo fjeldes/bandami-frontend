@@ -63,6 +63,7 @@ export default function AdminPlansPage() {
                   className="bg-surface-container rounded-lg border border-outline-variant py-1.5 px-2 text-label-sm"
                 >
                   <option value="gemini">Gemini (Free)</option>
+                  <option value="groq">Groq (Free)</option>
                   <option value="openai">OpenAI (Paid)</option>
                 </select>
               </div>
