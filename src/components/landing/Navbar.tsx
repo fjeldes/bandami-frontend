@@ -10,6 +10,7 @@ export function Navbar() {
   const user = useAuthStore((s) => s.user);
   const { dark } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [resourcesOpen, setResourcesOpen] = useState(false);
   const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
 
   return (
@@ -22,6 +23,28 @@ export function Navbar() {
       <div className="hidden md:flex items-center gap-8">
         <a href="#how-it-works" className="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md">How it works</a>
         <a href="#pricing" className="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md">Pricing</a>
+        <div className="relative">
+          <button
+            onClick={() => setResourcesOpen(!resourcesOpen)}
+            onBlur={() => setTimeout(() => setResourcesOpen(false), 150)}
+            className="flex items-center gap-1 text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md"
+          >
+            Resources
+            <span className="material-symbols-outlined text-[16px]">expand_more</span>
+          </button>
+          {resourcesOpen && (
+            <div className="absolute top-full left-0 mt-2 w-48 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-lg py-2 z-50">
+              <Link
+                href="/resources/band-scores"
+                onClick={() => setResourcesOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-body-sm text-on-surface hover:bg-surface-container-high transition-colors"
+              >
+                <span className="material-symbols-outlined text-[18px] text-on-surface-variant">score</span>
+                Band Scores
+              </Link>
+            </div>
+          )}
+        </div>
         <a href="#faq" className="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md">FAQ</a>
       </div>
 
@@ -80,6 +103,7 @@ export function Navbar() {
             <div className="flex-1 flex flex-col p-4 gap-2">
               <a href="#how-it-works" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">How it works</a>
               <a href="#pricing" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">Pricing</a>
+              <Link href="/resources/band-scores" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">Band Scores</Link>
               <a href="#faq" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">FAQ</a>
               <div className="border-t border-outline-variant/30 my-2" />
                 {user ? (
