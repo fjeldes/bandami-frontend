@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuthStore } from "@/hooks/useAuth";
@@ -11,7 +11,18 @@ export function Navbar() {
   const { dark } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
+  const resourcesRef = useRef<HTMLDivElement>(null);
   const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (resourcesRef.current && !resourcesRef.current.contains(event.target as Node)) {
+        setResourcesOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <nav className="flex justify-between items-center w-full px-gutter py-4 sticky top-0 z-50 bg-surface border-b border-surface-container-high">
@@ -21,12 +32,11 @@ export function Navbar() {
 
       {/* Desktop nav links */}
       <div className="hidden md:flex items-center gap-8">
-        <a href="#how-it-works" className="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md">How it works</a>
-        <a href="#pricing" className="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md">Pricing</a>
-        <div className="relative">
+        <a href="/?#how-it-works" className="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md">How it works</a>
+        <a href="/?#pricing" className="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md">Pricing</a>
+        <div className="relative" ref={resourcesRef}>
           <button
             onClick={() => setResourcesOpen(!resourcesOpen)}
-            onBlur={() => setTimeout(() => setResourcesOpen(false), 150)}
             className="flex items-center gap-1 text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md"
           >
             Resources
@@ -45,7 +55,7 @@ export function Navbar() {
             </div>
           )}
         </div>
-        <a href="#faq" className="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md">FAQ</a>
+        <a href="/?#faq" className="text-on-surface-variant hover:text-on-surface transition-colors font-label-md text-label-md">FAQ</a>
       </div>
 
       <div className="hidden md:flex items-center gap-4">
@@ -101,10 +111,10 @@ export function Navbar() {
               </button>
             </div>
             <div className="flex-1 flex flex-col p-4 gap-2">
-              <a href="#how-it-works" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">How it works</a>
-              <a href="#pricing" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">Pricing</a>
+              <a href="/?#how-it-works" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">How it works</a>
+              <a href="/?#pricing" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">Pricing</a>
               <Link href="/resources/band-scores" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">Band Scores</Link>
-              <a href="#faq" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">FAQ</a>
+              <a href="/?#faq" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">FAQ</a>
               <div className="border-t border-outline-variant/30 my-2" />
                 {user ? (
                 <div className="flex items-center gap-2">
