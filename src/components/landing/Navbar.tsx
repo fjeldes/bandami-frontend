@@ -33,11 +33,11 @@ export function Navbar() {
             <span className="material-symbols-outlined text-[16px]">expand_more</span>
           </button>
           {resourcesOpen && (
-            <div className="absolute top-full left-0 mt-2 w-48 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-lg py-2 z-50 overflow-hidden">
+            <div className="absolute top-full left-0 mt-2 w-48 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-lg z-50">
               <Link
                 href="/resources/band-scores"
                 onClick={() => setResourcesOpen(false)}
-                className="flex items-center gap-3 px-4 py-2.5 text-body-sm text-on-surface hover:bg-[--surface-container-high] transition-colors"
+                className="flex items-center gap-3 px-4 py-2.5 text-body-sm text-on-surface hover:bg-surface-container-high transition-colors w-full"
               >
                 <span className="material-symbols-outlined text-[18px] text-on-surface-variant">score</span>
                 Band Scores
