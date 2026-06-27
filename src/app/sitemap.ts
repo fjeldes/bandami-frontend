@@ -13,5 +13,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/reading`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE}/dashboard`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE}/history`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.6 },
+    { url: `${BASE}/resources/band-scores`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
   ];
 }
