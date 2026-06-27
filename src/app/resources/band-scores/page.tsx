@@ -198,12 +198,12 @@ function ScoreTable({ data, title }: { data: { min: number; max: number; band: n
         <h3 className="font-heading text-headline-sm text-on-surface">{title}</h3>
         <p className="text-body-sm text-on-surface-variant mt-1">40 questions total</p>
       </div>
-      <div className="overflow-x-auto">
-        <table className="w-full">
+      <div className="overflow-x-auto max-w-full">
+        <table className="w-full min-w-max">
           <thead className="bg-surface-container-high">
             <tr>
-              <th className="px-6 py-3 text-left text-label-sm font-semibold text-on-surface">Correct Answers</th>
-              <th className="px-6 py-3 text-left text-label-sm font-semibold text-on-surface">Band Score</th>
+              <th className="px-6 py-3 text-left text-label-sm font-semibold text-on-surface whitespace-nowrap">Correct Answers</th>
+              <th className="px-6 py-3 text-left text-label-sm font-semibold text-on-surface whitespace-nowrap">Band Score</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-outline-variant/30">
@@ -211,10 +211,10 @@ function ScoreTable({ data, title }: { data: { min: number; max: number; band: n
               const colors = BAND_COLORS[row.band as keyof typeof BAND_COLORS] || BAND_COLORS[5];
               return (
                 <tr key={row.band} className="hover:bg-surface-container-low transition-colors">
-                  <td className="px-6 py-3 text-body-sm text-on-surface">
+                  <td className="px-6 py-3 text-body-sm text-on-surface whitespace-nowrap">
                     {row.min === row.max ? row.min : `${row.min} - ${row.max}`}
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-6 py-3 whitespace-nowrap">
                     <span className={`${colors.badge} px-3 py-1 rounded-full text-label-sm font-semibold`}>
                       {row.band}
                     </span>
