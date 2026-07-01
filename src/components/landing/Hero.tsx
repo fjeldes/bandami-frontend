@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FeedbackPreview } from "./FeedbackPreview";
 
 export function Hero() {
   return (
@@ -40,33 +41,14 @@ export function Hero() {
           </a>
         </div>
 
-        <div className="mt-section-gap relative w-full max-w-4xl mx-auto h-[280px] sm:h-[400px] rounded-xl border border-outline-variant/50 bg-surface-container-lowest ghost-shadow overflow-hidden flex flex-col">
+        <div className="mt-section-gap relative w-full max-w-4xl mx-auto h-[340px] sm:h-[420px] rounded-xl border border-outline-variant/50 bg-surface-container-lowest ghost-shadow overflow-hidden flex flex-col">
           <div className="h-10 sm:h-12 border-b border-outline-variant/50 bg-surface-container-low flex items-center px-4 gap-2">
             <div className="w-3 h-3 rounded-full bg-error/30" />
             <div className="w-3 h-3 rounded-full bg-secondary/30" />
             <div className="w-3 h-3 rounded-full bg-primary/30" />
           </div>
-          <div className="flex-1 flex flex-col sm:flex-row p-4 sm:p-6 gap-4 sm:gap-6">
-            <div className="sm:w-2/3 h-full rounded border border-outline-variant/50 bg-surface-container-lowest p-4 sm:p-6">
-              <div className="h-3 sm:h-4 bg-surface-container rounded w-3/4 mb-3 sm:mb-4" />
-              <div className="h-3 sm:h-4 bg-surface-container rounded w-full mb-2" />
-              <div className="h-3 sm:h-4 bg-surface-container rounded w-5/6 mb-2" />
-              <div className="h-3 sm:h-4 bg-surface-container rounded w-full mb-2" />
-              <div className="h-3 sm:h-4 bg-surface-container rounded w-4/5" />
-            </div>
-            <div className="sm:w-1/3 h-full rounded border border-primary/10 bg-primary-fixed/10 p-3 sm:p-4 flex flex-row sm:flex-col gap-4">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-primary text-[18px]">analytics</span>
-                <span className="font-mono text-data-md text-primary">Band 7.5</span>
-              </div>
-              <div className="h-2 bg-primary-fixed rounded-full w-full hidden sm:block">
-                <div className="h-full bg-primary rounded-full w-[75%]" />
-              </div>
-              <div className="space-y-2 mt-auto hidden sm:block">
-                <div className="h-3 bg-surface-container rounded w-full" />
-                <div className="h-3 bg-surface-container rounded w-2/3" />
-              </div>
-            </div>
+          <div className="flex-1">
+            <FeedbackPreview />
           </div>
         </div>
       </div>
