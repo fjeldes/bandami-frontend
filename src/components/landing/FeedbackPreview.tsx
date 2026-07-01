@@ -129,7 +129,7 @@ export function FeedbackPreview() {
   const data = activeTab === "writing" ? WRITING_PREVIEW : SPEAKING_PREVIEW;
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full flex flex-col">
       <div className="flex items-center justify-between px-3 py-1.5 border-b border-outline-variant/30 shrink-0">
         <div className="flex gap-1.5">
           <button
