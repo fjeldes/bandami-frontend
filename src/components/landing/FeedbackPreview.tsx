@@ -42,19 +42,21 @@ function BandScore({ band, cefr }: { band: number; cefr: string }) {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="relative w-16 h-16 mb-1">
-        <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-          <path
-            className="fill-none stroke-surface-variant"
-            strokeWidth="2.5"
-            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-          />
-          <path
-            className="fill-none stroke-primary"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeDasharray={`${(band / 9) * 77.7}, 100`}
-            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-          />
+        <svg className="w-full h-full" viewBox="0 0 36 36">
+          <g transform="rotate(-90 18 18)">
+            <path
+              className="fill-none stroke-surface-variant"
+              strokeWidth="2.5"
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+            <path
+              className="fill-none stroke-primary"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeDasharray={`${(band / 9) * 77.7}, 100`}
+              d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+            />
+          </g>
           <text
             className="fill-primary font-mono font-bold"
             x="18"
@@ -161,7 +163,7 @@ export function FeedbackPreview() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+      <div className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-3">
         <div className="flex items-start gap-3">
           <BandScore band={data.band} cefr={data.cefr} />
           <div className="flex-1 min-w-0 pt-1">

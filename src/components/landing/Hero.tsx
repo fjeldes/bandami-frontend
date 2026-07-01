@@ -47,7 +47,7 @@ export function Hero() {
             <div className="w-3 h-3 rounded-full bg-secondary/30" />
             <div className="w-3 h-3 rounded-full bg-primary/30" />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-h-0">
             <FeedbackPreview />
           </div>
         </div>
