@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getQuestions, createSpeakingExam, submitSpeakingEvaluation } from "@/lib/api";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import type { Question, Exam } from "@/lib/types";
 
 type Phase = "load" | "mic-test" | "ready" | "single-prep" | "intro" | "part1-speak" | "part2-prep" | "part2-speak" | "part3-speak" | "preview" | "submitting";
@@ -45,10 +46,17 @@ function groupByPart(questions: Question[]) {
   return groups;
 }
 
+function stripHtml(html: string): string {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || "";
+}
+
 function speakText(text: string) {
   if (typeof window === "undefined" || !window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
+  const plainText = stripHtml(text);
+  const u = new SpeechSynthesisUtterance(plainText);
   u.lang = "en-US";
   u.rate = 0.85;
   u.pitch = 1;
@@ -555,7 +563,7 @@ export default function SpeakingTestPage() {
                 <span className="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-label-sm uppercase">{targetQuestion.module || "part2"}</span>
               </div>
               <h2 className="text-headline-md font-bold text-on-surface mb-3">{targetQuestion.title || "Speaking Topic"}</h2>
-              <p className="text-body-lg text-on-surface-variant leading-relaxed">{targetQuestion.prompt_text}</p>
+              <RichTextRenderer content={targetQuestion.prompt_text} className="text-body-lg text-on-surface-variant leading-relaxed" />
             </div>
             <div className="flex justify-center gap-3">
               <button onClick={() => setPhase("mic-test")} className="px-5 py-2.5 rounded-full border border-outline-variant text-on-surface-variant text-label-sm hover:bg-surface-container transition-colors">Back</button>
@@ -580,7 +588,7 @@ export default function SpeakingTestPage() {
             </div>
             <div className="bg-surface-container-lowest rounded-2xl border-2 border-primary/20 p-6 text-left shadow-md">
               <h3 className="text-label-sm font-semibold text-primary mb-3 uppercase tracking-widest">Topic Card</h3>
-              <p className="text-body-lg text-on-surface leading-relaxed whitespace-pre-wrap">{targetQuestion.prompt_text}</p>
+              <RichTextRenderer content={targetQuestion.prompt_text} className="text-body-lg text-on-surface leading-relaxed" />
             </div>
             <div className="w-full max-w-md mx-auto space-y-3">
               <div className="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
@@ -615,7 +623,7 @@ export default function SpeakingTestPage() {
               <div className="flex items-center gap-2 mb-3">
                 <span className="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-label-sm uppercase">{targetQuestion?.module || "part2"}</span>
               </div>
-              <p className="text-body-md text-on-surface-variant leading-relaxed line-clamp-3">{targetQuestion?.prompt_text}</p>
+              <RichTextRenderer content={targetQuestion?.prompt_text || ""} className="text-body-md text-on-surface-variant leading-relaxed line-clamp-3" />
             </div>
             <div className="bg-surface-container-low rounded-2xl border border-outline-variant/20 p-10 flex flex-col items-center relative overflow-hidden">
               <div className="absolute inset-0 opacity-5 pointer-events-none">
@@ -662,7 +670,7 @@ export default function SpeakingTestPage() {
             <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-8">
               <div className="mb-6 p-4 rounded-lg bg-surface-container-low border-l-4 border-primary">
                 <p className="text-label-sm text-primary mb-1 uppercase tracking-widest">Topic</p>
-                <p className="text-headline-md italic text-on-surface line-clamp-2">{targetQuestion?.prompt_text || "Speaking response"}</p>
+                <RichTextRenderer content={targetQuestion?.prompt_text || ""} className="text-headline-md italic text-on-surface line-clamp-2" />
               </div>
 
               <div className="h-16 flex items-end justify-center gap-1 px-2 mb-6 overflow-hidden">
@@ -872,7 +880,7 @@ export default function SpeakingTestPage() {
             )}
           </div>
           <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6">
-            <p className="text-body-lg text-on-surface leading-relaxed">{currentQuestion.prompt_text}</p>
+            <RichTextRenderer content={currentQuestion.prompt_text} className="text-body-lg text-on-surface leading-relaxed" />
           </div>
           <div className="flex items-center justify-between">
             <button onClick={() => speakText(currentQuestion.prompt_text)} className="flex items-center gap-1.5 text-primary text-label-sm hover:underline">
@@ -905,7 +913,7 @@ export default function SpeakingTestPage() {
           </div>
           <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 text-left">
             <h3 className="text-body-md font-semibold text-on-surface mb-3">Topic Card</h3>
-            <p className="text-body-lg text-on-surface leading-relaxed whitespace-pre-wrap">{currentQuestion.prompt_text}</p>
+            <RichTextRenderer content={currentQuestion.prompt_text} className="text-body-lg text-on-surface leading-relaxed" />
           </div>
           <p className="text-body-md text-on-surface-variant">Prepare your response. Do not speak yet.</p>
           <button onClick={beginPart2Speak} className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity">Skip Timer · Start Speaking</button>
@@ -920,7 +928,7 @@ export default function SpeakingTestPage() {
             <span className={`font-mono text-display-md font-extrabold ${timeLeft < 15 ? "text-error animate-pulse" : "text-on-surface"}`}>{fmt(timeLeft)}</span>
           </div>
           <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6">
-            <p className="text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap line-clamp-4">{currentQuestion.prompt_text}</p>
+            <RichTextRenderer content={currentQuestion.prompt_text} className="text-body-md text-on-surface-variant leading-relaxed line-clamp-4" />
           </div>
           <div className="bg-surface-container-low rounded-2xl border border-outline-variant/20 p-8 flex flex-col items-center relative overflow-hidden">
             <div className="absolute inset-0 opacity-5 pointer-events-none">

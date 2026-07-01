@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
+import RichTextEditor from "@/components/ui/RichTextEditor";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 interface Question {
   id: string;
@@ -33,7 +35,7 @@ export default function AdminQuestionsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [counts, setCounts] = useState({ writing: 0, speaking: 0 });
 
-  const [form, setForm] = useState({ exam_type: "speaking", task_type: "", difficulty: 1, prompt_text: "", title: "", module: "general" });
+  const [form, setForm] = useState({ exam_type: "speaking", task_type: null as string | null, difficulty: 1, prompt_text: "", title: "", module: "general" });
 
   const fetchQuestions = (pageNum: number = 1) => {
     setLoading(true);
@@ -50,15 +52,22 @@ export default function AdminQuestionsPage() {
 
   useEffect(() => { fetchQuestions(page); }, [filterType]);
 
+  useEffect(() => {
+    if (form.exam_type === "writing" && !form.task_type) {
+      setForm((prev) => ({ ...prev, task_type: "task1" }));
+    }
+  }, [form.exam_type]);
+
   const handleFilterChange = (type: string) => {
     setFilterType(type);
     setPage(1);
   };
 
   const handleCreate = async () => {
-    await apiFetch("/admin/questions", { method: "POST", body: JSON.stringify(form) });
+    const payload = { ...form, task_type: form.exam_type === "writing" ? form.task_type : undefined };
+    await apiFetch("/admin/questions", { method: "POST", body: JSON.stringify(payload) });
     setShowNew(false);
-    setForm({ exam_type: "speaking", task_type: "", difficulty: 1, prompt_text: "", title: "", module: "general" });
+    setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general" });
     fetchQuestions(1);
   };
 
@@ -133,7 +142,7 @@ export default function AdminQuestionsPage() {
             placeholder="Short title (e.g. Community Service in Schools)"
             className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md mb-3"
           />
-          <textarea value={form.prompt_text} onChange={(e) => setForm({ ...form, prompt_text: e.target.value })} placeholder="Full question prompt..." className="w-full bg-surface-container rounded-lg border border-outline-variant p-3 text-body-md resize-none h-24 mb-4" />
+          <RichTextEditor value={form.prompt_text} onChange={(value) => setForm({ ...form, prompt_text: value })} placeholder="Full question prompt..." className="mb-4" />
           <div className="flex gap-3">
             <button onClick={handleCreate} className="bg-primary text-on-primary font-bold px-4 py-2 rounded-lg hover:opacity-90">Create</button>
             <button onClick={() => setShowNew(false)} className="text-on-surface-variant hover:text-on-surface px-4 py-2 rounded-lg">Cancel</button>
@@ -153,7 +162,7 @@ export default function AdminQuestionsPage() {
             {editing === q.id ? (
               <div className="space-y-3">
                 <input value={q.title || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, title: e.target.value } : qq))} placeholder="Title" className="w-full bg-surface-container rounded-lg border border-outline-variant py-2 px-3 text-body-md" />
-                <textarea value={q.prompt_text} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, prompt_text: e.target.value } : qq))} className="w-full bg-surface-container rounded-lg border border-outline-variant p-3 text-body-md resize-none h-24" />
+                <RichTextEditor value={q.prompt_text} onChange={(value) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, prompt_text: value } : qq))} className="mb-3" />
                 <div className="flex gap-2 items-center">
                   <select value={q.difficulty} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, difficulty: Number(e.target.value) } : qq))} className="bg-surface-container rounded-lg border border-outline-variant py-1.5 px-2 text-label-sm">
                     <option value={1}>Easy</option>
@@ -182,7 +191,7 @@ export default function AdminQuestionsPage() {
                     <button onClick={() => handleDelete(q.id)} className="text-label-sm text-error hover:underline px-2 py-1">Delete</button>
                   </div>
                 </div>
-                <p className="text-body-md text-on-surface">{q.prompt_text}</p>
+                <RichTextRenderer content={q.prompt_text} className="text-body-md text-on-surface" />
               </>
             )}
           </div>

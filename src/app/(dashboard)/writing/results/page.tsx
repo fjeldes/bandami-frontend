@@ -7,6 +7,7 @@ import { getWritingEvaluation, apiFetch } from "@/lib/api";
 import type { Evaluation } from "@/lib/types";
 import { useAuthStore } from "@/hooks/useAuth";
 import { redirectToCheckout } from "@/lib/payments";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 
 const WRITING_CRITERIA = [
   { key: "task_response", label: "Task Response", icon: "task_alt", description: "How well the task is addressed" },
@@ -260,7 +261,7 @@ export default function WritingResultsPage() {
             <span className="material-symbols-outlined text-primary text-[20px]">quiz</span>
             <h2 className="text-body-md font-semibold text-on-surface">Question</h2>
           </div>
-          <p className="text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">{evaluation.prompt_text}</p>
+          <RichTextRenderer content={evaluation.prompt_text} className="text-body-md text-on-surface-variant leading-relaxed" />
         </div>
       )}
 

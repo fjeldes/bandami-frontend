@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getQuestions, createWritingExam, submitWritingEvaluation } from "@/lib/api";
 import { showError } from "@/components/ui/Toast";
+import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import type { Question, Exam } from "@/lib/types";
 
 const TASK_TIMES: Record<string, number> = { task1: 20 * 60, task2: 40 * 60 };
@@ -169,7 +170,7 @@ export default function WritingTestPage() {
           </div>
         </div>
         <h2 className="font-headline-md text-headline-md text-on-surface mb-4">{question.title || "Writing Prompt"}</h2>
-        <p className="font-body-md text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">{question.prompt_text}</p>
+        <RichTextRenderer content={question.prompt_text} className="font-body-md text-body-md text-on-surface-variant leading-relaxed" />
         <div className="mt-6 p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
           <p className="font-label-md text-label-md text-on-surface-variant mb-2">Tips</p>
           <ul className="font-label-md text-label-md text-on-surface-variant space-y-1 list-disc pl-4">
