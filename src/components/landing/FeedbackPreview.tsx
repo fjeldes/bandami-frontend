@@ -41,7 +41,7 @@ const SPEAKING_PREVIEW = {
 function BandScore({ band, cefr }: { band: number; cefr: string }) {
   return (
     <div className="flex flex-col items-center justify-center shrink-0">
-      <div className="relative w-14 h-14 mb-1">
+      <div className="relative w-12 h-12 xs:w-14 xs:h-14 mb-0.5 xs:mb-1">
         <svg className="w-full h-full" viewBox="0 0 36 36">
           <g transform="rotate(-90 18 18)">
             <path
@@ -101,7 +101,7 @@ function CriterionRow({
     <div className="flex items-start gap-2">
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-0.5">
-          <span className="text-label-sm font-medium text-on-surface-variant truncate">
+          <span className="text-label-sm font-medium text-on-surface-variant">
             {label}
           </span>
           <span
@@ -130,7 +130,7 @@ export function FeedbackPreview() {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-outline-variant/30 shrink-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-3 py-1.5 border-b border-outline-variant/30 shrink-0">
         <div className="flex gap-1.5">
           <button
             onClick={() => setActiveTab("writing")}
@@ -165,7 +165,7 @@ export function FeedbackPreview() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 p-3 flex flex-col gap-2.5">
+      <div className="flex-1 min-h-0 p-2 xs:p-3 flex flex-col gap-2 xs:gap-2.5">
         <div className="flex items-start gap-3">
           <BandScore band={data.band} cefr={data.cefr} />
           <div className="flex-1 min-w-0 pt-0.5">
@@ -175,7 +175,7 @@ export function FeedbackPreview() {
           </div>
         </div>
 
-        <div className="bg-surface-container-low rounded-lg p-2.5 border border-outline-variant/20 grid grid-cols-2 gap-x-4 gap-y-2">
+        <div className="bg-surface-container-low rounded-lg p-2.5 border border-outline-variant/20 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
           {data.criteria.map((c) => (
             <CriterionRow
               key={c.label}
