@@ -40,8 +40,8 @@ const SPEAKING_PREVIEW = {
 
 function BandScore({ band, cefr }: { band: number; cefr: string }) {
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="relative w-16 h-16 mb-1">
+    <div className="flex flex-col items-center justify-center shrink-0">
+      <div className="relative w-14 h-14 mb-1">
         <svg className="w-full h-full" viewBox="0 0 36 36">
           <g transform="rotate(-90 18 18)">
             <path
@@ -68,7 +68,7 @@ function BandScore({ band, cefr }: { band: number; cefr: string }) {
           </text>
         </svg>
       </div>
-      <span className="text-data-sm font-semibold text-primary bg-primary-container/30 px-2 py-0.5 rounded">
+      <span className="text-label-sm font-semibold text-primary bg-primary-container/30 px-1.5 py-0.5 rounded">
         {cefr}
       </span>
     </div>
@@ -98,26 +98,28 @@ function CriterionRow({
         : "bg-tertiary-container text-on-tertiary-container";
 
   return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center justify-between">
-        <span className="text-label-sm font-medium text-on-surface-variant truncate">
-          {label}
-        </span>
-        <span
-          className={`font-mono text-xs font-semibold px-2 py-0.5 rounded-full ml-2 shrink-0 ${badgeClass}`}
-        >
-          {score.toFixed(1)}
+    <div className="flex items-start gap-2">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-0.5">
+          <span className="text-label-sm font-medium text-on-surface-variant truncate">
+            {label}
+          </span>
+          <span
+            className={`font-mono text-xs font-semibold px-1.5 py-0.5 rounded-full ml-2 shrink-0 ${badgeClass}`}
+          >
+            {score.toFixed(1)}
+          </span>
+        </div>
+        <div className="h-1 bg-surface-variant rounded-full overflow-hidden mb-1">
+          <div
+            className={`h-full ${barColor} rounded-full`}
+            style={{ width: `${(score / 9) * 100}%` }}
+          />
+        </div>
+        <span className="text-label-sm text-on-surface-variant/60 leading-snug">
+          {comment}
         </span>
       </div>
-      <div className="h-1.5 bg-surface-variant rounded-full overflow-hidden">
-        <div
-          className={`h-full ${barColor} rounded-full`}
-          style={{ width: `${(score / 9) * 100}%` }}
-        />
-      </div>
-      <span className="text-label-sm text-on-surface-variant/70 leading-snug">
-        {comment}
-      </span>
     </div>
   );
 }
@@ -128,33 +130,33 @@ export function FeedbackPreview() {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-outline-variant/30">
-        <div className="flex gap-2">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-outline-variant/30 shrink-0">
+        <div className="flex gap-1.5">
           <button
             onClick={() => setActiveTab("writing")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-label-sm font-medium transition-all ${
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-label-sm font-medium transition-all ${
               activeTab === "writing"
                 ? "bg-primary text-on-primary shadow-sm"
                 : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-high/80"
             }`}
           >
-            <span className="material-symbols-outlined text-[14px]">edit_note</span>
+            <span className="material-symbols-outlined text-[12px]">edit_note</span>
             Writing
           </button>
           <button
             onClick={() => setActiveTab("speaking")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-label-sm font-medium transition-all ${
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-label-sm font-medium transition-all ${
               activeTab === "speaking"
                 ? "bg-primary text-on-primary shadow-sm"
                 : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-high/80"
             }`}
           >
-            <span className="material-symbols-outlined text-[14px]">mic</span>
+            <span className="material-symbols-outlined text-[12px]">mic</span>
             Speaking
           </button>
         </div>
-        <div className="flex items-center gap-1.5 bg-surface-container-high px-2.5 py-1 rounded-full">
-          <span className="material-symbols-outlined text-[14px] text-on-surface-variant">
+        <div className="flex items-center gap-1 bg-surface-container-high px-2 py-0.5 rounded-full">
+          <span className="material-symbols-outlined text-[12px] text-on-surface-variant">
             info
           </span>
           <span className="text-label-sm text-on-surface-variant font-medium">
@@ -163,17 +165,17 @@ export function FeedbackPreview() {
         </div>
       </div>
 
-      <div className="flex-1 min-h-0 overflow-y-auto p-4 flex flex-col gap-3">
+      <div className="flex-1 min-h-0 p-3 flex flex-col gap-2.5">
         <div className="flex items-start gap-3">
           <BandScore band={data.band} cefr={data.cefr} />
-          <div className="flex-1 min-w-0 pt-1">
+          <div className="flex-1 min-w-0 pt-0.5">
             <p className="text-label-sm text-on-surface-variant leading-relaxed line-clamp-3">
               {data.quickFeedback}
             </p>
           </div>
         </div>
 
-        <div className="bg-surface-container-low rounded-xl p-3 border border-outline-variant/20 space-y-3">
+        <div className="bg-surface-container-low rounded-lg p-2.5 border border-outline-variant/20 grid grid-cols-2 gap-x-4 gap-y-2">
           {data.criteria.map((c) => (
             <CriterionRow
               key={c.label}
@@ -184,31 +186,31 @@ export function FeedbackPreview() {
           ))}
         </div>
 
-        <div className="bg-primary-container/20 rounded-xl p-3 border border-primary/30">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="material-symbols-outlined text-[14px] text-primary">
+        <div className="bg-primary-container/20 rounded-lg px-2.5 py-2 border border-primary/30">
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <span className="material-symbols-outlined text-[12px] text-primary">
               stars
             </span>
             <span className="text-label-sm font-semibold text-primary">
               Pro Features
             </span>
-            <span className="bg-primary text-on-primary text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-auto">
+            <span className="bg-primary text-on-primary text-[10px] font-bold px-1 py-0.5 rounded-full ml-auto">
               PRO
             </span>
           </div>
-          <ul className="space-y-1">
+          <div className="flex flex-wrap gap-x-3 gap-y-0.5">
             {data.proFeatures.map((feature) => (
-              <li
+              <div
                 key={feature}
-                className="flex items-center gap-2 text-label-sm text-on-surface-variant"
+                className="flex items-center gap-1 text-label-sm text-on-surface-variant"
               >
-                <span className="material-symbols-outlined text-[14px] text-primary">
+                <span className="material-symbols-outlined text-[12px] text-primary">
                   check_circle
                 </span>
-                {feature}
-              </li>
+                <span>{feature}</span>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </div>

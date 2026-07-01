@@ -41,11 +41,11 @@ export function Hero() {
           </a>
         </div>
 
-        <div className="mt-section-gap relative w-full max-w-4xl mx-auto h-[340px] sm:h-[420px] rounded-xl border border-outline-variant/50 bg-surface-container-lowest ghost-shadow overflow-hidden flex flex-col">
-          <div className="h-10 sm:h-12 border-b border-outline-variant/50 bg-surface-container-low flex items-center px-4 gap-2">
-            <div className="w-3 h-3 rounded-full bg-error/30" />
-            <div className="w-3 h-3 rounded-full bg-secondary/30" />
-            <div className="w-3 h-3 rounded-full bg-primary/30" />
+        <div className="mt-section-gap relative w-full max-w-4xl mx-auto h-[320px] sm:h-[380px] rounded-xl border border-outline-variant/50 bg-surface-container-lowest ghost-shadow overflow-hidden flex flex-col">
+          <div className="h-9 sm:h-10 border-b border-outline-variant/50 bg-surface-container-low flex items-center px-4 gap-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-error/30" />
+            <div className="w-2.5 h-2.5 rounded-full bg-secondary/30" />
+            <div className="w-2.5 h-2.5 rounded-full bg-primary/30" />
           </div>
           <div className="flex-1 min-h-0">
             <FeedbackPreview />
