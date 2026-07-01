@@ -7,7 +7,7 @@ import { getQuestions, createWritingExam, submitWritingEvaluation } from "@/lib/
 import { showError } from "@/components/ui/Toast";
 import type { Question, Exam } from "@/lib/types";
 
-const TASK_TIMES: Record<string, number> = { task1: 15 * 60, task2: 40 * 60 };
+const TASK_TIMES: Record<string, number> = { task1: 20 * 60, task2: 40 * 60 };
 const TIMER_DEFAULT = 40 * 60;
 
 type Phase = "writing" | "submitting" | "done";
