@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ReactQuill from "react-quill";
+import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 
 interface RichTextEditorProps {
@@ -9,7 +9,6 @@ interface RichTextEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
-  modules?: object;
 }
 
 const modules = {
@@ -21,33 +20,35 @@ const modules = {
   ],
 };
 
+const ReactQuillEditor = dynamic(
+  () => {
+    return import("react-quill").then((mod) => {
+      const QuillComponent = mod.default;
+      return function QuillWrapper(props: any) {
+        return <QuillComponent {...props} />;
+      };
+    });
+  },
+  {
+    ssr: false,
+    loading: () => (
+      <div className="bg-surface-container rounded-lg border border-outline-variant p-3 h-32 animate-pulse" />
+    ),
+  }
+);
+
 export default function RichTextEditor({
   value,
   onChange,
   placeholder = "Write something...",
   className = "",
-  modules: customModules,
 }: RichTextEditorProps) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  if (!isMounted) {
-    return (
-      <div className={`bg-surface-container rounded-lg border border-outline-variant p-3 ${className}`}>
-        <div className="h-24 bg-surface-container-high animate-pulse rounded" />
-      </div>
-    );
-  }
-
   return (
     <div className={`rich-text-editor ${className}`}>
-      <ReactQuill
+      <ReactQuillEditor
         value={value}
         onChange={onChange}
-        modules={customModules || modules}
+        modules={modules}
         placeholder={placeholder}
         theme="snow"
       />
