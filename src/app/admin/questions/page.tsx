@@ -121,7 +121,7 @@ export default function AdminQuestionsPage() {
               <option value="writing">Writing</option>
             </select>
             {form.exam_type === "writing" && (
-              <select value={form.task_type} onChange={(e) => setForm({ ...form, task_type: e.target.value })} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md">
+              <select value={form.task_type ?? ""} onChange={(e) => setForm({ ...form, task_type: e.target.value })} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md">
                 <option value="task1">Task 1</option>
                 <option value="task2">Task 2</option>
               </select>
