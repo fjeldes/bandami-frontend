@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { FeedbackPreview } from "./FeedbackPreview";
 
 export function Hero() {
   return (
@@ -39,17 +38,6 @@ export function Hero() {
           >
             View Plans
           </a>
-        </div>
-
-        <div className="mt-section-gap relative w-full max-w-4xl mx-auto rounded-xl border border-outline-variant/50 bg-surface-container-lowest ghost-shadow overflow-hidden flex flex-col">
-          <div className="h-9 sm:h-10 border-b border-outline-variant/50 bg-surface-container-low flex items-center px-4 gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-error/30" />
-            <div className="w-2.5 h-2.5 rounded-full bg-secondary/30" />
-            <div className="w-2.5 h-2.5 rounded-full bg-primary/30" />
-          </div>
-          <div className="flex-1 min-h-0">
-            <FeedbackPreview />
-          </div>
         </div>
       </div>
     </section>

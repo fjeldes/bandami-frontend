@@ -100,15 +100,13 @@ export function Sidebar() {
         <div className="md:hidden fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label="Navigation menu">
           <div className="absolute inset-0 bg-black/30" onClick={() => setMobileOpen(false)} />
           <nav className="absolute left-0 top-0 bottom-0 w-64 max-w-[80vw] bg-surface shadow-xl flex flex-col">
-            <div className="p-6 border-b border-outline-variant/30">
-              <div className="flex items-center justify-between">
-                <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-48 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
-                <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="w-8 h-8 hover:bg-surface-container-high rounded-lg flex items-center justify-center">
-                  <span className="material-symbols-outlined">close</span>
-                </button>
-              </div>
+            <div className="p-4 border-b border-outline-variant/30 flex items-center justify-between gap-2">
+              <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-10 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
+              <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="w-8 h-8 hover:bg-surface-container-high rounded-lg flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined">close</span>
+              </button>
             </div>
-            <div className="flex-1 flex flex-col p-4 gap-1">
+            <div className="flex-1 overflow-y-auto p-4 gap-1 flex flex-col">
               {navLinks}
               {isAdmin && (
                 <>
