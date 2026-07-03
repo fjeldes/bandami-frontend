@@ -34,7 +34,7 @@ export default function FeedbackButton() {
               className="w-6 h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center ml-1"
               aria-label="Hide feedback button"
             >
-              <span className="material-symbols-outlined text-[14px]">chevron_left</span>
+              <span className="material-symbols-outlined text-[14px]">chevron_right</span>
             </button>
           </button>
         </div>
@@ -45,7 +45,7 @@ export default function FeedbackButton() {
             className="fixed bottom-6 right-0 w-8 h-12 rounded-l-lg bg-primary text-on-primary shadow-lg hover:brightness-90 active:brightness-80 transition-all duration-500 ease-out flex items-center justify-center"
             aria-label="Show feedback button"
           >
-            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
+            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
           </button>
         )}
       </div>
