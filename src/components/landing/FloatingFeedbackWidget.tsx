@@ -130,9 +130,9 @@ export function FloatingFeedbackWidget() {
   const data = activeTab === "writing" ? WRITING_PREVIEW : SPEAKING_PREVIEW;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex items-end">
+    <div className="fixed bottom-0 right-0 z-[60] flex items-end">
       <div
-        className={`bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/50 overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`absolute bottom-0 right-full bg-surface-container-lowest rounded-l-2xl rounded-tr-2xl shadow-2xl border border-outline-variant/50 overflow-hidden transition-all duration-300 ease-in-out ${
           isOpen
             ? "w-[320px] sm:w-[360px] max-h-[480px] translate-x-0"
             : "w-0 h-0 translate-x-full"
@@ -140,7 +140,7 @@ export function FloatingFeedbackWidget() {
       >
         {isOpen && (
           <div className="w-[320px] sm:w-[360px] max-h-[480px] flex flex-col">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-3 py-1.5 border-b border-outline-variant/30 shrink-0">
+            <div className="flex items-center justify-between px-3 py-2 border-b border-outline-variant/30 shrink-0">
               <div className="flex gap-1.5">
                 <button
                   onClick={() => setActiveTab("writing")}
@@ -165,13 +165,17 @@ export function FloatingFeedbackWidget() {
                   Speaking
                 </button>
               </div>
-              <div className="flex items-center gap-1.5 bg-surface-container-high px-2 py-0.5 rounded-full">
-                <span className="material-symbols-outlined text-[12px] text-on-surface-variant">
-                  info
-                </span>
-                <span className="text-label-sm text-on-surface-variant font-medium">
+              <div className="flex items-center gap-2">
+                <span className="text-label-sm text-on-surface-variant font-medium hidden sm:inline">
                   Sample Feedback
                 </span>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close feedback preview"
+                  className="w-7 h-7 rounded-full bg-surface-container-high hover:bg-surface-container-high/80 flex items-center justify-center transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[16px] text-on-surface-variant">close</span>
+                </button>
               </div>
             </div>
 
@@ -230,12 +234,11 @@ export function FloatingFeedbackWidget() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Close feedback preview" : "Open feedback preview"}
-        className={`fixed bottom-4 right-4 w-14 h-14 rounded-full shadow-lg bg-primary text-on-primary flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95 ${
-          isOpen ? "opacity-0 pointer-events-none translate-x-[200px]" : "opacity-100 pointer-events-auto"
-        }`}
-        style={{ zIndex: isOpen ? 40 : 60 }}
+        className="relative w-14 h-14 rounded-l-full rounded-tr-full shadow-lg bg-primary text-on-primary flex items-center justify-center transition-all duration-300 hover:scale-105 active:scale-95"
       >
-        <span className="material-symbols-outlined text-[24px]">analytics</span>
+        <span className={`material-symbols-outlined text-[20px] transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}>
+          {isOpen ? "close" : "analytics"}
+        </span>
       </button>
     </div>
   );
