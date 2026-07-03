@@ -19,33 +19,42 @@ export default function FeedbackButton() {
               : "translate-x-full opacity-0 pointer-events-none"
           }`}
         >
-          <button
-            onClick={() => setOpen(true)}
-            className="flex items-center gap-2 px-3 py-4 rounded-l-lg bg-primary text-on-primary shadow-lg hover:brightness-90 active:brightness-80 transition-all duration-500 ease-out font-label-sm text-label-sm font-medium"
-            style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
-            aria-label="Open feedback form"
-          >
-            <span>Feedback</span>
+          <div className="flex items-center rounded-l-lg bg-primary text-on-primary shadow-lg overflow-hidden">
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsVisible(false);
-              }}
-              className="w-6 h-6 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center ml-1"
+              onClick={() => setOpen(true)}
+              className="px-3 py-4 hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out font-label-sm text-label-sm font-medium"
+              style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
+              aria-label="Open feedback form"
+            >
+              Feedback
+            </button>
+            <button
+              onClick={() => setIsVisible(false)}
+              className="w-8 h-full min-h-[80px] flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out"
               aria-label="Hide feedback button"
             >
-              <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+              <span
+                className="material-symbols-outlined text-[18px]"
+                style={{ transform: "rotate(90deg)" }}
+              >
+                chevron_right
+              </span>
             </button>
-          </button>
+          </div>
         </div>
 
         {!isVisible && (
           <button
             onClick={() => setIsVisible(true)}
-            className="fixed bottom-6 right-0 w-8 h-12 rounded-l-lg bg-primary text-on-primary shadow-lg hover:brightness-90 active:brightness-80 transition-all duration-500 ease-out flex items-center justify-center"
+            className="fixed bottom-6 right-0 w-10 h-14 rounded-l-lg bg-primary text-on-primary shadow-lg hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out flex items-center justify-center"
             aria-label="Show feedback button"
           >
-            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
+            <span
+              className="material-symbols-outlined text-[18px]"
+              style={{ transform: "rotate(90deg)" }}
+            >
+              chevron_left
+            </span>
           </button>
         )}
       </div>

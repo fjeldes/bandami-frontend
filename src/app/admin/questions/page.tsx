@@ -14,6 +14,8 @@ interface Question {
   title?: string;
   module?: string;
   is_active: boolean;
+  img_url?: string | null;
+  img_info?: string | null;
 }
 
 interface QuestionsResponse {
@@ -35,7 +37,7 @@ export default function AdminQuestionsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [counts, setCounts] = useState({ writing: 0, speaking: 0 });
 
-  const [form, setForm] = useState({ exam_type: "speaking", task_type: null as string | null, difficulty: 1, prompt_text: "", title: "", module: "general" });
+  const [form, setForm] = useState({ exam_type: "speaking", task_type: null as string | null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null as string | null, img_info: null as string | null });
 
   const fetchQuestions = (pageNum: number = 1) => {
     setLoading(true);
@@ -67,7 +69,7 @@ export default function AdminQuestionsPage() {
     const payload = { ...form, task_type: form.exam_type === "writing" ? form.task_type : undefined };
     await apiFetch("/admin/questions", { method: "POST", body: JSON.stringify(payload) });
     setShowNew(false);
-    setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general" });
+    setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null, img_info: null });
     fetchQuestions(1);
   };
 
@@ -76,7 +78,7 @@ export default function AdminQuestionsPage() {
     if (!q) return;
     await apiFetch(`/admin/questions/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({ prompt_text: q.prompt_text, title: q.title, module: q.module, difficulty: q.difficulty, task_type: q.task_type, is_active: q.is_active }),
+      body: JSON.stringify({ prompt_text: q.prompt_text, title: q.title, module: q.module, difficulty: q.difficulty, task_type: q.task_type, is_active: q.is_active, img_info: q.img_info }),
     });
     setEditing(null);
     fetchQuestions(page);

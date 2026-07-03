@@ -28,6 +28,8 @@ export interface Question {
   prompt_text: string;
   title?: string;
   module?: string;
+  img_url?: string | null;
+  img_info?: string | null;
 }
 
 export interface Exam {
