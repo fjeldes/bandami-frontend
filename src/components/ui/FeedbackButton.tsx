@@ -33,11 +33,8 @@ export default function FeedbackButton() {
               className="w-8 h-full min-h-[80px] flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out"
               aria-label="Hide feedback button"
             >
-              <span
-                className="material-symbols-outlined text-[18px]"
-                style={{ transform: "rotate(90deg)" }}
-              >
-                chevron_right
+              <span className="material-symbols-outlined text-[18px]">
+                expand_less
               </span>
             </button>
           </div>
@@ -49,11 +46,8 @@ export default function FeedbackButton() {
             className="fixed bottom-6 right-0 w-10 h-14 rounded-l-lg bg-primary text-on-primary shadow-lg hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out flex items-center justify-center"
             aria-label="Show feedback button"
           >
-            <span
-              className="material-symbols-outlined text-[18px]"
-              style={{ transform: "rotate(90deg)" }}
-            >
-              chevron_left
+            <span className="material-symbols-outlined text-[18px]">
+              expand_more
             </span>
           </button>
         )}
