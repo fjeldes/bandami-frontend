@@ -43,7 +43,7 @@ export default function FeedbackButton() {
         {!isVisible && (
           <button
             onClick={() => setIsVisible(true)}
-            className="fixed bottom-6 right-0 w-10 h-14 rounded-l-lg bg-primary text-on-primary shadow-lg hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out flex items-center justify-center"
+            className="fixed bottom-6 right-0 w-8 h-10 rounded-l-lg bg-primary text-on-primary shadow-lg hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out flex items-center justify-center"
             aria-label="Show feedback button"
           >
             <span className="material-symbols-outlined text-[18px]">
