@@ -19,22 +19,21 @@ export default function FeedbackButton() {
               : "translate-x-full opacity-0 pointer-events-none"
           }`}
         >
-          <div className="flex items-center rounded-l-lg bg-primary text-on-primary shadow-lg overflow-hidden">
+          <div className="flex flex-col items-center rounded-l-lg bg-primary text-on-primary shadow-lg overflow-hidden">
             <button
               onClick={() => setOpen(true)}
-              className="px-3 py-4 hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out font-label-sm text-label-sm font-medium"
-              style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
+              className="px-4 py-3 hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out font-label-sm text-label-sm font-medium"
               aria-label="Open feedback form"
             >
               Feedback
             </button>
             <button
               onClick={() => setIsVisible(false)}
-              className="w-8 h-full min-h-[80px] flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out"
+              className="w-full h-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out border-t border-white/10"
               aria-label="Hide feedback button"
             >
               <span className="material-symbols-outlined text-[18px]">
-                expand_less
+                chevron_right
               </span>
             </button>
           </div>
@@ -47,7 +46,7 @@ export default function FeedbackButton() {
             aria-label="Show feedback button"
           >
             <span className="material-symbols-outlined text-[18px]">
-              expand_more
+              chevron_left
             </span>
           </button>
         )}
