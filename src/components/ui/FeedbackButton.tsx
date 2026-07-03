@@ -12,12 +12,10 @@ export default function FeedbackButton() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-on-primary shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center justify-center"
+        className="fixed bottom-6 right-6 z-50 px-4 py-2.5 rounded-full bg-primary text-on-primary shadow-lg hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 font-label-sm text-label-sm font-medium"
         aria-label="Send feedback"
       >
-        <span className="material-symbols-outlined text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>
-          feedback
-        </span>
+        Feedback
       </button>
 
       {open && (
