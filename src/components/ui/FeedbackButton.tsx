@@ -22,7 +22,8 @@ export default function FeedbackButton() {
           <div className="flex flex-col items-center rounded-l-lg bg-primary text-on-primary shadow-lg overflow-hidden">
             <button
               onClick={() => setOpen(true)}
-              className="px-4 py-3 hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out font-label-sm text-label-sm font-medium"
+              className="px-3 py-4 hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out font-label-sm text-label-sm font-medium"
+              style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
               aria-label="Open feedback form"
             >
               Feedback
