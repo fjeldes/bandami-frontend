@@ -145,6 +145,25 @@ export default function AdminQuestionsPage() {
             className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md mb-3"
           />
           <RichTextEditor value={form.prompt_text} onChange={(value) => setForm({ ...form, prompt_text: value })} placeholder="Full question prompt..." className="mb-4" />
+          {form.exam_type === "writing" && form.task_type === "task1" && (
+            <div className="mb-4 space-y-2">
+              <label className="text-label-md text-on-surface font-medium">Image URL (optional)</label>
+              <input
+                type="url"
+                value={form.img_url || ""}
+                onChange={(e) => setForm({ ...form, img_url: e.target.value || null })}
+                placeholder="https://storage.googleapis.com/..."
+                className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md"
+              />
+              <label className="text-label-md text-on-surface font-medium">Image Description (for AI evaluation)</label>
+              <textarea
+                value={form.img_info || ""}
+                onChange={(e) => setForm({ ...form, img_info: e.target.value || null })}
+                placeholder="Describe the image in detail so the AI can evaluate the response accurately. Example: 'Line graph showing average monthly temperatures in London, New York, and Sydney from January to December. London ranges from 5°C to 19°C...'"
+                className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md resize-none h-24"
+              />
+            </div>
+          )}
           <div className="flex gap-3">
             <button onClick={handleCreate} className="bg-primary text-on-primary font-bold px-4 py-2 rounded-lg hover:opacity-90">Create</button>
             <button onClick={() => setShowNew(false)} className="text-on-surface-variant hover:text-on-surface px-4 py-2 rounded-lg">Cancel</button>
@@ -165,6 +184,9 @@ export default function AdminQuestionsPage() {
               <div className="space-y-3">
                 <input value={q.title || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, title: e.target.value } : qq))} placeholder="Title" className="w-full bg-surface-container rounded-lg border border-outline-variant py-2 px-3 text-body-md" />
                 <RichTextEditor value={q.prompt_text} onChange={(value) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, prompt_text: value } : qq))} className="mb-3" />
+                {q.exam_type === "writing" && q.task_type === "task1" && (
+                  <textarea value={q.img_info || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, img_info: e.target.value } : qq))} placeholder="Image description for AI evaluation..." className="w-full bg-surface-container rounded-lg border border-outline-variant py-2 px-3 text-body-md resize-none h-20" />
+                )}
                 <div className="flex gap-2 items-center">
                   <select value={q.difficulty} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, difficulty: Number(e.target.value) } : qq))} className="bg-surface-container rounded-lg border border-outline-variant py-1.5 px-2 text-label-sm">
                     <option value={1}>Easy</option>
