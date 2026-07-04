@@ -40,6 +40,8 @@ export default function AdminQuestionsPage() {
   const [form, setForm] = useState({ exam_type: "speaking", task_type: null as string | null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null as string | null, img_info: null as string | null });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [createSuccess, setCreateSuccess] = useState(false);
 
   const fetchQuestions = (pageNum: number = 1) => {
     setLoading(true);
@@ -125,38 +127,52 @@ export default function AdminQuestionsPage() {
   };
 
   const handleCreate = async () => {
-    const payload = { ...form, task_type: form.exam_type === "writing" ? form.task_type : undefined };
-    const created = await apiFetch<Question>("/admin/questions", { method: "POST", body: JSON.stringify(payload) });
+    if (isCreating) return;
+    setIsCreating(true);
+    setCreateSuccess(false);
 
-    if (created && pendingImageFile) {
-      setUploadingImage(true);
-      try {
-        const formData = new FormData();
-        formData.append("file", pendingImageFile);
-        const response = await fetch(`/api/v1/admin/questions/${created.id}/image`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
-          },
-          body: formData,
-        });
-        if (response.ok) {
-          const data = await response.json();
-          await apiFetch(`/admin/questions/${created.id}`, {
-            method: "PATCH",
-            body: JSON.stringify({ img_url: data.img_url }),
+    try {
+      const payload = { ...form, task_type: form.exam_type === "writing" ? form.task_type : undefined };
+      const created = await apiFetch<Question>("/admin/questions", { method: "POST", body: JSON.stringify(payload) });
+
+      if (created && pendingImageFile) {
+        setUploadingImage(true);
+        try {
+          const formData = new FormData();
+          formData.append("file", pendingImageFile);
+          const response = await fetch(`/api/v1/admin/questions/${created.id}/image`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
+            },
+            body: formData,
           });
+          if (response.ok) {
+            const data = await response.json();
+            await apiFetch(`/admin/questions/${created.id}`, {
+              method: "PATCH",
+              body: JSON.stringify({ img_url: data.img_url }),
+            });
+          }
+        } catch (err) {
+          console.error("Image upload after create failed:", err);
+        } finally {
+          setUploadingImage(false);
         }
-      } catch (err) {
-        console.error("Image upload after create failed:", err);
-      } finally {
-        setUploadingImage(false);
       }
+      setPendingImageFile(null);
+      setCreateSuccess(true);
+      setTimeout(() => {
+        setShowNew(false);
+        setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null, img_info: null });
+        setCreateSuccess(false);
+        fetchQuestions(1);
+      }, 1500);
+    } catch (err) {
+      console.error("Failed to create question:", err);
+      alert("Failed to create question. Please try again.");
+      setIsCreating(false);
     }
-    setPendingImageFile(null);
-    setShowNew(false);
-    setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null, img_info: null });
-    fetchQuestions(1);
   };
 
   const handleUpdate = async (id: string) => {
@@ -204,22 +220,22 @@ export default function AdminQuestionsPage() {
         <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 mb-6 shadow-sm">
           <h3 className="font-heading text-headline-md text-on-surface mb-4">New Question</h3>
           <div className="grid grid-cols-2 gap-4 mb-4">
-            <select value={form.exam_type} onChange={(e) => setForm({ ...form, exam_type: e.target.value })} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md">
+            <select value={form.exam_type} onChange={(e) => setForm({ ...form, exam_type: e.target.value })} disabled={isCreating} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md disabled:opacity-50">
               <option value="speaking">Speaking</option>
               <option value="writing">Writing</option>
             </select>
             {form.exam_type === "writing" && (
-              <select value={form.task_type ?? ""} onChange={(e) => setForm({ ...form, task_type: e.target.value })} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md">
+              <select value={form.task_type ?? ""} onChange={(e) => setForm({ ...form, task_type: e.target.value })} disabled={isCreating} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md disabled:opacity-50">
                 <option value="task1">Task 1</option>
                 <option value="task2">Task 2</option>
               </select>
             )}
-            <select value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: Number(e.target.value) })} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md">
+            <select value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: Number(e.target.value) })} disabled={isCreating} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md disabled:opacity-50">
               <option value={1}>Easy</option>
               <option value={2}>Medium</option>
               <option value={3}>Hard</option>
             </select>
-            <select value={form.module} onChange={(e) => setForm({ ...form, module: e.target.value })} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md">
+            <select value={form.module} onChange={(e) => setForm({ ...form, module: e.target.value })} disabled={isCreating} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md disabled:opacity-50">
               <option value="general">General Training</option>
               <option value="academic">Academic</option>
             </select>
@@ -228,21 +244,22 @@ export default function AdminQuestionsPage() {
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             placeholder="Short title (e.g. Community Service in Schools)"
-            className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md mb-3"
+            disabled={isCreating}
+            className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md mb-3 disabled:opacity-50"
           />
           <RichTextEditor value={form.prompt_text} onChange={(value) => setForm({ ...form, prompt_text: value })} placeholder="Full question prompt..." className="mb-4" />
           {form.exam_type === "writing" && form.task_type === "task1" && (
             <div className="mb-4 space-y-2">
               <label className="text-label-md text-on-surface font-medium">Image (optional)</label>
               <div className="flex items-center gap-3">
-                <label htmlFor="image-upload" className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-lg px-4 py-2 cursor-pointer text-body-md text-on-surface transition-colors">
+                <label htmlFor="image-upload" className={`flex items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-lg px-4 py-2 cursor-pointer text-body-md text-on-surface transition-colors ${isCreating || uploadingImage ? "opacity-50 cursor-not-allowed" : ""}`}>
                   <span className="material-symbols-outlined text-[18px]">upload</span>
                   {uploadingImage ? "Uploading..." : "Choose file"}
                 </label>
                 <input
                   type="file"
                   accept="image/*"
-                  disabled={uploadingImage}
+                  disabled={isCreating || uploadingImage}
                   className="hidden"
                   id="image-upload"
                   onChange={(e) => {
@@ -262,13 +279,37 @@ export default function AdminQuestionsPage() {
                 value={form.img_info || ""}
                 onChange={(e) => setForm({ ...form, img_info: e.target.value || null })}
                 placeholder="Describe the image in detail so the AI can evaluate the response accurately. Example: 'Line graph showing average monthly temperatures in London, New York, and Sydney from January to December. London ranges from 5°C to 19°C...'"
-                className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md resize-none h-24"
+                disabled={isCreating}
+                className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md resize-none h-24 disabled:opacity-50"
               />
             </div>
           )}
           <div className="flex gap-3">
-            <button onClick={handleCreate} className="bg-primary text-on-primary font-bold px-4 py-2 rounded-lg hover:opacity-90">Create</button>
-            <button onClick={() => setShowNew(false)} className="text-on-surface-variant hover:text-on-surface px-4 py-2 rounded-lg">Cancel</button>
+            <button
+              onClick={handleCreate}
+              disabled={isCreating || uploadingImage || !form.prompt_text.trim()}
+              className="bg-primary text-on-primary font-bold px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
+            >
+              {isCreating ? (
+                <>
+                  <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
+                  Creating...
+                </>
+              ) : "Create"}
+            </button>
+            <button
+              onClick={() => { if (!isCreating) setShowNew(false); }}
+              disabled={isCreating}
+              className="text-on-surface-variant hover:text-on-surface px-4 py-2 rounded-lg disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            {createSuccess && (
+              <span className="text-emerald-600 text-label-sm flex items-center gap-1">
+                <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                Created!
+              </span>
+            )}
           </div>
         </div>
       )}
