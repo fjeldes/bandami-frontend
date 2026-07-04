@@ -38,6 +38,8 @@ export default function AdminQuestionsPage() {
   const [counts, setCounts] = useState({ writing: 0, speaking: 0 });
 
   const [form, setForm] = useState({ exam_type: "speaking", task_type: null as string | null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null as string | null, img_info: null as string | null });
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
 
   const fetchQuestions = (pageNum: number = 1) => {
     setLoading(true);
@@ -65,9 +67,88 @@ export default function AdminQuestionsPage() {
     setPage(1);
   };
 
+  const handleImageUpload = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image must be smaller than 5MB");
+      return;
+    }
+    setPendingImageFile(file);
+    setForm((prev) => ({ ...prev, img_url: URL.createObjectURL(file) }));
+  };
+
+  const handleImageUploadForQuestion = async (file: File, questionId: string) => {
+    if (!file.type.startsWith("image/")) {
+      alert("Please select an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image must be smaller than 5MB");
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(`/api/v1/admin/questions/${questionId}/image`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      setQuestions((prev) =>
+        prev.map((q) => (q.id === questionId ? { ...q, img_url: data.img_url } : q))
+      );
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      alert("Failed to upload image. Please try again.");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleCreate = async () => {
     const payload = { ...form, task_type: form.exam_type === "writing" ? form.task_type : undefined };
-    await apiFetch("/admin/questions", { method: "POST", body: JSON.stringify(payload) });
+    const created = await apiFetch<Question>("/admin/questions", { method: "POST", body: JSON.stringify(payload) });
+
+    if (created && pendingImageFile) {
+      setUploadingImage(true);
+      try {
+        const formData = new FormData();
+        formData.append("file", pendingImageFile);
+        const response = await fetch(`/api/v1/admin/questions/${created.id}/image`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
+          },
+          body: formData,
+        });
+        if (response.ok) {
+          const data = await response.json();
+          await apiFetch(`/admin/questions/${created.id}`, {
+            method: "PATCH",
+            body: JSON.stringify({ img_url: data.img_url }),
+          });
+        }
+      } catch (err) {
+        console.error("Image upload after create failed:", err);
+      } finally {
+        setUploadingImage(false);
+      }
+    }
+    setPendingImageFile(null);
     setShowNew(false);
     setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null, img_info: null });
     fetchQuestions(1);
@@ -147,14 +228,29 @@ export default function AdminQuestionsPage() {
           <RichTextEditor value={form.prompt_text} onChange={(value) => setForm({ ...form, prompt_text: value })} placeholder="Full question prompt..." className="mb-4" />
           {form.exam_type === "writing" && form.task_type === "task1" && (
             <div className="mb-4 space-y-2">
-              <label className="text-label-md text-on-surface font-medium">Image URL (optional)</label>
-              <input
-                type="url"
-                value={form.img_url || ""}
-                onChange={(e) => setForm({ ...form, img_url: e.target.value || null })}
-                placeholder="https://storage.googleapis.com/..."
-                className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md"
-              />
+              <label className="text-label-md text-on-surface font-medium">Image (optional)</label>
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-lg px-4 py-2 cursor-pointer text-body-md text-on-surface transition-colors">
+                  <span className="material-symbols-outlined text-[18px]">upload</span>
+                  {uploadingImage ? "Uploading..." : "Choose file"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={uploadingImage}
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImageUpload(file);
+                    }}
+                  />
+                </label>
+                {form.img_url && (
+                  <span className="text-label-sm text-emerald-600">Image uploaded</span>
+                )}
+              </div>
+              {form.img_url && (
+                <img src={form.img_url} alt="Preview" className="max-h-40 rounded-lg border border-outline-variant" />
+              )}
               <label className="text-label-md text-on-surface font-medium">Image Description (for AI evaluation)</label>
               <textarea
                 value={form.img_info || ""}
@@ -185,7 +281,27 @@ export default function AdminQuestionsPage() {
                 <input value={q.title || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, title: e.target.value } : qq))} placeholder="Title" className="w-full bg-surface-container rounded-lg border border-outline-variant py-2 px-3 text-body-md" />
                 <RichTextEditor value={q.prompt_text} onChange={(value) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, prompt_text: value } : qq))} className="mb-3" />
                 {q.exam_type === "writing" && q.task_type === "task1" && (
-                  <textarea value={q.img_info || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, img_info: e.target.value } : qq))} placeholder="Image description for AI evaluation..." className="w-full bg-surface-container rounded-lg border border-outline-variant py-2 px-3 text-body-md resize-none h-20" />
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <label className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-lg px-3 py-1.5 cursor-pointer text-label-sm text-on-surface transition-colors">
+                        <span className="material-symbols-outlined text-[16px]">upload</span>
+                        {uploadingImage ? "Uploading..." : "Upload Image"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={uploadingImage}
+                          className="hidden"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) handleImageUploadForQuestion(file, q.id);
+                          }}
+                        />
+                      </label>
+                      {q.img_url && <span className="text-label-sm text-emerald-600">Has image</span>}
+                    </div>
+                    {q.img_url && <img src={q.img_url} alt="Current" className="max-h-32 rounded border border-outline-variant" />}
+                    <textarea value={q.img_info || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, img_info: e.target.value } : qq))} placeholder="Image description for AI evaluation..." className="w-full bg-surface-container rounded-lg border border-outline-variant py-2 px-3 text-body-md resize-none h-20" />
+                  </div>
                 )}
                 <div className="flex gap-2 items-center">
                   <select value={q.difficulty} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, difficulty: Number(e.target.value) } : qq))} className="bg-surface-container rounded-lg border border-outline-variant py-1.5 px-2 text-label-sm">
