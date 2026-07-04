@@ -29,7 +29,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  const isFullScreen = pathname?.includes("/test") && user?.role !== "admin";
+  const isTestPage = pathname?.includes("/writing/test") || pathname?.includes("/speaking/test");
+  const isFullScreen = isTestPage;
 
   return (
     <div className="flex min-h-screen">
