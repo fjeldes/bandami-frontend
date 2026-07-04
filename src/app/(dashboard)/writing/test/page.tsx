@@ -171,7 +171,7 @@ export default function WritingTestPage() {
         </div>
         <h2 className="font-headline-md text-headline-md text-on-surface mb-4">{question.title || "Writing Prompt"}</h2>
         {question.img_url && (
-          <img src={question.img_url} alt="Question visual" className="w-full max-h-80 object-contain rounded-lg border border-outline-variant mb-4" />
+          <img src={question.img_url} alt="Question visual" className="w-full max-h-96 object-contain rounded-lg border border-outline-variant mb-4" />
         )}
         <RichTextRenderer content={question.prompt_text} className="font-body-md text-body-md text-on-surface-variant leading-relaxed" />
         <div className="mt-6 p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
