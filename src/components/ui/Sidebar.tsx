@@ -31,6 +31,7 @@ export function Sidebar() {
     { href: "/speaking", label: "Speaking", icon: "record_voice_over" },
     { href: "/reading", label: "Reading", icon: "menu_book", comingSoon: true },
     { href: "/listening", label: "Listening", icon: "headphones", comingSoon: true },
+    { href: "/resources", label: "Resources", icon: "library_books" },
     { href: "/history", label: "Reports", icon: "analytics" },
     { href: "/settings", label: "Settings", icon: "settings" },
   ];

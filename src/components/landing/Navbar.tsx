@@ -43,7 +43,24 @@ export function Navbar() {
             <span className="material-symbols-outlined text-[16px]">expand_more</span>
           </button>
           {resourcesOpen && (
-            <div className="absolute top-full left-0 mt-2 w-48 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-lg z-50 overflow-hidden">
+            <div className="absolute top-full left-0 mt-2 w-56 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-lg z-50 overflow-hidden">
+              <Link
+                href="/resources/writing"
+                onClick={() => setResourcesOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-body-sm text-on-surface transition-colors w-full rounded-xl hover:bg-surface-container-high"
+              >
+                <span className="material-symbols-outlined text-[18px] text-on-surface-variant">edit_note</span>
+                Writing Tips
+              </Link>
+              <Link
+                href="/resources/speaking"
+                onClick={() => setResourcesOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-body-sm text-on-surface transition-colors w-full rounded-xl hover:bg-surface-container-high"
+              >
+                <span className="material-symbols-outlined text-[18px] text-on-surface-variant">record_voice_over</span>
+                Speaking Tips
+              </Link>
+              <div className="h-px bg-outline-variant/30 my-1" />
               <Link
                 href="/resources/band-scores"
                 onClick={() => setResourcesOpen(false)}
@@ -113,7 +130,12 @@ export function Navbar() {
             <div className="flex-1 flex flex-col p-4 gap-2">
               <a href="/?#how-it-works" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">How it works</a>
               <a href="/?#pricing" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">Pricing</a>
-              <Link href="/resources/band-scores" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">Band Scores</Link>
+              <div className="py-2">
+                <p className="text-label-xs text-on-surface-variant uppercase tracking-wider mb-2">Resources</p>
+                <Link href="/resources/writing" onClick={() => setMobileOpen(false)} className="block text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-1.5 pl-2">Writing Tips</Link>
+                <Link href="/resources/speaking" onClick={() => setMobileOpen(false)} className="block text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-1.5 pl-2">Speaking Tips</Link>
+                <Link href="/resources/band-scores" onClick={() => setMobileOpen(false)} className="block text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-1.5 pl-2">Band Scores</Link>
+              </div>
               <a href="/?#faq" onClick={() => setMobileOpen(false)} className="text-on-surface-variant hover:text-on-surface font-label-md text-label-md py-2">FAQ</a>
               <div className="border-t border-outline-variant/30 my-2" />
                 {user ? (
