@@ -77,7 +77,12 @@ export default function AdminQuestionsPage() {
       return;
     }
     setPendingImageFile(file);
-    setForm((prev) => ({ ...prev, img_url: URL.createObjectURL(file) }));
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setForm((prev) => ({ ...prev, img_url: e.target?.result as string }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleImageUploadForQuestion = async (file: File, questionId: string) => {
