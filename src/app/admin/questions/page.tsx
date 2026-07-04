@@ -230,22 +230,23 @@ export default function AdminQuestionsPage() {
             <div className="mb-4 space-y-2">
               <label className="text-label-md text-on-surface font-medium">Image (optional)</label>
               <div className="flex items-center gap-3">
-                <label className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-lg px-4 py-2 cursor-pointer text-body-md text-on-surface transition-colors">
+                <label htmlFor="image-upload" className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-lg px-4 py-2 cursor-pointer text-body-md text-on-surface transition-colors">
                   <span className="material-symbols-outlined text-[18px]">upload</span>
                   {uploadingImage ? "Uploading..." : "Choose file"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    disabled={uploadingImage}
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleImageUpload(file);
-                    }}
-                  />
                 </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  disabled={uploadingImage}
+                  className="hidden"
+                  id="image-upload"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleImageUpload(file);
+                  }}
+                />
                 {form.img_url && (
-                  <span className="text-label-sm text-emerald-600">Image uploaded</span>
+                  <span className="text-label-sm text-emerald-600">Image selected</span>
                 )}
               </div>
               {form.img_url && (
