@@ -162,7 +162,7 @@ export default function WritingTestPage() {
         </div>
       )}
       <div className="flex flex-col lg:flex-row gap-6 min-h-[60vh] md:h-[calc(100dvh-9rem)]">
-      <div className="lg:w-2/5 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 overflow-y-auto ghost-shadow">
+      <div className="lg:w-1/2 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 overflow-y-auto ghost-shadow">
         <div className="flex items-center justify-between mb-4">
           <div className="flex gap-2">
             <span className="px-3 py-1 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm tracking-wide uppercase">{question.task_type?.replace("task", "Task ")}</span>
@@ -171,7 +171,7 @@ export default function WritingTestPage() {
         </div>
         <h2 className="font-headline-md text-headline-md text-on-surface mb-4">{question.title || "Writing Prompt"}</h2>
         {question.img_url && (
-          <img src={question.img_url} alt="Question visual" className="w-full max-h-72 object-contain rounded-lg border border-outline-variant mb-4" />
+          <img src={question.img_url} alt="Question visual" className="w-full max-h-80 object-contain rounded-lg border border-outline-variant mb-4" />
         )}
         <RichTextRenderer content={question.prompt_text} className="font-body-md text-body-md text-on-surface-variant leading-relaxed" />
         <div className="mt-6 p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
@@ -184,7 +184,7 @@ export default function WritingTestPage() {
         </div>
       </div>
 
-      <div className="lg:w-3/5 flex flex-col gap-4">
+      <div className="lg:w-1/2 flex flex-col gap-4">
         <div className="flex items-center justify-between bg-surface-container-lowest rounded-2xl border border-outline-variant/30 px-5 py-3 ghost-shadow">
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-outline text-[20px]">timer</span>
