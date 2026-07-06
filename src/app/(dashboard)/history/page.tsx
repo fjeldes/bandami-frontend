@@ -1,38 +1,144 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Activity, BarChart3, Trophy, Edit3, Mic, Clock, AlertTriangle, CheckCircle, ArrowRight, TrendingUp, BookOpen } from "lucide-react";
 import { getUserExams, apiFetch } from "@/lib/api";
 import { useAuthStore } from "@/hooks/useAuth";
 import type { ExamWithEvaluation } from "@/lib/types";
-
-function bandColors(band: number) {
-  if (band >= 7.5) return { accent: "border-l-4 border-primary", icon: "bg-primary-fixed text-primary", circle: "border-primary/20 bg-primary-fixed text-primary", cefr: "bg-primary-fixed text-on-primary-fixed-variant" };
-  if (band >= 6) return { accent: "border-l-4 border-secondary-container", icon: "bg-secondary-fixed/50 text-secondary-container", circle: "border-secondary-container/30 bg-secondary-fixed/50 text-secondary-container", cefr: "bg-secondary-fixed/50 text-secondary-container" };
-  if (band >= 5) return { accent: "border border-outline-variant/30", icon: "bg-surface-container-high text-on-surface-variant", circle: "border-outline-variant/30 bg-surface-container text-on-surface-variant", cefr: "bg-surface-container text-on-surface-variant" };
-  return { accent: "border-l-4 border-error", icon: "bg-error-container text-error", circle: "border-error/30 bg-error-container text-error", cefr: "bg-error-container text-error" };
-}
 
 function cefrLevel(band: number) {
   if (band >= 8.5) return "C2"; if (band >= 7.0) return "C1"; if (band >= 5.5) return "B2"; if (band >= 4.0) return "B1"; if (band >= 3.0) return "A2"; return "A1";
 }
 
 function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
+  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-function Sparkline({ points, height = 60, color = "#004f35" }: { points: number[]; height?: number; color?: string }) {
-  if (points.length < 2) return <div className="flex items-center justify-center text-label-sm text-on-surface-variant/50" style={{ height }}>Not enough data</div>;
+function getBandColors(band: number) {
+  if (band >= 8) return { bg: "bg-emerald-50", text: "text-emerald-600", ring: "ring-emerald-200", badge: "bg-emerald-100 text-emerald-700" };
+  if (band >= 6.5) return { bg: "bg-blue-50", text: "text-blue-600", ring: "ring-blue-200", badge: "bg-blue-100 text-blue-700" };
+  if (band >= 5.5) return { bg: "bg-amber-50", text: "text-amber-600", ring: "ring-amber-200", badge: "bg-amber-100 text-amber-700" };
+  return { bg: "bg-red-50", text: "text-red-600", ring: "ring-red-200", badge: "bg-red-100 text-red-700" };
+}
+
+function Sparkline({ points, height = 80, color = "#004ac6" }: { points: number[]; height?: number; color?: string }) {
+  if (points.length < 2) return null;
   const max = Math.max(...points, 1); const min = Math.min(...points, 0); const range = max - min || 1;
-  const w = 200; const h = height; const padY = 6;
-  const xs = points.map((_, i) => (i / (points.length - 1)) * w);
+  const w = 300; const h = height; const padX = 4; const padY = 8;
+  const xs = points.map((_, i) => padX + (i / (points.length - 1)) * (w - padX * 2));
   const ys = points.map((p) => padY + ((max - p) / range) * (h - padY * 2));
   const path = xs.map((x, i) => `${i === 0 ? "M" : "L"} ${x} ${ys[i]}`).join(" ");
+  const area = `${path} L ${xs[xs.length - 1]} ${h - padY} L ${xs[0]} ${h - padY} Z`;
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full" preserveAspectRatio="none" style={{ height }}>
-      <path d={path} fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-      {points.map((p, i) => (<circle key={i} cx={xs[i]} cy={ys[i]} r="3" fill={color} />))}
+      <defs>
+        <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#sparkGrad)`} />
+      <path d={path} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      {points.map((p, i) => (<circle key={i} cx={xs[i]} cy={ys[i]} r="3.5" fill={color} className="drop-shadow-sm" />))}
     </svg>
+  );
+}
+
+function KPICard({ label, value, sub, icon: Icon, color }: { label: string; value: string | number; sub: string; icon: any; color: string }) {
+  const colorMap: Record<string, { bg: string; text: string; icon: string }> = {
+    blue: { bg: "bg-blue-50", text: "text-blue-600", icon: "bg-blue-100" },
+    violet: { bg: "bg-violet-50", text: "text-violet-600", icon: "bg-violet-100" },
+    emerald: { bg: "bg-emerald-50", text: "text-emerald-600", icon: "bg-emerald-100" },
+    amber: { bg: "bg-amber-50", text: "text-amber-600", icon: "bg-amber-100" },
+  };
+  const c = colorMap[color] || colorMap.blue;
+  return (
+    <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-5 border border-slate-100">
+      <div className="flex items-start justify-between mb-3">
+        <div className={`w-11 h-11 rounded-xl ${c.icon} flex items-center justify-center shadow-sm`}>
+          <Icon className={`w-5 h-5 ${c.text}`} />
+        </div>
+      </div>
+      <p className="text-2xl font-bold text-slate-800 mb-1">{value}</p>
+      <p className="text-sm font-medium text-slate-500 mb-0.5">{label}</p>
+      <p className="text-xs text-slate-400">{sub}</p>
+    </div>
+  );
+}
+
+function ErrorPatternCard({ pattern }: { pattern: any }) {
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4 hover:shadow-md transition-all duration-200">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-sm font-semibold text-slate-700">{pattern.type}</span>
+        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 text-xs font-bold ring-1 ring-amber-200">
+          <AlertTriangle className="w-3 h-3" />
+          {pattern.count}x
+        </span>
+      </div>
+      <div className="space-y-2">
+        {pattern.examples.slice(0, 2).map((ex: any, i: number) => (
+          <div key={i} className="flex items-start gap-2 text-xs">
+            <div className="flex-1 p-2 rounded-lg bg-red-50 text-red-700 line-through font-medium">
+              {ex.original}
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-300 shrink-0 mt-2" />
+            <div className="flex-1 p-2 rounded-lg bg-emerald-50 text-emerald-700 font-medium">
+              {ex.corrected}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ExamRow({ exam }: { exam: ExamWithEvaluation }) {
+  const eval_ = exam.evaluations?.[0];
+  const band = eval_?.overall_band;
+  const isPending = !band && exam.status !== "completed";
+  const colors = band != null ? getBandColors(band) : null;
+  const Icon = exam.exam_type === "writing" ? Edit3 : Mic;
+
+  return (
+    <div className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors group">
+      <div className="flex items-center gap-4">
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${band != null ? colors?.bg : "bg-slate-100"}`}>
+          <Icon className={`w-5 h-5 ${band != null ? colors?.text : "text-slate-400"}`} />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-slate-800 capitalize">
+            {exam.exam_type}{exam.task_type ? ` Task ${exam.task_type.replace("task", "")}` : ""}
+          </p>
+          <p className="text-xs text-slate-500">{formatDate(exam.created_at)}</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        {isPending ? (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold ring-1 ring-amber-200">
+            <Clock className="w-3.5 h-3.5 animate-pulse" />
+            Pending
+          </span>
+        ) : band != null ? (
+          <>
+            <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl ${colors?.badge} font-bold text-sm`}>
+              <BarChart3 className="w-4 h-4" />
+              {band.toFixed(1)}
+            </div>
+            <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
+              {cefrLevel(band)}
+            </span>
+          </>
+        ) : null}
+        <Link
+          href={`/${exam.exam_type}/results?examId=${exam.id}`}
+          className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-800 hover:text-white transition-all duration-200 group-hover:scale-105"
+        >
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -64,191 +170,237 @@ export default function ReportsPage() {
   const bands = completed.map((e) => e.evaluations[0].overall_band);
   const avgBand = bands.length > 0 ? bands.reduce((a, b) => a + b, 0) / bands.length : null;
   const bestBand = bands.length > 0 ? Math.max(...bands) : null;
-  const latestBand = bands.length > 0 ? bands[0] : null;
+  const latestBand = bands.length > 0 ? bands[bands.length - 1] : null;
 
   const writingExams = completed.filter((e) => e.exam_type === "writing");
   const speakingExams = completed.filter((e) => e.exam_type === "speaking");
   const writingAvg = writingExams.length > 0 ? writingExams.reduce((a, e) => a + e.evaluations[0].overall_band, 0) / writingExams.length : null;
   const speakingAvg = speakingExams.length > 0 ? speakingExams.reduce((a, e) => a + e.evaluations[0].overall_band, 0) / speakingExams.length : null;
 
-  const trendPoints = completed.slice(0, 10).reverse().map((e) => e.evaluations[0].overall_band);
+  const trendPoints = completed.slice(-10).reverse().map((e) => e.evaluations[0].overall_band);
 
   const filtered = filter === "all" ? exams : exams.filter((e) => e.exam_type === filter);
   const paginated = filtered.slice((listPage - 1) * PAGE_SIZE, listPage * PAGE_SIZE);
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 
+  const filterTabs = [
+    { key: "all" as const, label: "All" },
+    { key: "writing" as const, label: "Writing" },
+    { key: "speaking" as const, label: "Speaking" },
+  ];
+
   return (
-    <div>
-      <div className="mb-5">
-        <h1 className="text-headline-md font-bold text-on-surface mb-1">Reports</h1>
-        <p className="text-label-sm text-on-surface-variant">Track your progress, trends, and performance breakdown.</p>
-      </div>
+    <div className="min-h-screen bg-slate-50/50">
+      <div className="max-w-6xl mx-auto px-4 py-10">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-headline-lg font-bold text-slate-800 mb-1">Reports</h1>
+          <p className="text-slate-500">Track your progress, trends, and performance breakdown.</p>
+        </div>
 
-      {loading ? (
-        <div className="flex justify-center py-16"><span className="material-symbols-outlined text-[40px] text-primary animate-spin">progress_activity</span></div>
-      ) : error ? (
-        <div className="text-center py-16"><p className="text-body-lg text-error mb-4">{error}</p><button onClick={fetchExams} className="text-primary font-semibold">Retry</button></div>
-      ) : (
-        <>
-          {/* Stats Overview */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-            {[
-              { label: "Total Exams", value: completed.length, icon: "assignment", sub: `${exams.length} total (incl. pending)` },
-              { label: "Average Band", value: avgBand?.toFixed(1) ?? "—", icon: "trending_up", sub: latestBand ? `Latest: ${latestBand.toFixed(1)}` : "No exams yet" },
-              { label: "Best Band", value: bestBand?.toFixed(1) ?? "—", icon: "emoji_events", sub: bestBand ? `CEFR ${cefrLevel(bestBand)}` : "—" },
-              { label: "Writing vs Speaking", value: writingAvg && speakingAvg ? `W ${writingAvg.toFixed(1)} · S ${speakingAvg.toFixed(1)}` : "—", icon: "compare_arrows", sub: writingExams.length + speakingExams.length > 0 ? `${writingExams.length}W / ${speakingExams.length}S` : "No data" },
-            ].map((s) => (
-              <div key={s.label} className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="material-symbols-outlined text-[18px] text-primary">{s.icon}</span>
-                  <span className="text-label-sm text-on-surface-variant">{s.label}</span>
-                </div>
-                <p className="text-headline-md font-bold text-on-surface mb-1">{s.value}</p>
-                <p className="text-label-sm text-on-surface-variant">{s.sub}</p>
-              </div>
-            ))}
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="w-10 h-10 border-3 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
           </div>
-
-          {/* Error Patterns (Premium) */}
-          {isPremium && errorPatterns.length > 0 && (
-            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-5">
-              <h3 className="text-body-md font-semibold text-on-surface mb-4">Common Error Patterns</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {errorPatterns.map((p: any) => (
-                  <div key={p.type} className="bg-error-container/10 rounded-lg p-3 border border-error-container/20">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-label-sm font-semibold text-on-surface">{p.type}</span>
-                      <span className="font-mono text-xs font-bold text-error px-2 py-0.5 rounded-full bg-error-container/30">{p.count}x</span>
-                    </div>
-                    {p.examples.slice(0, 2).map((ex: any, i: number) => (
-                      <div key={i} className="text-label-sm mt-1">
-                        <span className="text-error line-through">{ex.original}</span>
-                        <span className="text-on-surface-variant"> → </span>
-                        <span className="text-emerald-700">{ex.corrected}</span>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
+        ) : error ? (
+          <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
+            <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl font-bold text-red-500">!</span>
             </div>
-          )}
-
-          {/* Band Trend + Type Breakdown */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
-            <div className="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
-              <h3 className="text-body-md font-semibold text-on-surface mb-4">Band Score Trend</h3>
-              {trendPoints.length >= 2 ? (
-                <div>
-                  <Sparkline points={trendPoints} height={80} />
-                  <div className="flex justify-between mt-2 text-label-sm text-on-surface-variant">
-                    <span>Oldest</span>
-                    <span>Latest</span>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-body-md text-on-surface-variant/50 py-4 text-center">Complete at least 2 exams to see your trend.</p>
-              )}
-            </div>
-            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
-              <h3 className="text-body-md font-semibold text-on-surface mb-4">By Exam Type</h3>
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between text-label-sm mb-1"><span className="text-on-surface-variant">Writing</span><span className="font-semibold text-on-surface">{writingExams.length} exams</span></div>
-                  <div className="h-2 bg-surface-container rounded-full overflow-hidden">
-                    <div className="h-full bg-primary rounded-full transition-all" style={{ width: writingAvg ? `${(writingAvg / 9) * 100}%` : "0%" }} />
-                  </div>
-                  <p className="text-label-sm text-on-surface-variant mt-0.5">{writingAvg ? `Avg Band ${writingAvg.toFixed(1)}` : "No data"}</p>
-                </div>
-                <div>
-                  <div className="flex justify-between text-label-sm mb-1"><span className="text-on-surface-variant">Speaking</span><span className="font-semibold text-on-surface">{speakingExams.length} exams</span></div>
-                  <div className="h-2 bg-surface-container rounded-full overflow-hidden">
-                    <div className="h-full bg-primary rounded-full transition-all" style={{ width: speakingAvg ? `${(speakingAvg / 9) * 100}%` : "0%" }} />
-                  </div>
-                  <p className="text-label-sm text-on-surface-variant mt-0.5">{speakingAvg ? `Avg Band ${speakingAvg.toFixed(1)}` : "No data"}</p>
-                </div>
-              </div>
-            </div>
+            <p className="text-red-600 mb-4">{error}</p>
+            <button onClick={fetchExams} className="bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-700 transition-colors">
+              Retry
+            </button>
           </div>
-
-          {/* Exam List */}
-          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm">
-            <div className="p-5 border-b border-outline-variant/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h3 className="text-body-md font-semibold text-on-surface">Exam History</h3>
-              <div className="flex gap-1.5">
-                {(["all", "writing", "speaking"] as const).map((f) => (
-                  <button key={f} onClick={() => { setFilter(f); setListPage(1); }}
-                    className={`px-3 py-1.5 rounded-full text-label-sm font-semibold transition-colors ${filter === f ? "bg-primary text-on-primary" : "bg-surface-container hover:bg-surface-container-high text-on-surface-variant"}`}>
-                    {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
-                  </button>
-                ))}
-              </div>
+        ) : (
+          <>
+            {/* KPI Cards */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <KPICard
+                label="Total Exams"
+                value={completed.length}
+                sub={`${exams.length} total (${exams.length - completed.length} pending)`}
+                icon={Activity}
+                color="blue"
+              />
+              <KPICard
+                label="Average Band"
+                value={avgBand?.toFixed(1) ?? "—"}
+                sub={latestBand ? `Latest: ${latestBand.toFixed(1)}` : "No exams yet"}
+                icon={TrendingUp}
+                color="violet"
+              />
+              <KPICard
+                label="Best Band"
+                value={bestBand?.toFixed(1) ?? "—"}
+                sub={bestBand ? cefrLevel(bestBand) : "—"}
+                icon={Trophy}
+                color="amber"
+              />
+              <KPICard
+                label="Writing vs Speaking"
+                value={writingAvg && speakingAvg ? `${writingAvg.toFixed(1)} / ${speakingAvg.toFixed(1)}` : "—"}
+                sub={`${writingExams.length}W / ${speakingExams.length}S`}
+                icon={BarChart3}
+                color="emerald"
+              />
             </div>
 
-            {filtered.length === 0 ? (
-              <div className="p-8 text-center">
-                <span className="material-symbols-outlined text-[40px] text-outline mb-3">analytics</span>
-                <p className="text-body-md text-on-surface-variant">No exams yet. Start practicing to see your reports.</p>
-              </div>
-            ) : (
-              <>
-                <div className="divide-y divide-outline-variant/30">
-                  {paginated.map((exam, idx) => {
-                    const eval_ = exam.evaluations?.[0];
-                    const band = eval_?.overall_band;
-                    const isVisible = eval_?.is_feedback_visible;
-                    const isPending = !band && exam.status !== "completed";
-                    const colors = band != null ? bandColors(band) : { accent: "border border-outline-variant/30", icon: "bg-surface-container text-on-surface-variant", circle: "", cefr: "" };
-                    return (
-                      <div key={exam.id} className={`flex flex-col md:flex-row md:items-center justify-between gap-3 p-4 hover:bg-surface-container-low transition-colors ${isPending ? "opacity-50" : ""}`}>
-                        <div className="flex items-start gap-3 flex-1 min-w-0">
-                          <div className={`p-2 rounded-lg shrink-0 ${colors.icon}`}>
-                            <span className="material-symbols-outlined text-[18px]">{exam.exam_type === "writing" ? "edit" : "mic"}</span>
-                          </div>
-                          <div className="min-w-0">
-                            <h4 className="text-body-md font-semibold text-on-surface capitalize">{exam.exam_type}{exam.task_type ? ` Task ${exam.task_type.replace("task", "")}` : ""}</h4>
-                            <div className="flex items-center gap-2 text-label-sm text-on-surface-variant flex-wrap mt-0.5">
-                              <span>{formatDate(exam.created_at)}</span>
-                              
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0 ml-9 md:ml-0">
-                          {isPending ? (
-                            <span className="text-label-sm text-on-surface-variant capitalize flex items-center gap-1.5"><span className="material-symbols-outlined text-[16px]">progress_activity</span>{exam.status}</span>
-                          ) : band != null ? (
-                            <div className="flex items-center gap-2">
-                              <div className={`flex flex-col items-center justify-center w-12 h-12 rounded-full border-3 ${colors.circle}`}><span className="font-mono text-sm font-bold">{band.toFixed(1)}</span></div>
-                              <span className={`text-label-sm font-bold px-2 py-0.5 rounded ${colors.cefr}`}>{cefrLevel(band)}</span>
-                            </div>
-                          ) : null}
-                          <Link href={`/${exam.exam_type}/results?examId=${exam.id}`} className="text-primary hover:bg-primary/10 p-1.5 rounded-lg transition-colors">
-                            <span className="material-symbols-outlined">chevron_right</span>
-                          </Link>
-                        </div>
-                      </div>
-                    );
-                  })}
+            {/* Error Patterns (Premium) */}
+            {isPremium && errorPatterns.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-8">
+                <div className="flex items-center gap-2 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800">Common Error Patterns</h3>
+                    <p className="text-xs text-slate-500">Focus areas to improve your score</p>
+                  </div>
                 </div>
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-between px-5 py-3 border-t border-outline-variant/40">
-                    <span className="text-label-sm text-on-surface-variant">{filtered.length} exams</span>
-                    <div className="flex gap-1">
-                      <button onClick={() => setListPage((p) => Math.max(1, p - 1))} disabled={listPage === 1} className="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors disabled:opacity-30">
-                        <span className="material-symbols-outlined text-[18px]">chevron_left</span>
-                      </button>
-                      <span className="flex items-center px-2 text-label-sm text-on-surface-variant">{listPage}/{totalPages}</span>
-                      <button onClick={() => setListPage((p) => Math.min(totalPages, p + 1))} disabled={listPage >= totalPages} className="p-1.5 rounded-lg hover:bg-surface-container-high transition-colors disabled:opacity-30">
-                        <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-                      </button>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {errorPatterns.map((p: any) => (
+                    <ErrorPatternCard key={p.type} pattern={p} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Trend + Breakdown */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              {/* Trend Chart */}
+              <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <div className="flex items-center justify-between mb-5">
+                  <div>
+                    <h3 className="text-base font-bold text-slate-800">Band Score Trend</h3>
+                    <p className="text-xs text-slate-500">Your recent performance</p>
+                  </div>
+                  {trendPoints.length >= 2 && (
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-blue-500" />
+                      <span className="text-xs text-slate-500">Latest: {trendPoints[trendPoints.length - 1].toFixed(1)}</span>
                     </div>
+                  )}
+                </div>
+                {trendPoints.length >= 2 ? (
+                  <Sparkline points={trendPoints} height={100} color="#004ac6" />
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <BookOpen className="w-12 h-12 text-slate-200 mb-3" />
+                    <p className="text-sm text-slate-500">Complete at least 2 exams to see your trend.</p>
                   </div>
                 )}
-              </>
-            )}
-          </div>
-        </>
-      )}
+              </div>
+
+              {/* Type Breakdown */}
+              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+                <h3 className="text-base font-bold text-slate-800 mb-5">By Exam Type</h3>
+                <div className="space-y-5">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Edit3 className="w-4 h-4 text-slate-500" />
+                        <span className="text-sm font-medium text-slate-600">Writing</span>
+                      </div>
+                      <span className="text-sm font-bold text-slate-800">{writingExams.length} exams</span>
+                    </div>
+                    <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
+                        style={{ width: `${writingAvg ? (writingAvg / 9) * 100 : 0}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1.5">
+                      {writingAvg ? `Avg: ${writingAvg.toFixed(1)}` : "No data"}
+                    </p>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Mic className="w-4 h-4 text-slate-500" />
+                        <span className="text-sm font-medium text-slate-600">Speaking</span>
+                      </div>
+                      <span className="text-sm font-bold text-slate-800">{speakingExams.length} exams</span>
+                    </div>
+                    <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-violet-500 to-violet-600 rounded-full transition-all duration-500"
+                        style={{ width: `${speakingAvg ? (speakingAvg / 9) * 100 : 0}%` }}
+                      />
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1.5">
+                      {speakingAvg ? `Avg: ${speakingAvg.toFixed(1)}` : "No data"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Exam History */}
+            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+              <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <h3 className="text-base font-bold text-slate-800">Exam History</h3>
+                  <p className="text-xs text-slate-500">{filtered.length} exams found</p>
+                </div>
+                <div className="bg-slate-100 rounded-xl p-1 inline-flex">
+                  {filterTabs.map((tab) => (
+                    <button
+                      key={tab.key}
+                      onClick={() => { setFilter(tab.key); setListPage(1); }}
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                        filter === tab.key
+                          ? "bg-white text-slate-800 shadow-sm"
+                          : "text-slate-500 hover:text-slate-700"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {filtered.length === 0 ? (
+                <div className="p-12 text-center">
+                  <Activity className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+                  <p className="text-slate-500">No exams yet. Start practicing to see your reports.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="divide-y divide-slate-100">
+                    {paginated.map((exam) => (
+                      <ExamRow key={exam.id} exam={exam} />
+                    ))}
+                  </div>
+                  {totalPages > 1 && (
+                    <div className="p-4 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-sm text-slate-500">
+                        Page {listPage} of {totalPages}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setListPage((p) => Math.max(1, p - 1))}
+                          disabled={listPage === 1}
+                          className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          <ArrowRight className="w-4 h-4 rotate-180" />
+                        </button>
+                        <button
+                          onClick={() => setListPage((p) => Math.min(totalPages, p + 1))}
+                          disabled={listPage >= totalPages}
+                          className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
