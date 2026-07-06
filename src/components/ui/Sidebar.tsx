@@ -6,6 +6,105 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
+import {
+  LayoutDashboard,
+  PenTool,
+  Mic,
+  BookOpen,
+  Headphones,
+  Library,
+  BarChart3,
+  Settings,
+  ShieldAlert,
+  Users,
+  FileText,
+  Tag,
+  LogOut,
+  Menu,
+  X,
+  Sparkles,
+  Crown,
+} from "lucide-react";
+
+const ICON_MAP: Record<string, any> = {
+  dashboard: LayoutDashboard,
+  edit_note: PenTool,
+  record_voice_over: Mic,
+  menu_book: BookOpen,
+  headphones: Headphones,
+  library_books: Library,
+  analytics: BarChart3,
+  settings: Settings,
+  shield_person: ShieldAlert,
+  group: Users,
+  assignment: FileText,
+  quiz: FileText,
+  sell: Tag,
+};
+
+function NavItem({ href, label, icon, isActive, isComingSoon }: { href: string; label: string; icon: string; isActive: boolean; isComingSoon?: boolean }) {
+  const Icon = ICON_MAP[icon] || LayoutDashboard;
+
+  if (isComingSoon) {
+    return (
+      <div className="flex items-center px-3 py-2.5 rounded-lg text-slate-400 cursor-default opacity-50">
+        <Icon className="w-5 h-5 mr-3" />
+        <span className="text-sm font-medium">{label}</span>
+        <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">Soon</span>
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={href}
+      className={`group flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+        isActive
+          ? "bg-blue-50 border-l-4 border-blue-600 text-slate-900 font-semibold pl-[10px]"
+          : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 hover:pl-[14px]"
+      }`}
+    >
+      <Icon className={`w-5 h-5 mr-3 ${isActive ? "text-blue-600" : "text-slate-400 group-hover:text-slate-600"}`} />
+      {label}
+    </Link>
+  );
+}
+
+function ProBadge({ isPremium, isAdmin }: { isPremium: boolean; isAdmin: boolean }) {
+  if (isAdmin) {
+    return (
+      <div className="mx-3 p-3 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 text-white shadow-lg">
+        <div className="flex items-center gap-2 mb-1">
+          <ShieldAlert className="w-4 h-4 text-blue-400" />
+          <span className="text-xs font-bold uppercase tracking-wider">Administrator</span>
+        </div>
+        <p className="text-[11px] text-slate-400">Full access to all features</p>
+      </div>
+    );
+  }
+
+  if (isPremium) {
+    return (
+      <div className="mx-3 p-3 rounded-xl bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 shadow-sm">
+        <div className="flex items-center gap-2 mb-1">
+          <Crown className="w-4 h-4 text-blue-600" />
+          <span className="text-xs font-bold uppercase tracking-wider text-blue-700">Pro Member</span>
+        </div>
+        <p className="text-[11px] text-blue-500">All features unlocked</p>
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href="/pricing"
+      className="mx-3 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white text-sm font-bold shadow-md hover:shadow-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
+    >
+      <Sparkles className="w-4 h-4" />
+      Upgrade to Pro
+    </Link>
+  );
+}
 
 export function Sidebar() {
   const { dark } = useTheme();
@@ -37,7 +136,7 @@ export function Sidebar() {
   ];
 
   const adminNavItems = [
-    { href: "/admin", label: "Admin Dashboard", icon: "shield_person" },
+    { href: "/admin", label: "Dashboard", icon: "dashboard" },
     { href: "/admin/users", label: "Users", icon: "group" },
     { href: "/admin/exams", label: "Exams", icon: "assignment" },
     { href: "/admin/questions", label: "Questions", icon: "quiz" },
@@ -46,115 +145,110 @@ export function Sidebar() {
 
   const handleSignOut = () => { logout(); router.push("/"); };
 
-  const navLinks = navItems.map((item) => {
-    const isActive = pathname?.startsWith(item.href);
-    const linkContent = (
-      <span className={`flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 text-label-sm w-full ${
-        isActive && !item.comingSoon
-          ? "text-primary font-semibold border-r-2 border-primary bg-surface-container-low"
-          : item.comingSoon
-          ? "text-on-surface-variant/25 cursor-default opacity-50"
-          : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
-      }`}>
-        <span className="material-symbols-outlined mr-2.5 text-[20px]" aria-hidden="true" style={isActive && !item.comingSoon ? { fontVariationSettings: "'FILL' 1" } : undefined}>{item.icon}</span>
-        <span>{item.label}</span>
-        {item.comingSoon && (
-          <span className="ml-auto text-[10px] font-semibold px-1.5 py-0.5 rounded bg-surface-variant text-on-surface-variant/50">Soon</span>
-        )}
-      </span>
-    );
-    return item.comingSoon ? (
-      <div key={item.href}>{linkContent}</div>
-    ) : (
-      <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)}>
-        {linkContent}
-      </Link>
-    );
-  });
-
-  const adminNavLinks = adminNavItems.map((item) => {
-    const isActive = pathname?.startsWith(item.href);
-    return (
-      <Link
-        key={item.href}
-        href={item.href}
-        onClick={() => setMobileOpen(false)}
-        className={`flex items-center px-3 py-2.5 rounded-lg transition-colors duration-200 text-label-sm ${
-          isActive
-            ? "text-primary font-semibold border-r-2 border-primary bg-surface-container-low"
-            : "text-on-surface-variant hover:text-on-surface hover:bg-surface-container"
-        }`}
-      >
-        <span className="material-symbols-outlined mr-2.5 text-[20px]" aria-hidden="true" style={isActive ? { fontVariationSettings: "'FILL' 1" } : undefined}>{item.icon}</span>
-        <span>{item.label}</span>
-      </Link>
-    );
-  });
-
   return (
     <>
-      <button onClick={() => setMobileOpen(true)} aria-label="Open menu" className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center shadow-sm">
-        <span className="material-symbols-outlined" aria-hidden="true">menu</span>
+      <button onClick={() => setMobileOpen(true)} aria-label="Open menu" className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-xl bg-white shadow-lg flex items-center justify-center">
+        <Menu className="w-5 h-5 text-slate-600" />
       </button>
 
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-[60]" role="dialog" aria-modal="true" aria-label="Navigation menu">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setMobileOpen(false)} />
-          <nav className="absolute left-0 top-0 bottom-0 w-64 max-w-[80vw] bg-surface shadow-xl flex flex-col">
-            <div className="p-4 border-b border-outline-variant/30 flex items-center justify-between gap-2">
-              <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-10 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
-              <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="w-8 h-8 hover:bg-surface-container-high rounded-lg flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined">close</span>
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <nav className="absolute left-0 top-0 bottom-0 w-72 max-w-[85vw] bg-white shadow-2xl flex flex-col">
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-2">
+              <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-12 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
+              <button onClick={() => setMobileOpen(false)} aria-label="Close menu" className="w-8 h-8 hover:bg-slate-100 rounded-lg flex items-center justify-center shrink-0">
+                <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 gap-1 flex flex-col">
-              {navLinks}
+            <div className="flex-1 overflow-y-auto p-4 flex flex-col">
+              <div className="space-y-0.5">
+                {navItems.map((item) => (
+                  <NavItem
+                    key={item.href}
+                    href={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    isActive={pathname?.startsWith(item.href)}
+                    isComingSoon={item.comingSoon}
+                  />
+                ))}
+              </div>
+
               {isAdmin && (
-                <>
-                  <div className="h-px bg-outline-variant/30 my-2" />
-                  <p className="px-4 text-label-xs text-on-surface-variant uppercase tracking-wider mb-1">Admin</p>
-                  {adminNavLinks}
-                </>
+                <div className="mt-6">
+                  <p className="px-3 text-[11px] font-bold tracking-wider text-slate-400 uppercase mb-2">Admin</p>
+                  <div className="space-y-0.5">
+                    {adminNavItems.map((item) => (
+                      <NavItem
+                        key={item.href}
+                        href={item.href}
+                        label={item.label}
+                        icon={item.icon}
+                        isActive={pathname?.startsWith(item.href)}
+                      />
+                    ))}
+                  </div>
+                </div>
               )}
             </div>
-            <div className="p-4 border-t border-outline-variant/30">
-              <button onClick={handleSignOut} className="flex items-center gap-3 px-4 py-3 w-full rounded-lg text-on-surface-variant hover:bg-error-container/20 hover:text-error transition-colors text-left">
-                <span className="material-symbols-outlined">logout</span><span>Sign Out</span>
+            <div className="p-4 border-t border-slate-100">
+              <ProBadge isPremium={isPremium} isAdmin={isAdmin} />
+              <button
+                onClick={handleSignOut}
+                className="mt-3 w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="text-sm font-medium">Sign Out</span>
               </button>
             </div>
           </nav>
         </div>
       )}
 
-      <nav className="hidden md:flex h-screen w-60 fixed left-0 top-0 border-r border-outline-variant/30 bg-surface-container-lowest flex-col px-3 z-50">
-        <div className="my-6 px-2 flex justify-center">
-          <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-20 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
+      <nav className="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-white border-r border-slate-200 flex-col z-50">
+        <div className="my-6 px-4 flex justify-center">
+          <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-16 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
         </div>
-        <div className="flex-1 space-y-0.5">
-          {navLinks}
+
+        <div className="flex-1 px-3 space-y-0.5">
+          {navItems.map((item) => (
+            <NavItem
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              isActive={pathname?.startsWith(item.href)}
+              isComingSoon={item.comingSoon}
+            />
+          ))}
+
           {isAdmin && (
-            <>
-              <div className="h-px bg-outline-variant/30 my-2" />
-              <p className="px-4 text-label-xs text-on-surface-variant uppercase tracking-wider mb-1">Admin</p>
-              {adminNavLinks}
-            </>
-          )}
-        </div>
-        <div className="mt-auto pt-4 border-t border-outline-variant/30 space-y-1.5 mb-3">
-          {!isAdmin && !isPremium && (
-            <Link href="/pricing" className="w-full py-2.5 px-3 rounded-full bg-gradient-to-r from-accent to-accent-hover text-on-accent text-label-sm font-semibold hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all text-center block">
-              Upgrade to Pro
-            </Link>
-          )}
-          {isPremium && (
-            <div className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-gradient-to-r from-primary via-primary to-secondary text-on-primary text-label-sm font-bold tracking-wide uppercase shadow-md">
-              <span className="material-symbols-outlined text-[16px]">verified</span>
-              Pro Member
+            <div className="mt-6">
+              <p className="px-3 text-[11px] font-bold tracking-wider text-slate-400 uppercase mb-2">Admin</p>
+              <div className="space-y-0.5">
+                {adminNavItems.map((item) => (
+                  <NavItem
+                    key={item.href}
+                    href={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    isActive={pathname?.startsWith(item.href)}
+                  />
+                ))}
+              </div>
             </div>
           )}
-          <button onClick={handleSignOut} className="flex items-center px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-200 w-full text-left">
-            <span className="material-symbols-outlined mr-2.5 text-[20px]">logout</span>
-            <span className="text-label-sm">Sign Out</span>
+        </div>
+
+        <div className="mt-auto px-3 pb-4 space-y-3">
+          <ProBadge isPremium={isPremium} isAdmin={isAdmin} />
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            <span className="text-sm font-medium">Sign Out</span>
           </button>
         </div>
       </nav>
