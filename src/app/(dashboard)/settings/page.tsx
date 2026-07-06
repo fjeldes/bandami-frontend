@@ -1,19 +1,217 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
 import { getUserSubscription, getDashboardStats, apiFetch } from "@/lib/api";
 import { showSuccess, showError } from "@/components/ui/Toast";
+import {
+  User,
+  Mail,
+  Pencil,
+  Check,
+  X,
+  CreditCard,
+  Receipt,
+  Calendar,
+  ShieldCheck,
+  Crown,
+  Sparkles,
+  ExternalLink,
+  Lock,
+  LogOut,
+} from "lucide-react";
+import type { UserSubscription as UserSubType, DashboardStats } from "@/lib/types";
 
-function SubscriptionSection() {
+function Avatar({ name, size = "lg" }: { name?: string; size?: "sm" | "lg" }) {
+  const initial = name?.charAt(0)?.toUpperCase() || "?";
+  const sizeClass = size === "lg" ? "w-16 h-16 text-2xl" : "w-10 h-10 text-sm";
+  return (
+    <div className={`${sizeClass} rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-lg`}>
+      {initial}
+    </div>
+  );
+}
+
+function FieldLabel({ children }: { children: React.ReactNode }) {
+  return <p className="text-[11px] font-bold text-slate-400 tracking-wider uppercase">{children}</p>;
+}
+
+function ProfileSection({ user, editName, setEditName, nameValue, setNameValue, saveName, savingName }: any) {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+      <div className="flex items-start gap-5 mb-6">
+        <Avatar name={user?.full_name} />
+        <div className="flex-1">
+          <h2 className="text-lg font-bold text-slate-800 mb-1">{user?.full_name || "Your Profile"}</h2>
+          <p className="text-sm text-slate-500">{user?.email}</p>
+          <div className="flex items-center gap-2 mt-2">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              {user?.subscription_tier === "premium" ? "Pro" : "Free"} Plan
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div>
+          <FieldLabel>Full Name</FieldLabel>
+          {editName ? (
+            <div className="flex items-center gap-2 mt-1">
+              <input
+                value={nameValue}
+                onChange={(e) => setNameValue(e.target.value)}
+                className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+              />
+              <button
+                onClick={saveName}
+                disabled={savingName}
+                className="w-9 h-9 rounded-lg bg-blue-600 text-white flex items-center justify-center hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                <Check className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setEditName(false)}
+                className="w-9 h-9 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-slate-200 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-sm font-medium text-slate-800">{user?.full_name || "—"}</p>
+              <button
+                onClick={() => { setNameValue(user?.full_name || ""); setEditName(true); }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-100 transition-colors"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                Edit
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <FieldLabel>Email Address</FieldLabel>
+          <div className="flex items-center gap-2 mt-1">
+            <Mail className="w-4 h-4 text-slate-400" />
+            <p className="text-sm font-medium text-slate-800">{user?.email || "—"}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SubscriptionCard({ isPremium }: { isPremium: boolean }) {
+  if (!isPremium) {
+    return (
+      <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+            <Crown className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold">Upgrade to Pro</h3>
+            <p className="text-sm text-orange-100">Unlock all features</p>
+          </div>
+        </div>
+        <a
+          href="/pricing"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white text-orange-600 font-bold text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+        >
+          <Sparkles className="w-4 h-4" />
+          View Plans
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gradient-to-br from-slate-900 to-slate-950 rounded-2xl p-6 text-white shadow-xl">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg">
+          <Crown className="w-6 h-6 text-white" />
+        </div>
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-bold">Pro Member</h3>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+              Active
+            </span>
+          </div>
+          <p className="text-sm text-slate-400">Your subscription is active</p>
+        </div>
+      </div>
+
+      <div className="bg-white/10 rounded-xl p-4 mb-4">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Current Plan</p>
+        <p className="text-sm font-medium">Pro Monthly · $14.99/month</p>
+      </div>
+
+      <a
+        href="#"
+        onClick={async (e) => {
+          e.preventDefault();
+          try {
+            const result = await apiFetch<{ url?: string }>("/payments/create-portal", { method: "POST" });
+            if (result.url) window.open(result.url, "_blank");
+          } catch { showError("Could not open billing portal"); }
+        }}
+        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-sm font-semibold transition-all"
+      >
+        <CreditCard className="w-4 h-4" />
+        Manage Subscription
+        <ExternalLink className="w-3.5 h-3.5 opacity-70" />
+      </a>
+    </div>
+  );
+}
+
+function InvoiceRow({ invoice }: { invoice: any }) {
+  const url = invoice.hosted_invoice_url || invoice.invoice_pdf;
+  const label = invoice.payment_type === "first_charge" ? "First charge" : "Monthly";
+
+  return (
+    <div className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors group">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+          <Receipt className="w-5 h-5 text-slate-500" />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-slate-800">${invoice.amount_paid.toFixed(2)}</p>
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <Calendar className="w-3 h-3" />
+            {new Date(invoice.created).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+            <span className="text-slate-300">·</span>
+            {label}
+          </div>
+        </div>
+      </div>
+      {url && (
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+        >
+          View
+          <ExternalLink className="w-3 h-3" />
+        </a>
+      )}
+    </div>
+  );
+}
+
+function SubscriptionSection({ user }: { user: any }) {
   const [subData, setSubData] = useState<any>(null);
   const [invoices, setInvoices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [switchModal, setSwitchModal] = useState<string | null>(null);
-  const [cancelModal, setCancelModal] = useState(false);
 
   const load = async () => {
     const [sub, inv] = await Promise.all([
@@ -27,31 +225,6 @@ function SubscriptionSection() {
 
   useEffect(() => { load(); }, []);
 
-  const doCancel = async () => {
-    setCancelModal(false);
-    setActionLoading(true);
-    try {
-      await apiFetch("/payments/cancel", { method: "POST" });
-      await load();
-      showSuccess("Subscription will be canceled at period end.");
-    } catch (err) {
-      showError(err instanceof Error ? err.message : "Failed to cancel");
-    }
-    setActionLoading(false);
-  };
-
-  const reactivate = async () => {
-    setActionLoading(true);
-    try {
-      await apiFetch("/payments/reactivate", { method: "POST" });
-      await load();
-      showSuccess("Subscription reactivated!");
-    } catch (err) {
-      showError(err instanceof Error ? err.message : "Failed to reactivate");
-    }
-    setActionLoading(false);
-  };
-
   const switchPlan = async (planSlug: string) => {
     setSwitchModal(null);
     setActionLoading(true);
@@ -61,7 +234,7 @@ function SubscriptionSection() {
         window.location.href = result.url;
         return;
       }
-      showSuccess(`Switched to Pro Monthly!`);
+      showSuccess("Switched to Pro Monthly!");
       load();
     } catch (err) {
       showError(err instanceof Error ? err.message : "Failed to switch plan");
@@ -69,159 +242,176 @@ function SubscriptionSection() {
     setActionLoading(false);
   };
 
-  if (loading) return <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5"><div className="animate-pulse bg-surface-container-high rounded-lg h-20" /></section>;
-  if (!subData?.has_subscription) return null;
+  if (loading) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+        <div className="animate-pulse space-y-4">
+          <div className="h-24 bg-slate-100 rounded-xl" />
+          <div className="h-32 bg-slate-100 rounded-xl" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!subData?.has_subscription) {
+    return <SubscriptionCard isPremium={false} />;
+  }
 
   const periodEnd = subData.current_period_end ? new Date(subData.current_period_end).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—";
   const willCancel = subData.cancel_at_period_end;
   const isOneTime = subData.is_one_time;
-  const isMonthly = !isOneTime && subData.plan_interval === "month";
-  const isWeekPass = isOneTime || subData.plan_interval === "week";
 
   return (
-    <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
-      <h3 className="text-body-md font-semibold text-on-surface mb-4">Subscription</h3>
-      <div className="space-y-4">
-        {/* Plan details card */}
-        <div className="bg-surface-container rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <p className="text-label-sm text-on-surface-variant">Plan</p>
-            <p className="text-body-md font-semibold text-on-surface">
-              {subData.plan_name} · ${subData.plan_amount}/{subData.plan_interval}
-            </p>
-          </div>
-          <div>
-            <p className="text-label-sm text-on-surface-variant">Status</p>
-            <div className="flex items-center gap-2">
+    <div className="space-y-4">
+      <SubscriptionCard isPremium={true} />
+
+      {/* Plan Details */}
+      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+        <h3 className="text-sm font-bold text-slate-800 mb-4">Plan Details</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-3 rounded-xl bg-slate-50">
+            <FieldLabel>Status</FieldLabel>
+            <div className="flex items-center gap-2 mt-1">
               <span className={`w-2 h-2 rounded-full ${willCancel ? "bg-amber-500" : "bg-emerald-500"}`} />
-              <span className="text-body-md text-on-surface capitalize">
-                {willCancel ? "Cancels at period end" : isWeekPass ? "Active" : "Active"}
+              <span className="text-sm font-semibold text-slate-800">
+                {willCancel ? "Cancels soon" : "Active"}
               </span>
             </div>
           </div>
-          <div>
-            <p className="text-label-sm text-on-surface-variant">{isOneTime ? "Expires" : "Next billing"}</p>
-            <p className="text-body-md text-on-surface">{periodEnd}</p>
+          <div className="p-3 rounded-xl bg-slate-50">
+            <FieldLabel>{isOneTime ? "Expires" : "Next billing"}</FieldLabel>
+            <p className="text-sm font-semibold text-slate-800 mt-1">{periodEnd}</p>
           </div>
-          {!isOneTime && (
-            <div>
-              <p className="text-label-sm text-on-surface-variant">Payment</p>
-              <p className="text-body-md text-on-surface capitalize">
-                {subData.card_brand ? `${subData.card_brand} ····${subData.card_last4}` : "—"}
-              </p>
-            </div>
-          )}
-          {isOneTime && (
-            <div>
-              <p className="text-label-sm text-on-surface-variant">Type</p>
-              <p className="text-body-md text-on-surface">One-time payment</p>
+          {!isOneTime && subData.card_brand && (
+            <div className="p-3 rounded-xl bg-slate-50 col-span-2">
+              <FieldLabel>Payment Method</FieldLabel>
+              <div className="flex items-center gap-2 mt-1">
+                <CreditCard className="w-4 h-4 text-slate-400" />
+                <span className="text-sm font-semibold text-slate-800 capitalize">
+                  {subData.card_brand} ····{subData.card_last4}
+                </span>
+              </div>
             </div>
           )}
         </div>
-
-        {/* Upgrade to monthly Pro */}
-        {isOneTime && (
-          <div className="bg-surface-container rounded-xl p-4">
-            <p className="text-label-sm font-semibold text-on-surface-variant mb-3">Convert to Pro</p>
-            <div className="grid grid-cols-1 gap-2">
-              <button
-                onClick={() => setSwitchModal("premium")}
-                disabled={actionLoading}
-                className="p-3 rounded-lg border border-outline-variant/30 hover:border-primary/50 text-left transition-colors"
-              >
-                <p className="text-body-md font-semibold text-on-surface">Pro Monthly</p>
-                <p className="text-label-sm text-on-surface-variant">$14.99/month — cancel anytime</p>
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Actions — single Manage button that opens provider's billing portal */}
-        {!isOneTime && (
-          <div className="flex flex-wrap gap-2">
-            <button onClick={async () => {
-              try {
-                const result = await apiFetch<{ url?: string }>("/payments/create-portal", { method: "POST" });
-                if (result.url) {
-                  window.open(result.url, "_blank");
-                }
-              } catch { showError("Could not open billing portal"); }
-            }} className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all">
-              Manage Subscription
-            </button>
-          </div>
-        )}
-
-        {/* Invoice History */}
-        {invoices.length > 0 && (
-          <div className="pt-4 border-t border-outline-variant/30">
-            <h4 className="text-label-sm text-on-surface-variant font-semibold mb-3 uppercase tracking-wider">Invoice History</h4>
-            <div className="space-y-1.5">
-              {invoices.slice(0, 5).map((inv: any) => {
-                const url = inv.hosted_invoice_url || inv.invoice_pdf;
-                const label = inv.payment_type === "first_charge" ? "First charge" : "Monthly";
-                return (
-                  <div key={inv.id}
-                    className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-container transition-colors text-body-md">
-                    <div className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-on-surface-variant text-[18px]">receipt_long</span>
-                      <div>
-                        <p className="text-body-md text-on-surface">${inv.amount_paid.toFixed(2)}</p>
-                        <p className="text-label-sm text-on-surface-variant">{new Date(inv.created).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} · {label}</p>
-                      </div>
-                    </div>
-                    {url && <a href={url} target="_blank" rel="noopener noreferrer" className="text-primary text-label-sm hover:underline">View</a>}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Invoice History */}
+      {invoices.length > 0 && (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+          <h3 className="text-sm font-bold text-slate-800 mb-3">Invoice History</h3>
+          <div className="divide-y divide-slate-100">
+            {invoices.slice(0, 5).map((inv: any) => (
+              <InvoiceRow key={inv.id} invoice={inv} />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Switch Plan Modal */}
       {switchModal && typeof document !== "undefined" && createPortal(
-        <div className="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center p-4" onClick={() => setSwitchModal(null)}>
-          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/40 p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
-            <h4 className="text-headline-md font-bold text-on-surface mb-2">Switch Plan</h4>
-            <p className="text-body-md text-on-surface-variant mb-6">
-              {isOneTime
-                ? "Pro is a monthly subscription. You'll be redirected to our secure checkout to set up your recurring payment."
-                : "Switch to Pro Monthly ($14.99/month). Your billing period will be adjusted automatically."}
+        <div className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setSwitchModal(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+            <h4 className="text-lg font-bold text-slate-800 mb-2">Switch to Monthly</h4>
+            <p className="text-sm text-slate-500 mb-6">
+              Convert to Pro Monthly at $14.99/month. Your billing period will be adjusted automatically.
             </p>
-            <div className="flex gap-3 justify-end">
-              <button onClick={() => setSwitchModal(null)} className="px-4 py-2 rounded-xl text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">Cancel</button>
-              <button onClick={() => switchPlan(switchModal)} disabled={actionLoading}
-                className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50">
-                {actionLoading ? "Switching..." : "Confirm Switch"}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setSwitchModal(null)}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold hover:bg-slate-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => switchPlan(switchModal)}
+                disabled={actionLoading}
+                className="flex-1 px-4 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                {actionLoading ? "Switching..." : "Confirm"}
               </button>
             </div>
           </div>
         </div>,
         document.body
       )}
-      {cancelModal && createPortal(
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setCancelModal(false)}>
-          <div className="bg-surface-container-lowest rounded-xl shadow-xl p-6 max-w-sm w-full" onClick={e => e.stopPropagation()}>
-            <h3 className="text-body-md font-semibold text-on-surface mb-2">Cancel Subscription</h3>
-            <p className="text-label-sm text-on-surface-variant mb-6">
-              Your Pro access will continue until the end of the billing period. After that, you'll be switched to the Free plan. Continue?
-            </p>
-            <div className="flex gap-3 justify-end">
-              <button onClick={() => setCancelModal(false)} className="px-4 py-2 rounded-xl text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">Stay on Pro</button>
-              <button onClick={doCancel} disabled={actionLoading}
-                className="px-4 py-2 rounded-xl bg-error text-on-error text-label-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50">
-                {actionLoading ? "Canceling..." : "Yes, Cancel"}
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-    </section>
+    </div>
   );
 }
-import type { UserSubscription as UserSubType, DashboardStats } from "@/lib/types";
+
+function PasswordSection({ user, changePw, setChangePw, currentPw, setCurrentPw, newPw, setNewPw, confirmPw, setConfirmPw, savingPw, savePassword }: any) {
+  if (user?.google_id) return null;
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
+            <Lock className="w-5 h-5 text-slate-500" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-slate-800">Password</h3>
+            <p className="text-xs text-slate-500">Update your password</p>
+          </div>
+        </div>
+      </div>
+
+      {changePw ? (
+        <div className="space-y-3">
+          <div>
+            <FieldLabel>Current Password</FieldLabel>
+            <input
+              type="password"
+              value={currentPw}
+              onChange={(e) => setCurrentPw(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all mt-1"
+            />
+          </div>
+          <div>
+            <FieldLabel>New Password</FieldLabel>
+            <input
+              type="password"
+              value={newPw}
+              onChange={(e) => setNewPw(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all mt-1"
+            />
+          </div>
+          <div>
+            <FieldLabel>Confirm New Password</FieldLabel>
+            <input
+              type="password"
+              value={confirmPw}
+              onChange={(e) => setConfirmPw(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all mt-1"
+            />
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button
+              onClick={savePassword}
+              disabled={savingPw}
+              className="px-4 py-2 rounded-xl bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
+            >
+              {savingPw ? "Saving..." : "Change Password"}
+            </button>
+            <button
+              onClick={() => setChangePw(false)}
+              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold hover:bg-slate-200 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={() => setChangePw(true)}
+          className="text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+        >
+          Change password
+        </button>
+      )}
+    </div>
+  );
+}
 
 export default function SettingsPage() {
   const user = useAuthStore((s) => s.user);
@@ -230,7 +420,6 @@ export default function SettingsPage() {
   const searchParams = useSearchParams();
 
   const [subscription, setSubscription] = useState<UserSubType | null>(null);
-  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [editName, setEditName] = useState(false);
@@ -288,7 +477,6 @@ export default function SettingsPage() {
     ]).then(([sub, s]) => {
       if (!mounted.current) return;
       setSubscription(sub);
-      setStats(s);
       setLoading(false);
     });
 
@@ -303,7 +491,6 @@ export default function SettingsPage() {
     setSavingName(true);
     try {
       await apiFetch("/users/me/profile", { method: "PATCH", body: JSON.stringify({ full_name: nameValue.trim() }) });
-      // refresh user data
       useAuthStore.getState().refreshSession();
       showSuccess("Name updated");
       setEditName(false);
@@ -332,107 +519,74 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-16">
-        <span className="material-symbols-outlined text-[40px] text-primary animate-spin">progress_activity</span>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-10 h-10 border-3 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-headline-md font-bold text-on-surface">Settings</h1>
-
-      {searchParams.get("checkout") === "success" && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-start gap-3">
-          <span className="material-symbols-outlined text-emerald-600 text-[24px] shrink-0">check_circle</span>
-          <div>
-            <p className="text-body-md font-semibold text-emerald-800">Your 3-day free trial has started!</p>
-            <p className="text-label-sm text-emerald-700 mt-0.5">
-              No charge today. You'll be charged <strong>$14.99/month + tax</strong> after the trial. Cancel anytime.
-            </p>
-          </div>
+    <div className="min-h-screen bg-slate-50/50">
+      <div className="max-w-5xl mx-auto px-4 py-10">
+        <div className="mb-8">
+          <h1 className="text-headline-lg font-bold text-slate-800 mb-1">Settings</h1>
+          <p className="text-slate-500">Manage your account and subscription</p>
         </div>
-      )}
 
-      {/* Profile */}
-      <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
-        <h3 className="text-body-md font-semibold text-on-surface mb-4">Profile</h3>
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0">
-            <span className="font-mono text-headline-md font-bold">{user?.full_name?.charAt(0)?.toUpperCase() || "?"}</span>
-          </div>
-          <div className="space-y-3 flex-1">
-            <div>
-              <label className="text-label-sm text-on-surface-variant">Full Name</label>
-              {editName ? (
-                <div className="flex items-center gap-2 mt-0.5">
-                  <input value={nameValue} onChange={(e) => setNameValue(e.target.value)} className="bg-surface-container border border-outline-variant rounded-lg px-3 py-1.5 text-body-md text-on-surface outline-none focus:border-primary flex-1" />
-                  <button onClick={saveName} disabled={savingName} className="text-primary text-label-sm font-semibold hover:underline">{savingName ? "Saving..." : "Save"}</button>
-                  <button onClick={() => setEditName(false)} className="text-on-surface-variant text-label-sm">Cancel</button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <p className="text-body-md text-on-surface">{user?.full_name || "—"}</p>
-                  <button onClick={() => { setNameValue(user?.full_name || ""); setEditName(true); }} className="text-primary text-label-sm hover:underline">Edit</button>
-                </div>
-              )}
+        {searchParams.get("checkout") === "success" && (
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+              <Check className="w-5 h-5 text-emerald-600" />
             </div>
             <div>
-              <label className="text-label-sm text-on-surface-variant">Email</label>
-              <p className="text-body-md text-on-surface">{user?.email || "—"}</p>
-            </div>
-            <div>
-              <label className="text-label-sm text-on-surface-variant">Plan</label>
-              <p className="text-body-md text-on-surface capitalize flex items-center gap-2">
-                {user?.subscription_tier || "free"}
-                {subscription && <span className="text-label-sm text-on-surface-variant bg-surface-container-high px-2 py-0.5 rounded-full">Active</span>}
+              <p className="text-sm font-bold text-emerald-800">Your 3-day free trial has started!</p>
+              <p className="text-xs text-emerald-600 mt-0.5">
+                No charge today. You'll be charged <strong>$14.99/month + tax</strong> after the trial. Cancel anytime.
               </p>
-              {user?.subscription_tier === "premium" && (
-                <span className="text-label-sm text-on-surface-variant ml-2">· See Subscription section below for plan management</span>
-              )}
             </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column: Profile */}
+          <div className="space-y-6">
+            <ProfileSection
+              user={user}
+              editName={editName}
+              setEditName={setEditName}
+              nameValue={nameValue}
+              setNameValue={setNameValue}
+              saveName={saveName}
+              savingName={savingName}
+            />
+            <PasswordSection
+              user={user}
+              changePw={changePw}
+              setChangePw={setChangePw}
+              currentPw={currentPw}
+              setCurrentPw={setCurrentPw}
+              newPw={newPw}
+              setNewPw={setNewPw}
+              confirmPw={confirmPw}
+              setConfirmPw={setConfirmPw}
+              savingPw={savingPw}
+              savePassword={savePassword}
+            />
+            <button
+              onClick={handleSignOut}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-50 text-red-600 font-semibold text-sm hover:bg-red-100 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
+          </div>
+
+          {/* Right Column: Subscription */}
+          <div>
+            <SubscriptionSection user={user} />
           </div>
         </div>
-      </section>
-
-      {/* Subscription Management */}
-      {user?.subscription_tier === "premium" && (
-        <SubscriptionSection />
-      )}
-
-      {/* Password */}
-      {!user?.google_id && (
-      <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
-        <h3 className="text-body-md font-semibold text-on-surface mb-4">Password</h3>
-        {changePw ? (
-          <div className="space-y-3">
-            <div>
-              <label className="text-label-sm text-on-surface-variant">Current Password</label>
-              <input type="password" value={currentPw} onChange={(e) => setCurrentPw(e.target.value)} className="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-2 text-body-md text-on-surface outline-none focus:border-primary mt-1" />
-            </div>
-            <div>
-              <label className="text-label-sm text-on-surface-variant">New Password</label>
-              <input type="password" value={newPw} onChange={(e) => setNewPw(e.target.value)} className="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-2 text-body-md text-on-surface outline-none focus:border-primary mt-1" />
-            </div>
-            <div>
-              <label className="text-label-sm text-on-surface-variant">Confirm New Password</label>
-              <input type="password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} className="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-2 text-body-md text-on-surface outline-none focus:border-primary mt-1" />
-            </div>
-            <div className="flex gap-2">
-              <button onClick={savePassword} disabled={savingPw} className="bg-primary text-on-primary px-4 py-2 rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity">{savingPw ? "Saving..." : "Change Password"}</button>
-              <button onClick={() => setChangePw(false)} className="text-on-surface-variant text-label-sm hover:underline">Cancel</button>
-            </div>
-          </div>
-        ) : (
-          <button onClick={() => setChangePw(true)} className="text-primary text-label-sm font-semibold hover:underline">Change password</button>
-        )}
-      </section>
-      )}
-      {/* Sign Out */}
-
-      <button onClick={handleSignOut} className="w-full flex items-center justify-center gap-2 bg-error-container/30 text-error font-semibold py-3 rounded-xl hover:bg-error-container/50 transition-colors text-body-md">
-        <span className="material-symbols-outlined">logout</span> Sign Out
-      </button>
+      </div>
     </div>
   );
 }
