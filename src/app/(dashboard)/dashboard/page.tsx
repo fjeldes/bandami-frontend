@@ -7,35 +7,37 @@ import { useDashboardStats, useExams, useStudyPlan, useGenerateStudyPlan, useTog
 import { showSuccess, showError } from "@/components/ui/Toast";
 
 function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse bg-surface-container-high rounded-lg ${className}`} />;
+  return <div className={`animate-pulse bg-surface-container-high rounded-xl ${className}`} />;
 }
 
-function Sparkline({ points, height = 80 }: { points: number[]; height?: number }) {
+function Sparkline({ points, height = 80, color = "#004ac6" }: { points: number[]; height?: number; color?: string }) {
   if (points.length < 2) return null;
   const max = Math.max(...points, 1);
   const min = Math.min(...points, 0);
   const range = max - min || 1;
   const w = 100;
   const h = height;
-  const padX = 0;
-  const padY = 8;
+  const padX = 2;
+  const padY = 6;
   const xs = points.map((_, i) => padX + (i / (points.length - 1)) * (w - padX * 2));
   const ys = points.map((p) => padY + ((max - p) / range) * (h - padY * 2));
   const path = xs.map((x, i) => `${i === 0 ? "M" : "L"} ${x} ${ys[i]}`).join(" ");
-  const area = `${path} L ${xs[xs.length - 1]} ${h} L ${xs[0]} ${h} Z`;
+  const area = `${path} L ${xs[xs.length - 1]} ${h - padY} L ${xs[0]} ${h - padY} Z`;
+  const gradId = `sparkGrad_${color.replace('#', '')}`;
 
   return (
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full" preserveAspectRatio="none">
       <defs>
-        <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#004ac6" stopOpacity="0.25" />
-          <stop offset="100%" stopColor="#004ac6" stopOpacity="0" />
+        <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+          <stop offset="60%" stopColor={color} stopOpacity="0.08" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={area} fill="url(#sparkGrad)" />
-      <path d={path} fill="none" stroke="#004ac6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={area} fill={`url(#${gradId})`} />
+      <path d={path} fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       {points.map((p, i) => (
-        <circle key={i} cx={xs[i]} cy={ys[i]} r="2.5" fill="#2563eb" />
+        <circle key={i} cx={xs[i]} cy={ys[i]} r="3" fill={color} className="drop-shadow-sm" />
       ))}
     </svg>
   );
@@ -313,52 +315,69 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
-          { icon: "analytics", label: "Average Band", value: stats?.average_band ? stats.average_band.toFixed(1) : "--", sub: stats?.average_band ? `CEFR ${cefrLevel(stats.average_band)}` : "--", color: "text-secondary-container" },
-          { icon: "trending_up", label: "Best", value: bestBand ? bestBand.toFixed(1) : "--", sub: "Highest score", color: "text-emerald-600" },
-          { icon: "auto_awesome", label: "Progress", value: target && latestBand ? `${((latestBand / target) * 100).toFixed(0)}%` : "--", sub: target ? `to Band ${target.toFixed(1)}` : "Set goal ↑", color: "text-primary" },
+          { icon: "analytics", label: "Average Band", value: stats?.average_band ? stats.average_band.toFixed(1) : "--", sub: stats?.average_band ? `CEFR ${cefrLevel(stats.average_band)}` : "--", color: "text-primary", gradient: "from-primary/10 to-transparent" },
+          { icon: "trending_up", label: "Best", value: bestBand ? bestBand.toFixed(1) : "--", sub: "Highest score", color: "text-emerald-500", gradient: "from-emerald-500/10 to-transparent" },
+          { icon: "auto_awesome", label: "Progress", value: target && latestBand ? `${((latestBand / target) * 100).toFixed(0)}%` : "--", sub: target ? `to Band ${target.toFixed(1)}` : "Set goal ↑", color: "text-primary", gradient: "from-primary/10 to-transparent" },
         ].map((c, idx) => (
-          <div key={c.label} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/40 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 animate-fade-in-up" style={{ animationDelay: `${0.1 + idx * 0.08}s` }}>
-            <div className="flex items-center gap-2 mb-3">
-              <span className={`material-symbols-outlined text-[18px] ${c.color}`}>{c.icon}</span>
-              <span className="text-label-sm text-on-surface-variant">{c.label}</span>
+          <div key={c.label} className={`group relative bg-gradient-to-br ${c.gradient} rounded-2xl p-5 shadow-card hover:shadow-card-float hover:-translate-y-1 transition-all duration-300 ease-out animate-fade-in-up border border-transparent hover:border-outline-variant/50`} style={{ animationDelay: `${0.1 + idx * 0.08}s` }}>
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/50 to-transparent dark:from-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-3 mb-4">
+              <div className={`w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center ${c.color}`}>
+                <span className={`material-symbols-outlined text-[20px]`}>{c.icon}</span>
+              </div>
+              <span className="text-label-sm text-on-surface-variant font-medium">{c.label}</span>
             </div>
-            <p className="font-mono text-headline-md font-bold text-on-surface mb-1">{c.value}</p>
-            <p className="text-label-sm text-on-surface-variant">{c.sub}</p>
+            <p className="relative font-mono text-headline-md font-bold text-on-surface mb-1">{c.value}</p>
+            <p className="relative text-label-sm text-on-surface-variant">{c.sub}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
         {/* Progress Chart */}
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
-          <h3 className="text-body-md font-semibold text-on-surface mb-4">Band Score Trend</h3>
+        <div className="bg-surface-container-lowest rounded-2xl shadow-card hover:shadow-card-hover transition-shadow duration-300 p-5 border border-outline-variant/30">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-body-md font-semibold text-on-surface">Band Score Trend</h3>
+            <div className="flex items-center gap-3 text-label-xs">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-primary" />
+                <span className="text-on-surface-variant">Writing</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-secondary" />
+                <span className="text-on-surface-variant">Speaking</span>
+              </span>
+            </div>
+          </div>
           {writingBands.length < 2 && speakingBands.length < 2 ? (
             <div className="text-center py-8">
               <span className="material-symbols-outlined text-[40px] text-outline mb-3">show_chart</span>
               <p className="text-body-md text-on-surface-variant">Complete a few exams to see your trend.</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {writingBands.length >= 2 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-primary" />
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-2">
                     <span className="text-label-sm text-on-surface-variant">Writing</span>
-                    <span className="text-label-sm text-on-surface ml-auto font-mono">{writingBands[writingBands.length - 1].b.toFixed(1)}</span>
+                    <span className="font-mono text-data-md font-bold text-primary">{writingBands[writingBands.length - 1].b.toFixed(1)}</span>
                   </div>
-                  <div className="h-20 overflow-hidden"><Sparkline points={writingBands.map((w) => w.b)} height={80} /></div>
+                  <div className="h-24 bg-gradient-to-b from-primary/5 to-transparent rounded-xl p-2 -mx-2">
+                    <Sparkline points={writingBands.map((w) => w.b)} height={80} color="#004ac6" />
+                  </div>
                 </div>
               )}
               {speakingBands.length >= 2 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-secondary-container" />
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-2">
                     <span className="text-label-sm text-on-surface-variant">Speaking</span>
-                    <span className="text-label-sm text-on-surface ml-auto font-mono">{speakingBands[speakingBands.length - 1].b.toFixed(1)}</span>
+                    <span className="font-mono text-data-md font-bold text-secondary">{speakingBands[speakingBands.length - 1].b.toFixed(1)}</span>
                   </div>
-                  <div className="h-20 overflow-hidden"><Sparkline points={speakingBands.map((s) => s.b)} height={80} /></div>
+                  <div className="h-24 bg-gradient-to-b from-secondary/5 to-transparent rounded-xl p-2 -mx-2">
+                    <Sparkline points={speakingBands.map((s) => s.b)} height={80} color="#0390d4" />
+                  </div>
                 </div>
               )}
             </div>
@@ -367,29 +386,39 @@ export default function DashboardPage() {
 
         {/* Activity Heatmap + Study Plan */}
         <div className="space-y-5">
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-            <h3 className="text-body-md font-semibold text-on-surface mb-3">This Week</h3>
+          <div className="bg-surface-container-lowest rounded-2xl shadow-card hover:shadow-card-hover transition-shadow duration-300 p-5 border border-outline-variant/30 animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+            <h3 className="text-body-md font-semibold text-on-surface mb-4">This Week</h3>
             {daysThisWeek.every((d) => d.count === 0) ? (
               <div className="text-center py-4">
                 <span className="material-symbols-outlined text-[32px] text-outline mb-2">calendar_today</span>
                 <p className="text-label-sm text-on-surface-variant">No activity yet this week. Start practicing!</p>
               </div>
             ) : (
-              <div className="flex items-end gap-1.5 h-20 px-1">
+              <div className="flex items-end gap-2 h-24 px-2">
                 {daysThisWeek.map((d, i) => {
                   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
                   const today = new Date();
                   today.setDate(today.getDate() - (6 - i));
                   const month = today.toLocaleDateString("en-US", { month: "short" });
                   const dayNum = today.getDate();
+                  const maxH = 72;
+                  const barH = d.count > 0 ? Math.min(Math.max(8, d.count * 24), maxH) : 4;
+                  const opacity = d.count > 1 ? "100" : d.count > 0 ? "70" : "30";
                   return (
-                  <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
-                    <div className={`w-full rounded-sm transition-all ${d.count > 0 ? "bg-primary" : "bg-surface-variant"} ${d.count > 1 ? "opacity-100" : d.count > 0 ? "opacity-70" : "opacity-30"}`}
-                      style={{ height: `${Math.min(Math.max(4, d.count * 20), 64)}px` }} />
-                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 bg-on-surface text-surface text-[10px] font-semibold px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                  <div key={i} className="group relative flex-1 flex flex-col items-center gap-2">
+                    <div className="w-full flex flex-col items-center justify-end h-full">
+                      <span className="text-[10px] font-semibold text-on-surface-variant mb-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        {d.count}
+                      </span>
+                      <div
+                        className={`w-full rounded-t-md transition-all duration-300 hover:brightness-110 ${d.count > 0 ? "bg-primary" : "bg-surface-variant"}`}
+                        style={{ height: `${barH}px`, opacity: d.count > 0 ? undefined : 0.4 }}
+                      />
+                    </div>
+                    <span className="text-[10px] text-on-surface-variant font-medium">{d.day}</span>
+                    <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] font-semibold px-2 py-1 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-10">
                       {d.count} {d.count === 1 ? "eval" : "evals"} · {month} {dayNum}
                     </span>
-                    <span className="text-[10px] text-on-surface-variant">{d.day}</span>
                   </div>
                 )})}
               </div>
@@ -397,22 +426,24 @@ export default function DashboardPage() {
           </div>
 
           {weakCriteria.length > 0 && (
-            <div className="bg-primary/5 rounded-xl border border-primary/20 p-5 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-1 h-full bg-primary/80 rounded-l-full" />
-              <div className="flex items-center gap-2 mb-2">
-                <span className="material-symbols-outlined text-primary text-[20px]">lightbulb</span>
-                <h3 className="text-body-md font-semibold text-on-surface">Focus Areas</h3>
+            <div className="bg-gradient-to-br from-primary/8 to-transparent rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 p-5 border border-primary/20 animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-accent text-[20px]">lightbulb</span>
+                </div>
+                <div>
+                  <h3 className="text-body-md font-semibold text-on-surface">Focus Areas</h3>
+                  <p className="text-label-xs text-on-surface-variant">Based on your last evaluation</p>
+                </div>
               </div>
-              <p className="text-label-sm text-on-surface-variant mb-3">
-                Based on your last evaluation, improve these criteria:
-              </p>
-              <div className="space-y-1.5">
+              <div className="flex flex-wrap gap-2 mb-4">
                 {weakCriteria.map((c) => (
-                  <span key={c} className="inline-block capitalize bg-primary-fixed/50 text-on-primary-fixed-variant text-label-sm px-2.5 py-0.5 rounded-full mr-2 mb-1.5">{c}</span>
+                  <span key={c} className="capitalize bg-primary-fixed/60 text-on-primary-fixed-variant text-label-sm px-3 py-1.5 rounded-lg font-medium">{c}</span>
                 ))}
               </div>
-              <Link href={lastEval?.exam_type === "speaking" ? "/speaking" : "/writing"} className="text-label-sm text-primary font-semibold hover:underline mt-2 inline-block">
-                Practice now →
+              <Link href={lastEval?.exam_type === "speaking" ? "/speaking" : "/writing"} className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-on-accent px-5 py-2.5 rounded-xl text-label-sm font-semibold shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
+                Practice now
+                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
               </Link>
             </div>
           )}
@@ -420,18 +451,18 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
-          { href: "/writing", icon: "edit", label: "Writing", sub: `${stats?.writing_exams ?? 0} completed` },
-          { href: "/speaking", icon: "mic", label: "Speaking", sub: `${stats?.speaking_exams ?? 0} completed` },
+          { href: "/writing", icon: "edit", label: "Writing", sub: `${stats?.writing_exams ?? 0} completed`, accent: "primary" },
+          { href: "/speaking", icon: "mic", label: "Speaking", sub: `${stats?.speaking_exams ?? 0} completed`, accent: "secondary" },
           { href: "/reading", icon: "menu_book", label: "Reading", sub: "Coming soon", comingSoon: true },
-          { href: "/history", icon: "analytics", label: "Reports", sub: "Review past exams" },
+          { href: "/history", icon: "analytics", label: "Reports", sub: "Review past exams", accent: "primary" },
         ].map((a) => (
           a.comingSoon ? (
-            <div key={a.href} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/40 shadow-sm opacity-50 cursor-default select-none">
-              <div className="flex items-center gap-3">
-                <div className="bg-surface-variant p-2.5 rounded-lg text-outline">
-                  <span className="material-symbols-outlined text-[24px]">{a.icon}</span>
+            <div key={a.href} className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/30 shadow-sm opacity-50 cursor-default select-none transition-all">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-surface-variant flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[24px] text-outline">{a.icon}</span>
                 </div>
                 <div>
                   <h3 className="text-body-md font-semibold text-on-surface">{a.label}</h3>
@@ -440,10 +471,11 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-          <Link key={a.href} href={a.href} className="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/40 shadow-sm hover:border-primary hover:shadow-md transition-all group">
-            <div className="flex items-center gap-3">
-              <div className="bg-primary-container/20 p-2.5 rounded-lg text-primary group-hover:bg-primary-container/40 transition-colors">
-                <span className="material-symbols-outlined text-[24px]">{a.icon}</span>
+          <Link key={a.href} href={a.href} className={`group relative bg-surface-container-lowest rounded-2xl p-5 shadow-card hover:shadow-card-float border border-transparent hover:border-${a.accent === 'secondary' ? 'secondary' : 'outline-variant'}/50 transition-all duration-300 hover:-translate-y-1`}>
+            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-${a.accent === 'secondary' ? 'secondary' : 'primary'}/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="relative flex items-center gap-4">
+              <div className={`w-12 h-12 rounded-xl bg-${a.accent === 'secondary' ? 'secondary' : 'primary'}/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-200`}>
+                <span className={`material-symbols-outlined text-[24px] text-${a.accent === 'secondary' ? 'secondary' : 'primary'}`}>{a.icon}</span>
               </div>
               <div>
                 <h3 className="text-body-md font-semibold text-on-surface">{a.label}</h3>
@@ -457,32 +489,37 @@ export default function DashboardPage() {
 
           {/* Study Plan (Pro) */}
       {isPremium && (
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="text-body-md font-semibold text-on-surface">7-Day Study Plan</h3>
-              {studyPlan && (
-                <p className="text-label-sm text-on-surface-variant mt-0.5">
-                  {studyPlan.filter((d: any) => d.completed).length}/{studyPlan.length} days completed
-                  <span className="mx-2">·</span>
-                  {remainingThisMonth}/4 plans this month
-                </p>
-              )}
-              {!studyPlan && remainingThisMonth < 4 && (
-                <p className="text-label-sm text-on-surface-variant mt-0.5">{remainingThisMonth}/4 plans remaining this month</p>
-              )}
+        <div className="bg-surface-container-lowest rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 p-5 mb-6 border border-outline-variant/30">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <span className="material-symbols-outlined text-primary text-[20px]">calendar_month</span>
+              </div>
+              <div>
+                <h3 className="text-body-md font-semibold text-on-surface">7-Day Study Plan</h3>
+                {studyPlan && (
+                  <p className="text-label-xs text-on-surface-variant mt-0.5">
+                    {studyPlan.filter((d: any) => d.completed).length}/{studyPlan.length} days completed
+                    <span className="mx-2">·</span>
+                    {remainingThisMonth}/4 plans this month
+                  </p>
+                )}
+                {!studyPlan && remainingThisMonth < 4 && (
+                  <p className="text-label-xs text-on-surface-variant mt-0.5">{remainingThisMonth}/4 plans remaining this month</p>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
               {!studyPlan && remainingThisMonth > 0 && exams.length > 0 && (
                 <button onClick={generatePlan} disabled={planLoading}
-                  className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50 flex items-center gap-1.5">
+                  className="bg-accent hover:bg-accent-hover text-on-accent px-5 py-2.5 rounded-xl text-label-sm font-semibold shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
                   {planLoading ? "Generating..." : "Generate Plan"}
                 </button>
               )}
               {studyPlan && remainingThisMonth > 0 && exams.length > 0 && (
                 <button onClick={() => setShowRegenModal(true)} disabled={planLoading}
-                  className="bg-surface-container-high text-on-surface px-3 py-2 rounded-xl text-label-sm font-semibold hover:bg-surface-container transition-all disabled:opacity-50 flex items-center gap-1.5">
+                  className="bg-surface-container-high hover:bg-surface-container-highest text-on-surface px-4 py-2.5 rounded-xl text-label-sm font-semibold border border-outline-variant/50 hover:border-outline transition-all disabled:opacity-50 flex items-center gap-2">
                   <span className="material-symbols-outlined text-[16px]">refresh</span>
                   Regenerate
                 </button>
@@ -578,18 +615,18 @@ export default function DashboardPage() {
       )}
 
       {/* Recent Activity */}
-      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm">
-        <div className="p-5 border-b border-outline-variant/40 flex justify-between items-center">
+      <div className="bg-surface-container-lowest rounded-2xl shadow-card hover:shadow-card-hover transition-all duration-300 border border-outline-variant/30">
+        <div className="p-5 border-b border-outline-variant/30 flex justify-between items-center">
           <h3 className="text-body-md font-semibold text-on-surface">Recent Activity</h3>
-          <Link href="/history" className="text-label-sm text-primary font-semibold hover:underline">View All</Link>
+          <Link href="/history" className="text-label-sm text-primary font-semibold hover:text-accent transition-colors">View All</Link>
         </div>
         {exams.length === 0 ? (
           <div className="p-8 text-center">
             <span className="material-symbols-outlined text-[40px] text-outline mb-3">assignment</span>
             <p className="text-body-md text-on-surface-variant">No exams yet. Start practicing to see your activity here.</p>
             <div className="flex gap-3 justify-center mt-4">
-              <Link href="/writing" className="bg-primary-container text-on-primary-container px-4 py-2 rounded-lg text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all">Practice Writing</Link>
-              <Link href="/speaking" className="bg-primary text-on-primary px-4 py-2 rounded-lg text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all">Practice Speaking</Link>
+              <Link href="/writing" className="bg-primary text-on-primary px-5 py-2.5 rounded-xl text-label-sm font-semibold hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all">Practice Writing</Link>
+              <Link href="/speaking" className="bg-secondary hover:bg-secondary/90 text-on-secondary px-5 py-2.5 rounded-xl text-label-sm font-semibold hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all">Practice Speaking</Link>
             </div>
           </div>
         ) : (

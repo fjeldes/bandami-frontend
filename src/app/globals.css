@@ -67,8 +67,15 @@
   --c-referral-border: #93c5fd;
   --c-referral-text: #062a60;
 
+  --c-accent: #f97316;
+  --c-accent-hover: #ea580c;
+  --c-accent-container: #fff7ed;
+  --c-on-accent: #ffffff;
+  --c-on-accent-container: #9a3412;
+
   --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.04);
-  --shadow-card-hover: 0px 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-card-hover: 0px 12px 32px rgba(0, 0, 0, 0.12);
+  --shadow-card-float: 0px 20px 40px rgba(0, 0, 0, 0.15);
   --shadow-dialog: 0px 16px 48px rgba(0, 0, 0, 0.12);
   --radius-element: 0.5rem;
   --radius-container: 1rem;
@@ -130,8 +137,15 @@
   --c-referral-border: #60a5fa;
   --c-referral-text: #bfdbfe;
 
+  --c-accent: #fb923c;
+  --c-accent-hover: #f97316;
+  --c-accent-container: #431407;
+  --c-on-accent: #0c0a09;
+  --c-on-accent-container: #fed7aa;
+
   --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.3);
-  --shadow-card-hover: 0px 8px 30px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0px 12px 32px rgba(0, 0, 0, 0.4);
+  --shadow-card-float: 0px 20px 40px rgba(0, 0, 0, 0.5);
   --shadow-dialog: 0px 16px 48px rgba(0, 0, 0, 0.5);
 }
 

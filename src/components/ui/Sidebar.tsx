@@ -142,14 +142,14 @@ export function Sidebar() {
         </div>
         <div className="mt-auto pt-4 border-t border-outline-variant/30 space-y-1.5 mb-3">
           {!isAdmin && !isPremium && (
-            <Link href="/pricing" className="w-full py-2 px-3 rounded-full bg-primary-container text-on-primary-container text-label-sm hover:bg-primary hover:text-on-primary transition-colors text-center block">
+            <Link href="/pricing" className="w-full py-2.5 px-3 rounded-full bg-gradient-to-r from-accent to-accent-hover text-on-accent text-label-sm font-semibold hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all text-center block">
               Upgrade to Pro
             </Link>
           )}
           {isPremium && (
-            <div className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-full bg-primary text-on-primary text-label-sm font-semibold tracking-wide uppercase shadow-sm">
+            <div className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-gradient-to-r from-primary via-primary to-secondary text-on-primary text-label-sm font-bold tracking-wide uppercase shadow-md">
               <span className="material-symbols-outlined text-[16px]">verified</span>
-              Pro
+              Pro Member
             </div>
           )}
           <button onClick={handleSignOut} className="flex items-center px-3 py-2 rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors duration-200 w-full text-left">

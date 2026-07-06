@@ -85,6 +85,15 @@ const config: Config = {
         "referral-bg": "var(--c-referral-bg)",
         "referral-border": "var(--c-referral-border)",
         "referral-text": "var(--c-referral-text)",
+        accent: {
+          DEFAULT: "var(--c-accent)",
+          hover: "var(--c-accent-hover)",
+          container: "var(--c-accent-container)",
+        },
+        "on-accent": {
+          DEFAULT: "var(--c-on-accent)",
+          container: "var(--c-on-accent-container)",
+        },
       },
       fontFamily: {
         body: ["var(--font-inter)", "system-ui", "sans-serif"],
@@ -122,6 +131,7 @@ const config: Config = {
       boxShadow: {
         card: "var(--shadow-card)",
         "card-hover": "var(--shadow-card-hover)",
+        "card-float": "var(--shadow-card-float)",
         dialog: "var(--shadow-dialog)",
         ghost: "0 10px 40px -10px rgba(25, 28, 30, 0.06)",
       },
