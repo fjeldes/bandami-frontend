@@ -4,6 +4,21 @@ import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
+import {
+  Plus,
+  EyeOff,
+  Pencil,
+  Trash2,
+  FileText,
+  Mic,
+  CheckCircle,
+  XCircle,
+  Upload,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  FileQuestion,
+} from "lucide-react";
 
 interface Question {
   id: string;
@@ -25,6 +40,106 @@ interface QuestionsResponse {
   per_page: number;
   total_pages: number;
   counts: { writing: number; speaking: number };
+}
+
+function ExamTypeBadge({ type, taskType }: { type: string; taskType?: string }) {
+  if (type === "writing") {
+    const isTask2 = taskType === "task2";
+    return (
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold ${isTask2 ? "bg-violet-50 text-violet-700" : "bg-blue-50 text-blue-700"}`}>
+        <FileText className="w-3.5 h-3.5" />
+        Writing — {isTask2 ? "Task 2" : "Task 1"}
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700">
+      <Mic className="w-3.5 h-3.5" />
+      Speaking
+    </span>
+  );
+}
+
+function StatusBadge({ isActive }: { isActive: boolean }) {
+  if (isActive) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+        <CheckCircle className="w-3 h-3" />
+        Active
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-xs font-medium">
+      <XCircle className="w-3 h-3" />
+      Inactive
+    </span>
+  );
+}
+
+function DifficultyBadge({ difficulty }: { difficulty: number }) {
+  const colors = {
+    1: "bg-slate-100 text-slate-600",
+    2: "bg-amber-50 text-amber-700",
+    3: "bg-red-50 text-red-600",
+  };
+  const labels = { 1: "Easy", 2: "Medium", 3: "Hard" };
+  return (
+    <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors[difficulty as keyof typeof colors]}`}>
+      {labels[difficulty as keyof typeof labels]}
+    </span>
+  );
+}
+
+function QuestionCard({ question, onEdit, onDelete, onToggle }: { question: Question; onEdit: () => void; onDelete: () => void; onToggle: () => void }) {
+  const isInactive = !question.is_active;
+
+  return (
+    <div className={`bg-white rounded-xl border ${isInactive ? "border-slate-200 opacity-60" : "border-slate-100"} shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden mb-4`}>
+      <div className="bg-slate-50/60 px-5 py-3 border-b border-slate-100 flex justify-between items-center">
+        <div className="flex items-center gap-2 flex-wrap">
+          <ExamTypeBadge type={question.exam_type} taskType={question.task_type} />
+          <DifficultyBadge difficulty={question.difficulty} />
+          <StatusBadge isActive={question.is_active} />
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={onToggle}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            title={question.is_active ? "Disable" : "Enable"}
+          >
+            <EyeOff className="w-4 h-4" />
+          </button>
+          <button
+            onClick={onEdit}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+          <button
+            onClick={onDelete}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+      <div className="p-5">
+        {question.title && (
+          <h4 className="text-sm font-semibold text-slate-800 mb-2">{question.title}</h4>
+        )}
+        <RichTextRenderer content={question.prompt_text} className="text-sm text-slate-600 leading-relaxed" />
+        {question.img_url && (
+          <div className="mt-3 p-3 bg-slate-50 rounded-lg">
+            <img src={question.img_url} alt="Question image" className="max-h-32 rounded border border-slate-200" />
+            {question.img_info && (
+              <p className="text-xs text-slate-500 mt-2 italic">Image context: {question.img_info}</p>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default function AdminQuestionsPage() {
@@ -70,71 +185,42 @@ export default function AdminQuestionsPage() {
   };
 
   const handleImageUpload = async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      alert("Please select an image file");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Image must be smaller than 5MB");
-      return;
-    }
+    if (!file.type.startsWith("image/")) { alert("Please select an image file"); return; }
+    if (file.size > 5 * 1024 * 1024) { alert("Image must be smaller than 5MB"); return; }
     setPendingImageFile(file);
-
     const reader = new FileReader();
-    reader.onload = (e) => {
-      setForm((prev) => ({ ...prev, img_url: e.target?.result as string }));
-    };
+    reader.onload = (e) => { setForm((prev) => ({ ...prev, img_url: e.target?.result as string })); };
     reader.readAsDataURL(file);
   };
 
   const handleImageUploadForQuestion = async (file: File, questionId: string) => {
-    if (!file.type.startsWith("image/")) {
-      alert("Please select an image file");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Image must be smaller than 5MB");
-      return;
-    }
-
+    if (!file.type.startsWith("image/")) { alert("Please select an image file"); return; }
+    if (file.size > 5 * 1024 * 1024) { alert("Image must be smaller than 5MB"); return; }
     setUploadingImage(true);
     try {
       const formData = new FormData();
       formData.append("file", file);
-
       const response = await fetch(`/api/v1/admin/questions/${questionId}/image`, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
-        },
+        headers: { Authorization: `Bearer ${sessionStorage.getItem("access_token")}` },
         body: formData,
       });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
+      if (!response.ok) throw new Error("Upload failed");
       const data = await response.json();
-      setQuestions((prev) =>
-        prev.map((q) => (q.id === questionId ? { ...q, img_url: data.img_url } : q))
-      );
+      setQuestions((prev) => prev.map((q) => (q.id === questionId ? { ...q, img_url: data.img_url } : q)));
     } catch (err) {
       console.error("Image upload failed:", err);
       alert("Failed to upload image. Please try again.");
-    } finally {
-      setUploadingImage(false);
-    }
+    } finally { setUploadingImage(false); }
   };
 
   const handleCreate = async () => {
     if (isCreating) return;
     setIsCreating(true);
     setCreateSuccess(false);
-
     try {
       const payload = { ...form, task_type: form.exam_type === "writing" ? form.task_type : undefined };
       const created = await apiFetch<Question>("/admin/questions", { method: "POST", body: JSON.stringify(payload) });
-
       if (created && pendingImageFile) {
         setUploadingImage(true);
         try {
@@ -142,23 +228,15 @@ export default function AdminQuestionsPage() {
           formData.append("file", pendingImageFile);
           const response = await fetch(`/api/v1/admin/questions/${created.id}/image`, {
             method: "POST",
-            headers: {
-              Authorization: `Bearer ${sessionStorage.getItem("access_token")}`,
-            },
+            headers: { Authorization: `Bearer ${sessionStorage.getItem("access_token")}` },
             body: formData,
           });
           if (response.ok) {
             const data = await response.json();
-            await apiFetch(`/admin/questions/${created.id}`, {
-              method: "PATCH",
-              body: JSON.stringify({ img_url: data.img_url }),
-            });
+            await apiFetch(`/admin/questions/${created.id}`, { method: "PATCH", body: JSON.stringify({ img_url: data.img_url }) });
           }
-        } catch (err) {
-          console.error("Image upload after create failed:", err);
-        } finally {
-          setUploadingImage(false);
-        }
+        } catch (err) { console.error("Image upload after create failed:", err); }
+        finally { setUploadingImage(false); }
       }
       setPendingImageFile(null);
       setCreateSuccess(true);
@@ -193,217 +271,191 @@ export default function AdminQuestionsPage() {
   };
 
   const toggleActive = async (q: Question) => {
-    await apiFetch(`/admin/questions/${q.id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ is_active: !q.is_active }),
-    });
+    await apiFetch(`/admin/questions/${q.id}`, { method: "PATCH", body: JSON.stringify({ is_active: !q.is_active }) });
     fetchQuestions(page);
   };
 
   if (loading) {
-    return <div className="flex justify-center py-20"><span className="material-symbols-outlined text-[40px] text-primary animate-spin">progress_activity</span></div>;
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+      </div>
+    );
   }
 
+  const filterTabs = [
+    { key: "all", label: "All", count: counts.writing + counts.speaking },
+    { key: "writing", label: "Writing", count: counts.writing },
+    { key: "speaking", label: "Speaking", count: counts.speaking },
+  ];
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="font-heading text-display-md text-on-surface mb-1">Questions</h1>
-          <p className="text-body-md text-on-surface-variant">{questions.length} questions{filterType !== "all" ? ` (${filterType})` : ""}</p>
+    <div className="min-h-screen bg-slate-50/50">
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight mb-1">Questions</h1>
+            <p className="text-sm text-slate-500">{counts.writing + counts.speaking} total questions</p>
+          </div>
+          <button
+            onClick={() => setShowNew(true)}
+            className="bg-slate-900 hover:bg-blue-600 text-white font-medium px-4 py-2.5 rounded-xl shadow-sm transition-colors flex items-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            New Question
+          </button>
         </div>
-        <button onClick={() => setShowNew(true)} className="bg-primary text-on-primary font-bold px-4 py-2.5 rounded-xl hover:opacity-90 flex items-center gap-2">
-          <span className="material-symbols-outlined text-[18px]">add</span> New Question
-        </button>
-      </div>
 
-      {showNew && (
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 mb-6 shadow-sm">
-          <h3 className="font-heading text-headline-md text-on-surface mb-4">New Question</h3>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <select value={form.exam_type} onChange={(e) => setForm({ ...form, exam_type: e.target.value })} disabled={isCreating} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md disabled:opacity-50">
-              <option value="speaking">Speaking</option>
-              <option value="writing">Writing</option>
-            </select>
-            {form.exam_type === "writing" && (
-              <select value={form.task_type ?? ""} onChange={(e) => setForm({ ...form, task_type: e.target.value })} disabled={isCreating} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md disabled:opacity-50">
-                <option value="task1">Task 1</option>
-                <option value="task2">Task 2</option>
+        {/* New Question Form */}
+        {showNew && (
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 mb-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-4">New Question</h3>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <select value={form.exam_type} onChange={(e) => setForm({ ...form, exam_type: e.target.value })} disabled={isCreating} className="bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none">
+                <option value="speaking">Speaking</option>
+                <option value="writing">Writing</option>
               </select>
-            )}
-            <select value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: Number(e.target.value) })} disabled={isCreating} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md disabled:opacity-50">
-              <option value={1}>Easy</option>
-              <option value={2}>Medium</option>
-              <option value={3}>Hard</option>
-            </select>
-            <select value={form.module} onChange={(e) => setForm({ ...form, module: e.target.value })} disabled={isCreating} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md disabled:opacity-50">
-              <option value="general">General Training</option>
-              <option value="academic">Academic</option>
-            </select>
-          </div>
-          <input
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            placeholder="Short title (e.g. Community Service in Schools)"
-            disabled={isCreating}
-            className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md mb-3 disabled:opacity-50"
-          />
-          <RichTextEditor value={form.prompt_text} onChange={(value) => setForm({ ...form, prompt_text: value })} placeholder="Full question prompt..." className="mb-4" />
-          {form.exam_type === "writing" && form.task_type === "task1" && (
-            <div className="mb-4 space-y-2">
-              <label className="text-label-md text-on-surface font-medium">Image (optional)</label>
-              <div className="flex items-center gap-3">
-                <label htmlFor="image-upload" className={`flex items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-lg px-4 py-2 cursor-pointer text-body-md text-on-surface transition-colors ${isCreating || uploadingImage ? "opacity-50 cursor-not-allowed" : ""}`}>
-                  <span className="material-symbols-outlined text-[18px]">upload</span>
-                  {uploadingImage ? "Uploading..." : "Choose file"}
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  disabled={isCreating || uploadingImage}
-                  className="hidden"
-                  id="image-upload"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleImageUpload(file);
-                  }}
-                />
-                {form.img_url && (
-                  <span className="text-label-sm text-emerald-600">Image selected</span>
-                )}
-              </div>
-              {form.img_url && (
-                <img src={form.img_url} alt="Preview" className="max-h-40 rounded-lg border border-outline-variant" />
+              {form.exam_type === "writing" && (
+                <select value={form.task_type ?? ""} onChange={(e) => setForm({ ...form, task_type: e.target.value })} disabled={isCreating} className="bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none">
+                  <option value="task1">Task 1</option>
+                  <option value="task2">Task 2</option>
+                </select>
               )}
-              <label className="text-label-md text-on-surface font-medium">Image Description (for AI evaluation)</label>
-              <textarea
-                value={form.img_info || ""}
-                onChange={(e) => setForm({ ...form, img_info: e.target.value || null })}
-                placeholder="Describe the image in detail so the AI can evaluate the response accurately. Example: 'Line graph showing average monthly temperatures in London, New York, and Sydney from January to December. London ranges from 5°C to 19°C...'"
-                disabled={isCreating}
-                className="w-full bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md resize-none h-24 disabled:opacity-50"
-              />
+              <select value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: Number(e.target.value) })} disabled={isCreating} className="bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none">
+                <option value={1}>Easy</option>
+                <option value={2}>Medium</option>
+                <option value={3}>Hard</option>
+              </select>
+              <select value={form.module} onChange={(e) => setForm({ ...form, module: e.target.value })} disabled={isCreating} className="bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none">
+                <option value="general">General Training</option>
+                <option value="academic">Academic</option>
+              </select>
             </div>
-          )}
-          <div className="flex gap-3">
-            <button
-              onClick={handleCreate}
-              disabled={isCreating || uploadingImage || !form.prompt_text.trim()}
-              className="bg-primary text-on-primary font-bold px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
-            >
-              {isCreating ? (
-                <>
-                  <span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span>
-                  Creating...
-                </>
-              ) : "Create"}
-            </button>
-            <button
-              onClick={() => { if (!isCreating) setShowNew(false); }}
+            <input
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              placeholder="Short title (e.g. Community Service in Schools)"
               disabled={isCreating}
-              className="text-on-surface-variant hover:text-on-surface px-4 py-2 rounded-lg disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            {createSuccess && (
-              <span className="text-emerald-600 text-label-sm flex items-center gap-1">
-                <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                Created!
-              </span>
-            )}
-          </div>
-        </div>
-      )}
-
-      <div className="flex gap-2 mb-6">
-        <button onClick={() => handleFilterChange("all")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "all" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>All ({counts.writing + counts.speaking})</button>
-        <button onClick={() => handleFilterChange("writing")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "writing" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Writing ({counts.writing})</button>
-        <button onClick={() => handleFilterChange("speaking")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "speaking" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Speaking ({counts.speaking})</button>
-      </div>
-
-      <div className="space-y-3">
-        {questions.map((q) => (
-          <div key={q.id} className={`bg-surface-container-lowest rounded-xl border p-5 shadow-sm ${q.is_active ? "border-outline-variant" : "border-outline-variant/30 opacity-50"}`}>
-            {editing === q.id ? (
-              <div className="space-y-3">
-                <input value={q.title || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, title: e.target.value } : qq))} placeholder="Title" className="w-full bg-surface-container rounded-lg border border-outline-variant py-2 px-3 text-body-md" />
-                <RichTextEditor value={q.prompt_text} onChange={(value) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, prompt_text: value } : qq))} className="mb-3" />
-                {q.exam_type === "writing" && q.task_type === "task1" && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <label className="flex items-center gap-2 bg-surface-container hover:bg-surface-container-high border border-outline-variant rounded-lg px-3 py-1.5 cursor-pointer text-label-sm text-on-surface transition-colors">
-                        <span className="material-symbols-outlined text-[16px]">upload</span>
-                        {uploadingImage ? "Uploading..." : "Upload Image"}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          disabled={uploadingImage}
-                          className="hidden"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleImageUploadForQuestion(file, q.id);
-                          }}
-                        />
-                      </label>
-                      {q.img_url && <span className="text-label-sm text-emerald-600">Has image</span>}
-                    </div>
-                    {q.img_url && <img src={q.img_url} alt="Current" className="max-h-32 rounded border border-outline-variant" />}
-                    <textarea value={q.img_info || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, img_info: e.target.value } : qq))} placeholder="Image description for AI evaluation..." className="w-full bg-surface-container rounded-lg border border-outline-variant py-2 px-3 text-body-md resize-none h-20" />
-                  </div>
-                )}
-                <div className="flex gap-2 items-center">
-                  <select value={q.difficulty} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, difficulty: Number(e.target.value) } : qq))} className="bg-surface-container rounded-lg border border-outline-variant py-1.5 px-2 text-label-sm">
-                    <option value={1}>Easy</option>
-                    <option value={2}>Medium</option>
-                    <option value={3}>Hard</option>
-                  </select>
-                  <select value={q.module || "general"} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, module: e.target.value } : qq))} className="bg-surface-container rounded-lg border border-outline-variant py-1.5 px-2 text-label-sm">
-                    <option value="general">General</option>
-                    <option value="academic">Academic</option>
-                  </select>
-                  <button onClick={() => handleUpdate(q.id)} className="bg-primary text-on-primary text-label-sm font-bold px-3 py-1.5 rounded-lg">Save</button>
-                  <button onClick={() => setEditing(null)} className="text-on-surface-variant text-label-sm px-3 py-1.5">Cancel</button>
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm mb-3 disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+            />
+            <RichTextEditor value={form.prompt_text} onChange={(value) => setForm({ ...form, prompt_text: value })} placeholder="Full question prompt..." className="mb-4" />
+            {form.exam_type === "writing" && form.task_type === "task1" && (
+              <div className="mb-4 space-y-3">
+                <label className="text-sm font-medium text-slate-700">Image (optional)</label>
+                <div className="flex items-center gap-3">
+                  <label className={`flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl px-4 py-2 cursor-pointer text-sm text-slate-600 transition-colors ${isCreating || uploadingImage ? "opacity-50 cursor-not-allowed" : ""}`}>
+                    <Upload className="w-4 h-4" />
+                    {uploadingImage ? "Uploading..." : "Choose file"}
+                    <input type="file" accept="image/*" disabled={isCreating || uploadingImage} className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleImageUpload(file); }} />
+                  </label>
+                  {form.img_url && <span className="text-sm text-emerald-600 font-medium">Image selected</span>}
                 </div>
+                {form.img_url && <img src={form.img_url} alt="Preview" className="max-h-40 rounded-xl border border-slate-200" />}
+                <textarea
+                  value={form.img_info || ""}
+                  onChange={(e) => setForm({ ...form, img_info: e.target.value || null })}
+                  placeholder="Describe the image for AI evaluation..."
+                  disabled={isCreating}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm resize-none h-20 disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none"
+                />
               </div>
-            ) : (
-              <>
-                <div className="flex items-start justify-between gap-4 mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-label-sm bg-surface-container-high px-2 py-0.5 rounded capitalize">{q.exam_type}{q.task_type ? ` — ${q.task_type.replace("task", "Task ")}` : ""}</span>
-                    <span className="text-label-sm text-on-surface-variant">{q.difficulty === 1 ? "Easy" : q.difficulty === 2 ? "Medium" : "Hard"}</span>
-                    <span className={`text-label-sm px-2 py-0.5 rounded ${q.is_active ? "bg-emerald-100 text-emerald-700" : "bg-surface-container-high text-on-surface-variant"}`}>{q.is_active ? "Active" : "Inactive"}</span>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => toggleActive(q)} className="text-label-sm text-on-surface-variant hover:text-on-surface px-2 py-1 rounded">{q.is_active ? "Disable" : "Enable"}</button>
-                    <button onClick={() => setEditing(q.id)} className="text-label-sm text-primary hover:underline px-2 py-1">Edit</button>
-                    <button onClick={() => handleDelete(q.id)} className="text-label-sm text-error hover:underline px-2 py-1">Delete</button>
+            )}
+            <div className="flex gap-3">
+              <button onClick={handleCreate} disabled={isCreating || uploadingImage || !form.prompt_text.trim()} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl disabled:opacity-50 flex items-center gap-2 transition-colors">
+                {isCreating ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating...</> : "Create Question"}
+              </button>
+              <button onClick={() => { if (!isCreating) setShowNew(false); }} disabled={isCreating} className="px-4 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 disabled:opacity-50 transition-colors">Cancel</button>
+              {createSuccess && <span className="flex items-center gap-1 text-emerald-600 text-sm font-medium"><CheckCircle className="w-4 h-4" /> Created!</span>}
+            </div>
+          </div>
+        )}
+
+        {/* Filter Tabs */}
+        <div className="bg-slate-100/80 rounded-xl p-1 inline-flex gap-1 mb-6">
+          {filterTabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => handleFilterChange(tab.key)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${filterType === tab.key ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+            >
+              {tab.label} ({tab.count})
+            </button>
+          ))}
+        </div>
+
+        {/* Questions List */}
+        <div className="space-y-3">
+          {questions.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-12 text-center">
+              <FileQuestion className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+              <p className="text-slate-500">No questions found</p>
+            </div>
+          ) : (
+            questions.map((q) => (
+              editing === q.id ? (
+                <div key={q.id} className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+                  <input value={q.title || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, title: e.target.value } : qq))} placeholder="Title" className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-sm mb-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none" />
+                  <RichTextEditor value={q.prompt_text} onChange={(value) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, prompt_text: value } : qq))} className="mb-3" />
+                  {q.exam_type === "writing" && q.task_type === "task1" && (
+                    <div className="space-y-2 mb-3">
+                      <div className="flex items-center gap-3">
+                        <label className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg px-3 py-1.5 cursor-pointer text-sm text-slate-600 transition-colors">
+                          <Upload className="w-4 h-4" />
+                          {uploadingImage ? "Uploading..." : "Upload Image"}
+                          <input type="file" accept="image/*" disabled={uploadingImage} className="hidden" onChange={(e) => { const file = e.target.files?.[0]; if (file) handleImageUploadForQuestion(file, q.id); }} />
+                        </label>
+                        {q.img_url && <span className="text-sm text-emerald-600 font-medium">Has image</span>}
+                      </div>
+                      {q.img_url && <img src={q.img_url} alt="Current" className="max-h-32 rounded border border-slate-200" />}
+                      <textarea value={q.img_info || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, img_info: e.target.value } : qq))} placeholder="Image description..." className="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-sm resize-none h-20 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none" />
+                    </div>
+                  )}
+                  <div className="flex gap-2 items-center">
+                    <select value={q.difficulty} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, difficulty: Number(e.target.value) } : qq))} className="bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-sm">
+                      <option value={1}>Easy</option><option value={2}>Medium</option><option value={3}>Hard</option>
+                    </select>
+                    <select value={q.module || "general"} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, module: e.target.value } : qq))} className="bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-sm">
+                      <option value="general">General</option><option value="academic">Academic</option>
+                    </select>
+                    <button onClick={() => handleUpdate(q.id)} className="bg-blue-600 text-white text-sm font-semibold px-4 py-1.5 rounded-lg">Save</button>
+                    <button onClick={() => setEditing(null)} className="text-slate-500 text-sm px-3 py-1.5">Cancel</button>
                   </div>
                 </div>
-                <RichTextRenderer content={q.prompt_text} className="text-body-md text-on-surface" />
-              </>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-6">
-          <button
-            onClick={() => { setPage(page - 1); fetchQuestions(page - 1); }}
-            disabled={page <= 1}
-            className="px-4 py-2 rounded-lg text-label-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-          <span className="text-body-md text-on-surface-variant">Page {page} of {totalPages}</span>
-          <button
-            onClick={() => { setPage(page + 1); fetchQuestions(page + 1); }}
-            disabled={page >= totalPages}
-            className="px-4 py-2 rounded-lg text-label-sm font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
+              ) : (
+                <QuestionCard
+                  key={q.id}
+                  question={q}
+                  onEdit={() => setEditing(q.id)}
+                  onDelete={() => handleDelete(q.id)}
+                  onToggle={() => toggleActive(q)}
+                />
+              )
+            ))
+          )}
         </div>
-      )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 mt-8">
+            <button
+              onClick={() => { setPage(page - 1); fetchQuestions(page - 1); }}
+              disabled={page <= 1}
+              className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <span className="text-sm text-slate-600">Page {page} of {totalPages}</span>
+            <button
+              onClick={() => { setPage(page + 1); fetchQuestions(page + 1); }}
+              disabled={page >= totalPages}
+              className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
