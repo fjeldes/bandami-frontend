@@ -29,7 +29,7 @@ export function FAQ() {
         </div>
         <div className="space-y-4">
           {faqs.map((faq, idx) => (
-            <details key={faq.q} className="group ds-card-interactive p-card-padding cursor-pointer [&_summary::-webkit-details-marker]:hidden animate-fade-in-up" style={{ animationDelay: `${0.3 + idx * 0.1}s` }}>
+            <details key={faq.q} className="group bg-surface-container-lowest rounded-2xl shadow-card hover:shadow-card-float transition-all duration-300 border border-transparent hover:border-outline-variant/50 p-card-padding cursor-pointer [&_summary::-webkit-details-marker]:hidden animate-fade-in-up" style={{ animationDelay: `${0.3 + idx * 0.1}s` }}>
               <summary className="flex items-center justify-between font-body-lg text-body-lg text-on-surface font-medium">
                 <span>{faq.q}</span>
                 <span className="material-symbols-outlined transition duration-300 group-open:-rotate-180">expand_more</span>
