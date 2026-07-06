@@ -41,7 +41,7 @@ export function Hero() {
           </a>
         </div>
 
-        <div className="mt-section-gap relative w-full max-w-4xl mx-auto bg-surface-container-lowest rounded-2xl shadow-card hover:shadow-card-float transition-all duration-300 border border-transparent hover:border-outline-variant/50 overflow-hidden flex flex-col">
+        <div className="mt-section-gap relative w-full max-w-4xl mx-auto ds-card-interactive overflow-hidden flex flex-col">
           <div className="h-9 sm:h-10 border-b border-outline-variant/50 bg-surface-container-low flex items-center px-4 gap-2">
             <div className="w-2.5 h-2.5 rounded-full bg-error/30" />
             <div className="w-2.5 h-2.5 rounded-full bg-secondary/30" />

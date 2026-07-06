@@ -62,7 +62,7 @@ function PricingContent() {
         {isLoading ? (
           <div className="flex justify-center gap-6">
             {[1, 2].map((i) => (
-              <div key={i} className="bg-surface-container-lowest rounded-2xl shadow-card hover:shadow-card-float transition-all duration-300 border border-transparent hover:border-outline-variant/50 p-6 w-[340px]">
+              <div key={i} className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 w-[340px]">
                 <div className="animate-pulse space-y-4">
                   <div className="h-6 bg-surface-container-high rounded-lg w-2/3" />
                   <div className="h-10 bg-surface-container-high rounded-lg w-1/2" />
@@ -85,7 +85,7 @@ function PricingContent() {
                 style={{ animationDelay: `${idx * 0.1}s` }}
               >
                 {plan.slug === "free" && (
-                  <div className="h-full bg-surface-container-lowest rounded-2xl shadow-card hover:shadow-card-float transition-all duration-300 border border-transparent hover:border-outline-variant/50 p-6 flex flex-col">
+                  <div className="h-full bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-6 flex flex-col shadow-sm">
                     <h3 className="text-headline-md font-bold text-on-surface mb-1">{plan.name}</h3>
                     <div className="flex items-baseline gap-1 mb-6">
                     <span className="font-mono text-display-md font-extrabold text-primary">$0</span>
