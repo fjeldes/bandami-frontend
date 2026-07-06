@@ -209,7 +209,7 @@ export default function AdminExamsPage() {
                           <tr key={e.id} className="hover:bg-slate-50/80 transition-colors">
                             <td className="py-4 px-6">
                               <div className="flex items-center gap-3">
-                                <UserAvatar name={user?.full_name} email={user?.email || "?"} />
+                                <UserAvatar name={user?.full_name ?? null} email={user?.email || "?"} />
                                 <div>
                                   <p className="text-sm font-medium text-slate-900">{user?.full_name || "Anonymous"}</p>
                                   <p className="text-xs text-slate-500">{user?.email || "—"}</p>
