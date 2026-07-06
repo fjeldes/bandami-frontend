@@ -69,7 +69,7 @@ function SubscriptionSection() {
     setActionLoading(false);
   };
 
-  if (loading) return <section className="ds-card"><div className="animate-pulse bg-surface-container-high rounded-lg h-20" /></section>;
+  if (loading) return <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5"><div className="animate-pulse bg-surface-container-high rounded-lg h-20" /></section>;
   if (!subData?.has_subscription) return null;
 
   const periodEnd = subData.current_period_end ? new Date(subData.current_period_end).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : "—";
@@ -79,7 +79,7 @@ function SubscriptionSection() {
   const isWeekPass = isOneTime || subData.plan_interval === "week";
 
   return (
-    <section className="ds-card">
+    <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
       <h3 className="text-body-md font-semibold text-on-surface mb-4">Subscription</h3>
       <div className="space-y-4">
         {/* Plan details card */}
@@ -146,7 +146,7 @@ function SubscriptionSection() {
                   window.open(result.url, "_blank");
                 }
               } catch { showError("Could not open billing portal"); }
-            }} className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 px-4 py-2 rounded-xl text-label-sm font-semibold transition-all">
+            }} className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all">
               Manage Subscription
             </button>
           </div>
@@ -182,7 +182,7 @@ function SubscriptionSection() {
       {/* Switch Plan Modal */}
       {switchModal && typeof document !== "undefined" && createPortal(
         <div className="fixed inset-0 z-[9999] bg-black/40 flex items-center justify-center p-4" onClick={() => setSwitchModal(null)}>
-          <div className="ds-card max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl border border-outline-variant/40 p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
             <h4 className="text-headline-md font-bold text-on-surface mb-2">Switch Plan</h4>
             <p className="text-body-md text-on-surface-variant mb-6">
               {isOneTime
@@ -192,7 +192,7 @@ function SubscriptionSection() {
             <div className="flex gap-3 justify-end">
               <button onClick={() => setSwitchModal(null)} className="px-4 py-2 rounded-xl text-on-surface-variant text-label-sm font-semibold hover:bg-surface-container-high transition-colors">Cancel</button>
               <button onClick={() => switchPlan(switchModal)} disabled={actionLoading}
-                className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 px-4 py-2 rounded-xl text-label-sm font-semibold transition-all disabled:opacity-50">
+                className="bg-primary text-on-primary px-4 py-2 rounded-xl text-label-sm font-semibold hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50">
                 {actionLoading ? "Switching..." : "Confirm Switch"}
               </button>
             </div>
@@ -202,7 +202,7 @@ function SubscriptionSection() {
       )}
       {cancelModal && createPortal(
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setCancelModal(false)}>
-          <div className="ds-card max-w-sm w-full" onClick={e => e.stopPropagation()}>
+          <div className="bg-surface-container-lowest rounded-xl shadow-xl p-6 max-w-sm w-full" onClick={e => e.stopPropagation()}>
             <h3 className="text-body-md font-semibold text-on-surface mb-2">Cancel Subscription</h3>
             <p className="text-label-sm text-on-surface-variant mb-6">
               Your Pro access will continue until the end of the billing period. After that, you'll be switched to the Free plan. Continue?
@@ -355,7 +355,7 @@ export default function SettingsPage() {
       )}
 
       {/* Profile */}
-      <section className="ds-card">
+      <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
         <h3 className="text-body-md font-semibold text-on-surface mb-4">Profile</h3>
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0">
@@ -402,7 +402,7 @@ export default function SettingsPage() {
 
       {/* Password */}
       {!user?.google_id && (
-      <section className="ds-card">
+      <section className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
         <h3 className="text-body-md font-semibold text-on-surface mb-4">Password</h3>
         {changePw ? (
           <div className="space-y-3">
@@ -419,7 +419,7 @@ export default function SettingsPage() {
               <input type="password" value={confirmPw} onChange={(e) => setConfirmPw(e.target.value)} className="w-full bg-surface-container border border-outline-variant rounded-lg px-3 py-2 text-body-md text-on-surface outline-none focus:border-primary mt-1" />
             </div>
             <div className="flex gap-2">
-              <button onClick={savePassword} disabled={savingPw} className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 px-4 py-2 rounded-lg text-label-sm font-semibold transition-opacity">{savingPw ? "Saving..." : "Change Password"}</button>
+              <button onClick={savePassword} disabled={savingPw} className="bg-primary text-on-primary px-4 py-2 rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity">{savingPw ? "Saving..." : "Change Password"}</button>
               <button onClick={() => setChangePw(false)} className="text-on-surface-variant text-label-sm hover:underline">Cancel</button>
             </div>
           </div>

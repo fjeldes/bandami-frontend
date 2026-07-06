@@ -444,12 +444,12 @@ export default function SpeakingTestPage() {
         {error === "provider_overloaded" ? (
           <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
             <p className="text-body-md text-error mb-3">The AI evaluation service is temporarily unavailable. This happens when many users are practicing at the same time. Your work is safe — please try again in a moment.</p>
-            <button onClick={handleSubmit} className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 px-5 py-2.5 rounded-lg text-label-sm font-semibold">Retry</button>
+            <button onClick={handleSubmit} className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold">Retry</button>
           </div>
         ) : error ? (
           <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
             <p className="text-body-md text-error mb-3">{error}</p>
-            <button onClick={handleSubmit} className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 px-5 py-2.5 rounded-lg text-label-sm font-semibold">Retry</button>
+            <button onClick={handleSubmit} className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold">Retry</button>
           </div>
         ) : null}
       </div>
@@ -475,7 +475,7 @@ export default function SpeakingTestPage() {
         )}
         {phase === "mic-test" && (
         <div className="max-w-2xl mx-auto mt-8 md:mt-12">
-            <div className="ds-card relative overflow-hidden">
+            <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-8 md:p-10 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
               <div className="text-center mb-8">
                 <span className="material-symbols-outlined text-[48px] text-primary mb-3">mic</span>
@@ -535,7 +535,7 @@ export default function SpeakingTestPage() {
                       Test Again
                     </button>
                     <button onClick={isSingleMode ? startSingleTest : () => setPhase("intro")}
-                      className="px-6 py-2.5 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold transition-opacity active:scale-95 shadow-sm">
+                      className="px-6 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity active:scale-95 shadow-sm">
                       Continue
                     </button>
                   </div>
@@ -546,7 +546,7 @@ export default function SpeakingTestPage() {
                     <p className="text-body-md text-on-surface-variant">Click the button below to allow microphone access</p>
                   </div>
                   <div className="flex justify-center">
-                    <button onClick={testMic} className="w-20 h-20 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 flex items-center justify-center active:scale-95 transition-all shadow-lg">
+                    <button onClick={testMic} className="w-20 h-20 rounded-full bg-primary text-on-primary flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-lg">
                       <span className="material-symbols-outlined text-[40px]" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
                     </button>
                   </div>
@@ -558,7 +558,7 @@ export default function SpeakingTestPage() {
 
         {phase === "ready" && !recordingActive && (
           <div className="space-y-6">
-            <div className="ds-card">
+            <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6">
               <div className="flex items-center gap-2 mb-4">
                 <span className="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-label-sm uppercase">{targetQuestion.module || "part2"}</span>
               </div>
@@ -567,7 +567,7 @@ export default function SpeakingTestPage() {
             </div>
             <div className="flex justify-center gap-3">
               <button onClick={() => setPhase("mic-test")} className="px-5 py-2.5 rounded-full border border-outline-variant text-on-surface-variant text-label-sm hover:bg-surface-container transition-colors">Back</button>
-              <button onClick={beginSingleRecording} className="px-5 py-2.5 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold transition-opacity flex items-center gap-2">
+              <button onClick={beginSingleRecording} className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">fiber_manual_record</span> Start Recording
               </button>
             </div>
@@ -586,7 +586,7 @@ export default function SpeakingTestPage() {
                 {fmt(timeLeft)}
               </span>
             </div>
-            <div className="ds-card text-left">
+            <div className="bg-surface-container-lowest rounded-2xl border-2 border-primary/20 p-6 text-left shadow-md">
               <h3 className="text-label-sm font-semibold text-primary mb-3 uppercase tracking-widest">Topic Card</h3>
               <RichTextRenderer content={targetQuestion.prompt_text} className="text-body-lg text-on-surface leading-relaxed" />
             </div>
@@ -610,7 +610,7 @@ export default function SpeakingTestPage() {
             </div>
             <button
               onClick={beginSingleRecordingAfterPrep}
-              className="px-5 py-2.5 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold transition-opacity"
+              className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity"
             >
               Skip Timer · Start Speaking
             </button>
@@ -625,7 +625,7 @@ export default function SpeakingTestPage() {
               </div>
               <RichTextRenderer content={targetQuestion?.prompt_text || ""} className="text-body-md text-on-surface-variant leading-relaxed line-clamp-3" />
             </div>
-            <div className="ds-card flex flex-col items-center relative overflow-hidden">
+            <div className="bg-surface-container-low rounded-2xl border border-outline-variant/20 p-10 flex flex-col items-center relative overflow-hidden">
               <div className="absolute inset-0 opacity-5 pointer-events-none">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-3xl -mr-32 -mt-32" />
                 <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary rounded-full blur-3xl -ml-32 -mb-32" />
@@ -687,7 +687,7 @@ export default function SpeakingTestPage() {
                 <button className="p-2 text-on-surface-variant hover:text-primary transition-colors">
                   <span className="material-symbols-outlined text-[28px]">replay_10</span>
                 </button>
-                <button className="w-16 h-16 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 flex items-center justify-center shadow-lg active:scale-95 transition-all"
+                <button className="w-16 h-16 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all"
                   onClick={() => { const a = document.getElementById("previewAudio") as HTMLAudioElement; if (a) a.paused ? a.play() : a.pause(); }}>
                   <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
                 </button>
@@ -705,7 +705,7 @@ export default function SpeakingTestPage() {
                 <span className="material-symbols-outlined text-[18px]">refresh</span> Re-record
               </button>
               <button onClick={handleSingleSubmit}
-                className="flex-[1.5] py-3 rounded-xl bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-accent/20">
+                className="flex-[1.5] py-3 rounded-xl bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
                 <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span>
                 Submit for AI Analysis
                 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -729,7 +729,7 @@ export default function SpeakingTestPage() {
         <h2 className="text-headline-md font-bold text-on-surface mb-2">Full IELTS Test</h2>
         <p className="text-body-md text-on-surface-variant mb-6">Coming soon. Practice individual questions below.</p>
         <button onClick={() => router.push("/speaking")}
-          className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 px-6 py-3 rounded-full text-label-sm font-semibold transition-opacity">
+          className="bg-primary text-on-primary px-6 py-3 rounded-full text-label-sm font-semibold hover:opacity-90 transition-opacity">
           Back to Speaking
         </button>
       </div>
@@ -775,7 +775,7 @@ export default function SpeakingTestPage() {
                 <div key={i} className={`flex flex-col items-center text-center p-3 rounded-lg border transition-all ${
                   s.active ? "border-primary bg-primary-container/5 scale-105 shadow-sm" : s.done ? "border-outline-variant/30 bg-surface-container-low" : "border-outline-variant/30 bg-surface-container-low opacity-60"
                 }`}>
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center mb-2 ${s.active ? "bg-accent text-on-accent" : s.done ? "bg-accent text-on-accent" : "bg-surface-container-highest text-on-surface-variant"}`}>
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center mb-2 ${s.active ? "bg-primary text-on-primary" : s.done ? "bg-primary text-on-primary" : "bg-surface-container-highest text-on-surface-variant"}`}>
                     <span className="material-symbols-outlined text-[18px]" style={s.active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{s.icon}</span>
                   </div>
                   <span className="text-label-sm text-on-surface font-bold">{s.label}</span>
@@ -815,7 +815,7 @@ export default function SpeakingTestPage() {
                     Test Again
                   </button>
                   <button onClick={() => setPhase("intro")}
-                    className="px-6 py-2.5 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold transition-opacity active:scale-95 shadow-sm">
+                    className="px-6 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity active:scale-95 shadow-sm">
                     Continue
                   </button>
                 </div>
@@ -826,7 +826,7 @@ export default function SpeakingTestPage() {
                   <p className="text-body-md text-on-surface-variant">Click the button below to allow microphone access</p>
                 </div>
                 <div className="flex justify-center">
-                  <button onClick={testMic} className="w-20 h-20 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 flex items-center justify-center active:scale-95 transition-all shadow-lg">
+                  <button onClick={testMic} className="w-20 h-20 rounded-full bg-primary text-on-primary flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-lg">
                     <span className="material-symbols-outlined text-[40px]" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
                   </button>
                 </div>
@@ -863,7 +863,7 @@ export default function SpeakingTestPage() {
           </div>
           <div className="flex gap-3 justify-center">
             <button onClick={() => setPhase("mic-test")} className="px-5 py-2.5 rounded-full border border-outline-variant text-on-surface-variant text-label-sm hover:bg-surface-container transition-colors">Back</button>
-            <button onClick={beginExam} className="px-5 py-2.5 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold transition-opacity">Start Test</button>
+            <button onClick={beginExam} className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity">Start Test</button>
           </div>
         </div>
       )}
@@ -891,7 +891,7 @@ export default function SpeakingTestPage() {
                 {questionIdx + 1 < currentQuestions.length ? "Stop & Next" : "Stop & Finish"}
               </button>
             ) : (
-              <button onClick={() => { startTimer(PART_TIMERS[currentPart], nextQuestion); startRecording(); }} className="px-5 py-2.5 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold transition-opacity">
+              <button onClick={() => { startTimer(PART_TIMERS[currentPart], nextQuestion); startRecording(); }} className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity">
                 Start Answer
               </button>
             )}
@@ -916,7 +916,7 @@ export default function SpeakingTestPage() {
             <RichTextRenderer content={currentQuestion.prompt_text} className="text-body-lg text-on-surface leading-relaxed" />
           </div>
           <p className="text-body-md text-on-surface-variant">Prepare your response. Do not speak yet.</p>
-          <button onClick={beginPart2Speak} className="px-5 py-2.5 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold transition-opacity">Skip Timer · Start Speaking</button>
+          <button onClick={beginPart2Speak} className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity">Skip Timer · Start Speaking</button>
         </div>
       )}
 
@@ -945,7 +945,7 @@ export default function SpeakingTestPage() {
             </div>
             <div className="relative z-10">
               <div className="absolute inset-0 rounded-full border-4 border-primary/20 scale-150 animate-pulse" style={{ animationDuration: "2s" }} />
-              <div className="w-20 h-20 rounded-full bg-accent flex items-center justify-center shadow-lg relative z-10">
+              <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center shadow-lg relative z-10">
                 <span className="material-symbols-outlined text-[32px] text-on-primary" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
               </div>
             </div>
@@ -979,7 +979,7 @@ export default function SpeakingTestPage() {
               ))}
             </div>
             <div className="flex items-center justify-center gap-6 mb-4">
-              <button className="w-16 h-16 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 flex items-center justify-center shadow-lg active:scale-95 transition-all"
+              <button className="w-16 h-16 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all"
                 onClick={() => { const a = document.getElementById("previewAudioFull") as HTMLAudioElement; if (a) a.paused ? a.play() : a.pause(); }}>
                 <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
               </button>
@@ -991,7 +991,7 @@ export default function SpeakingTestPage() {
             <button onClick={() => router.push("/speaking")} className="flex-1 py-3 rounded-xl border-2 border-outline-variant text-on-surface text-label-sm font-semibold hover:bg-surface-variant/20 transition-all flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-[18px]">delete</span> Discard
             </button>
-            <button onClick={handleSubmit} className="flex-[1.5] py-3 rounded-xl bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-accent/20">
+            <button onClick={handleSubmit} className="flex-[1.5] py-3 rounded-xl bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
               <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span>
               Submit for AI Analysis
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -1006,7 +1006,7 @@ export default function SpeakingTestPage() {
           <span className="material-symbols-outlined text-[56px] text-primary mb-4">record_voice_over</span>
           <h2 className="text-headline-md font-bold text-on-surface mb-2">Speaking Test</h2>
           <p className="text-body-md text-on-surface-variant mb-8 max-w-md mx-auto">{allQuestions.length} questions across {partOrder.length} parts.</p>
-          <button onClick={() => setPhase("mic-test")} className="px-6 py-3 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold transition-opacity flex items-center gap-2 mx-auto">
+          <button onClick={() => setPhase("mic-test")} className="px-6 py-3 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 mx-auto">
             <span className="material-symbols-outlined text-[20px]">mic</span> Start Speaking Test
           </button>
         </div>

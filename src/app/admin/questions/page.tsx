@@ -211,13 +211,13 @@ export default function AdminQuestionsPage() {
           <h1 className="font-heading text-display-md text-on-surface mb-1">Questions</h1>
           <p className="text-body-md text-on-surface-variant">{questions.length} questions{filterType !== "all" ? ` (${filterType})` : ""}</p>
         </div>
-        <button onClick={() => setShowNew(true)} className="bg-accent text-on-accent hover:bg-accent-hover font-bold px-4 py-2.5 rounded-xl flex items-center gap-2">
+        <button onClick={() => setShowNew(true)} className="bg-primary text-on-primary font-bold px-4 py-2.5 rounded-xl hover:opacity-90 flex items-center gap-2">
           <span className="material-symbols-outlined text-[18px]">add</span> New Question
         </button>
       </div>
 
       {showNew && (
-        <div className="ds-card p-5 mb-6">
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 mb-6 shadow-sm">
           <h3 className="font-heading text-headline-md text-on-surface mb-4">New Question</h3>
           <div className="grid grid-cols-2 gap-4 mb-4">
             <select value={form.exam_type} onChange={(e) => setForm({ ...form, exam_type: e.target.value })} disabled={isCreating} className="bg-surface-container rounded-lg border border-outline-variant py-2.5 px-3 text-body-md disabled:opacity-50">
@@ -288,7 +288,7 @@ export default function AdminQuestionsPage() {
             <button
               onClick={handleCreate}
               disabled={isCreating || uploadingImage || !form.prompt_text.trim()}
-              className="bg-accent text-on-accent hover:bg-accent-hover font-bold px-4 py-2 rounded-lg disabled:opacity-50 flex items-center gap-2"
+              className="bg-primary text-on-primary font-bold px-4 py-2 rounded-lg hover:opacity-90 disabled:opacity-50 flex items-center gap-2"
             >
               {isCreating ? (
                 <>
@@ -315,14 +315,14 @@ export default function AdminQuestionsPage() {
       )}
 
       <div className="flex gap-2 mb-6">
-        <button onClick={() => handleFilterChange("all")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "all" ? "bg-accent text-on-accent" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>All ({counts.writing + counts.speaking})</button>
-        <button onClick={() => handleFilterChange("writing")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "writing" ? "bg-accent text-on-accent" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Writing ({counts.writing})</button>
-        <button onClick={() => handleFilterChange("speaking")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "speaking" ? "bg-accent text-on-accent" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Speaking ({counts.speaking})</button>
+        <button onClick={() => handleFilterChange("all")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "all" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>All ({counts.writing + counts.speaking})</button>
+        <button onClick={() => handleFilterChange("writing")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "writing" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Writing ({counts.writing})</button>
+        <button onClick={() => handleFilterChange("speaking")} className={`px-4 py-2 rounded-lg text-label-sm font-medium ${filterType === "speaking" ? "bg-primary text-on-primary" : "bg-surface-container text-on-surface-variant hover:bg-surface-container-high"}`}>Speaking ({counts.speaking})</button>
       </div>
 
       <div className="space-y-3">
         {questions.map((q) => (
-          <div key={q.id} className={`ds-card p-5 ${q.is_active ? "" : "opacity-50"}`}>
+          <div key={q.id} className={`bg-surface-container-lowest rounded-xl border p-5 shadow-sm ${q.is_active ? "border-outline-variant" : "border-outline-variant/30 opacity-50"}`}>
             {editing === q.id ? (
               <div className="space-y-3">
                 <input value={q.title || ""} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, title: e.target.value } : qq))} placeholder="Title" className="w-full bg-surface-container rounded-lg border border-outline-variant py-2 px-3 text-body-md" />
@@ -360,7 +360,7 @@ export default function AdminQuestionsPage() {
                     <option value="general">General</option>
                     <option value="academic">Academic</option>
                   </select>
-                  <button onClick={() => handleUpdate(q.id)} className="bg-accent text-on-accent hover:bg-accent-hover text-label-sm font-bold px-3 py-1.5 rounded-lg">Save</button>
+                  <button onClick={() => handleUpdate(q.id)} className="bg-primary text-on-primary text-label-sm font-bold px-3 py-1.5 rounded-lg">Save</button>
                   <button onClick={() => setEditing(null)} className="text-on-surface-variant text-label-sm px-3 py-1.5">Cancel</button>
                 </div>
               </div>

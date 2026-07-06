@@ -34,7 +34,7 @@ export default function AdminPlansPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {plans.map((p) => (
-          <div key={p.id} className="ds-card p-5">
+          <div key={p.id} className="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <h3 className="font-heading text-headline-md text-on-surface">{p.name}</h3>

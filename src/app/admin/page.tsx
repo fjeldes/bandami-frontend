@@ -53,7 +53,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((c) => (
-          <div key={c.label} className="ds-card p-5">
+          <div key={c.label} className="bg-surface-container-lowest rounded-xl border border-outline-variant p-5 shadow-sm">
             <div className="flex items-center gap-2 mb-3">
               <span className={`material-symbols-outlined ${c.color}`}>{c.icon}</span>
               <span className="text-label-sm text-on-surface-variant">{c.label}</span>

@@ -131,12 +131,12 @@ export default function WritingTestPage() {
         {error === "provider_overloaded" ? (
           <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
             <p className="text-body-md text-error mb-3">The AI evaluation service is temporarily unavailable. This happens when many users are practicing at the same time. Your work is safe — please try again in a moment.</p>
-            <button onClick={handleSubmit} className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold px-5 py-2.5 rounded-lg transition-opacity">Retry</button>
+            <button onClick={handleSubmit} className="bg-primary text-on-primary text-label-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Retry</button>
           </div>
         ) : error ? (
           <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
             <p className="text-body-md text-error mb-3">{error}</p>
-            <button onClick={handleSubmit} className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold px-5 py-2.5 rounded-lg transition-opacity">Retry</button>
+            <button onClick={handleSubmit} className="bg-primary text-on-primary text-label-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Retry</button>
           </div>
         ) : null}
       </div>
@@ -162,7 +162,7 @@ export default function WritingTestPage() {
         </div>
       )}
       <div className="flex flex-col lg:flex-row gap-6 min-h-[60vh] md:h-[calc(100dvh-9rem)]">
-      <div className="lg:w-1/2 ds-card overflow-y-auto">
+      <div className="lg:w-1/2 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 overflow-y-auto ghost-shadow">
         <div className="flex items-center justify-between mb-4">
           <div className="flex gap-2">
             <span className="px-3 py-1 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm tracking-wide uppercase">{question.task_type?.replace("task", "Task ")}</span>
@@ -185,7 +185,7 @@ export default function WritingTestPage() {
       </div>
 
       <div className="lg:w-1/2 flex flex-col gap-4">
-        <div className="ds-card">
+        <div className="flex items-center justify-between bg-surface-container-lowest rounded-2xl border border-outline-variant/30 px-5 py-3 ghost-shadow">
           <div className="flex items-center gap-3">
             <span className="material-symbols-outlined text-outline text-[20px]">timer</span>
             <span className={`font-mono text-data-lg ${timeLeft < 300 ? "text-error" : "text-on-surface"}`}>{formatTime(timeLeft)}</span>
@@ -208,7 +208,7 @@ export default function WritingTestPage() {
         )}
 
         <button onClick={handleSubmit} disabled={!text.trim()}
-          className="w-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 font-label-md text-label-md py-3.5 rounded-full active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+          className="w-full bg-primary text-on-primary font-label-md text-label-md py-3.5 rounded-full hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
           <span className="material-symbols-outlined text-[20px]">send</span>
           Submit for Evaluation
         </button>

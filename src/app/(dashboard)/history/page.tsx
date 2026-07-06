@@ -98,7 +98,7 @@ export default function ReportsPage() {
               { label: "Best Band", value: bestBand?.toFixed(1) ?? "—", icon: "emoji_events", sub: bestBand ? `CEFR ${cefrLevel(bestBand)}` : "—" },
               { label: "Writing vs Speaking", value: writingAvg && speakingAvg ? `W ${writingAvg.toFixed(1)} · S ${speakingAvg.toFixed(1)}` : "—", icon: "compare_arrows", sub: writingExams.length + speakingExams.length > 0 ? `${writingExams.length}W / ${speakingExams.length}S` : "No data" },
             ].map((s) => (
-              <div key={s.label} className="ds-card">
+              <div key={s.label} className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="material-symbols-outlined text-[18px] text-primary">{s.icon}</span>
                   <span className="text-label-sm text-on-surface-variant">{s.label}</span>
@@ -111,7 +111,7 @@ export default function ReportsPage() {
 
           {/* Error Patterns (Premium) */}
           {isPremium && errorPatterns.length > 0 && (
-            <div className="ds-card mb-5">
+            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-5">
               <h3 className="text-body-md font-semibold text-on-surface mb-4">Common Error Patterns</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {errorPatterns.map((p: any) => (
@@ -135,7 +135,7 @@ export default function ReportsPage() {
 
           {/* Band Trend + Type Breakdown */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
-            <div className="lg:col-span-2 ds-card">
+            <div className="lg:col-span-2 bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
               <h3 className="text-body-md font-semibold text-on-surface mb-4">Band Score Trend</h3>
               {trendPoints.length >= 2 ? (
                 <div>
@@ -149,7 +149,7 @@ export default function ReportsPage() {
                 <p className="text-body-md text-on-surface-variant/50 py-4 text-center">Complete at least 2 exams to see your trend.</p>
               )}
             </div>
-            <div className="ds-card">
+            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
               <h3 className="text-body-md font-semibold text-on-surface mb-4">By Exam Type</h3>
               <div className="space-y-4">
                 <div>
@@ -171,7 +171,7 @@ export default function ReportsPage() {
           </div>
 
           {/* Exam List */}
-          <div className="ds-card">
+          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm">
             <div className="p-5 border-b border-outline-variant/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <h3 className="text-body-md font-semibold text-on-surface">Exam History</h3>
               <div className="flex gap-1.5">

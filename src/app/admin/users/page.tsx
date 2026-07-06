@@ -73,7 +73,7 @@ export default function AdminUsersPage() {
         </div>
       ) : (
         <>
-          <div className="ds-card overflow-hidden">
+          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-outline-variant text-label-sm text-on-surface-variant">

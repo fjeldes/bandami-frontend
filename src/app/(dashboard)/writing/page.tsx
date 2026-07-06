@@ -80,7 +80,7 @@ export default function WritingListPage() {
         <div className="text-center py-16">
           <span className="material-symbols-outlined text-[48px] text-error mb-4">error</span>
           <p className="text-body-md text-error mb-4">{error}</p>
-          <button onClick={() => window.location.reload()} className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 px-4 py-2 rounded-lg text-label-sm font-semibold transition-opacity">Retry</button>
+          <button onClick={() => window.location.reload()} className="bg-primary text-on-primary px-4 py-2 rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity">Retry</button>
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20 font-body-md text-body-md text-on-surface-variant">No questions found.</div>
@@ -91,7 +91,7 @@ export default function WritingListPage() {
             const bestScore = scores[q.id];
 
             return (
-              <div key={q.id} className="ds-card-interactive animate-fade-in-up" style={{ animationDelay: `${Math.min(idx * 0.05, 1)}s` }}>
+              <div key={q.id} className="group relative bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-4 hover:shadow-lg hover:border-primary/20 flex flex-col h-full animate-fade-in-up" style={{ animationDelay: `${Math.min(idx * 0.05, 1)}s` }}>
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex flex-wrap gap-1.5">
                     <span className="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm uppercase tracking-wide">{q.task_type?.replace("task", "Task ")}</span>
@@ -112,7 +112,7 @@ export default function WritingListPage() {
                       </div>
                       <Link
                         href={`/writing/test?id=${q.id}`}
-                        className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold transition-all shadow-sm"
+                        className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all shadow-sm"
                       >
                         <span className="material-symbols-outlined text-[16px]">edit</span>
                         Retake
@@ -121,7 +121,7 @@ export default function WritingListPage() {
                   ) : (
                     <Link
                       href={`/writing/test?id=${q.id}`}
-                      className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 text-label-sm font-semibold transition-all shadow-sm"
+                      className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all shadow-sm"
                     >
                       <span className="material-symbols-outlined text-[16px]">edit</span>
                       Start Test

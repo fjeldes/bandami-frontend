@@ -14,7 +14,7 @@ export function CookieConsent() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[9998] ds-card border-t border-outline-variant/30 shadow-lg p-4 md:p-5">
+    <div className="fixed bottom-0 left-0 right-0 z-[9998] bg-surface-container-lowest border-t border-outline-variant/30 shadow-lg p-4 md:p-5">
       <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-3">
         <p className="text-body-sm text-on-surface-variant flex-1">
           We use cookies to secure your session and improve your experience. See our{" "}
@@ -23,7 +23,7 @@ export function CookieConsent() {
         <div className="flex gap-2 shrink-0">
           <button
             onClick={() => { localStorage.setItem("cookie_consent", "true"); setVisible(false); }}
-            className="bg-accent text-on-accent font-semibold px-5 py-2 rounded-xl text-label-sm hover:bg-accent-hover transition-all hover:-translate-y-0.5"
+            className="bg-primary text-on-primary font-semibold px-5 py-2 rounded-lg text-label-sm hover:opacity-90 transition-opacity"
           >
             Accept
           </button>

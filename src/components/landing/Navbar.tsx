@@ -43,7 +43,7 @@ export function Navbar() {
             <span className="material-symbols-outlined text-[16px]">expand_more</span>
           </button>
           {resourcesOpen && (
-            <div className="absolute top-full left-0 mt-2 w-56 ds-card-interactive z-50 overflow-hidden">
+            <div className="absolute top-full left-0 mt-2 w-56 bg-surface-container-lowest rounded-xl border border-outline-variant shadow-lg z-50 overflow-hidden">
               <Link
                 href="/resources/writing"
                 onClick={() => setResourcesOpen(false)}

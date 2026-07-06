@@ -51,7 +51,7 @@ export function Pricing() {
               style={{ animationDelay: `${0.4 + idx * 0.12}s` }}>
 
               {plan.slug === "free" && (
-                <div className="h-full ds-card-interactive p-6 flex flex-col">
+                <div className="h-full bg-surface-container-lowest ghost-shadow border border-outline-variant/30 rounded-2xl p-6 flex flex-col">
                   <h3 className="font-headline-md text-headline-md text-on-surface mb-1">{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-6">
                     <span className="font-display-md text-display-md text-on-surface font-bold">$0</span>
