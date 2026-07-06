@@ -44,7 +44,7 @@ function LockedPeek({ text }: { text: string }) {
       <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-end pb-2 pt-8 bg-gradient-to-t from-surface-container-lowest to-transparent">
         <span className="material-symbols-outlined text-outline text-[20px] mb-1">lock</span>
         <span className="text-label-sm text-on-surface-variant mb-2">Full detailed feedback is locked</span>
-        <button onClick={() => redirectToCheckout("premium")} className="bg-primary text-on-primary font-semibold px-4 py-2 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all">
+        <button onClick={() => redirectToCheckout("premium")} className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 font-semibold px-4 py-2 rounded-xl text-sm transition-all">
           Unlock Pro · $14.99/mo
         </button>
       </div>
@@ -175,7 +175,7 @@ export default function SpeakingResultsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left Column */}
         <div className="lg:col-span-4 flex flex-col gap-5">
-          <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 flex flex-col items-center justify-center relative overflow-hidden border border-outline-variant/40">
+          <div className="ds-card flex flex-col items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary-fixed/20 to-transparent pointer-events-none" />
             <h3 className="text-body-md text-on-surface-variant mb-4 text-center z-10">Overall Band Score</h3>
 
@@ -208,7 +208,7 @@ export default function SpeakingResultsPage() {
 
             <div className="w-full grid grid-cols-2 gap-2.5 mt-4 z-10">
               <Link href="/speaking" className="w-full bg-primary-container text-on-primary-container py-2 rounded-lg text-label-sm font-semibold text-center hover:scale-[0.98] active:scale-[0.97] transition-all">Try Another</Link>
-              <Link href="/dashboard" className="w-full bg-primary text-on-primary py-2 rounded-lg text-label-sm font-semibold text-center hover:scale-[0.98] active:scale-[0.97] transition-all">Dashboard</Link>
+              <Link href="/dashboard" className="w-full bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 py-2 rounded-lg text-label-sm font-semibold text-center transition-all">Dashboard</Link>
             </div>
           </div>
         </div>
@@ -282,7 +282,7 @@ export default function SpeakingResultsPage() {
                   <span className="material-symbols-outlined text-[28px] text-outline">lock</span>
                   <span className="text-label-md font-semibold text-on-surface-variant">Detailed Scoring (Pro)</span>
                   <p className="text-label-sm text-on-surface-variant/70 text-center max-w-[280px]">Get detailed scoring for all sub-criteria: fluency, coherence, vocabulary, grammar, and pronunciation.</p>
-                  <button onClick={() => redirectToCheckout("premium")} className="mt-2 bg-primary text-on-primary font-semibold px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
+                  <button onClick={() => redirectToCheckout("premium")} className="mt-2 bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 font-semibold px-4 py-2 rounded-lg text-sm transition-opacity">
                     Unlock Pro · $14.99/mo
                   </button>
                 </div>

@@ -75,14 +75,14 @@ export default function AdminSettingsPage() {
           <h1 className="text-headline-md font-bold text-on-surface mb-1">Settings</h1>
           <p className="text-body-md text-on-surface-variant">Global application configuration</p>
         </div>
-        <button onClick={saveAll} disabled={saving} className="bg-primary text-on-primary font-semibold px-5 py-2.5 rounded-lg text-label-sm hover:opacity-90 transition-opacity disabled:opacity-50">
+        <button onClick={saveAll} disabled={saving} className="bg-accent text-on-accent hover:bg-accent-hover font-semibold px-5 py-2.5 rounded-lg text-label-sm transition-opacity disabled:opacity-50">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
       <div className="space-y-6">
         {Object.entries(categories).map(([cat, keys]) => (
-          <section key={cat} className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
+          <section key={cat} className="ds-card p-5">
             <h3 className="text-body-md font-semibold text-on-surface mb-4">{cat}</h3>
             <div className="space-y-3">
               {keys.map((key) => {

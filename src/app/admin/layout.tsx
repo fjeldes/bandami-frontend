@@ -48,7 +48,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {mobileNav && (
         <div className="md:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/30" onClick={() => setMobileNav(false)} />
-          <nav className="absolute left-0 top-0 bottom-0 w-64 bg-surface-container-lowest shadow-xl flex flex-col overflow-y-auto">
+          <nav className="absolute left-0 top-0 bottom-0 w-64 ds-card-interactive flex flex-col overflow-y-auto">
             <div className="p-5 border-b border-outline-variant/30 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">shield_person</span>
               <span className="font-headline-md text-headline-md font-bold text-primary">Admin</span>
@@ -76,7 +76,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       )}
 
-      <nav className="hidden md:flex w-60 bg-surface-container-lowest border-r border-outline-variant/30 flex-col shrink-0">
+      <nav className="hidden md:flex w-60 ds-card-interactive border-r border-outline-variant/30 flex-col shrink-0">
         <div className="p-5 border-b border-outline-variant/30 flex items-center gap-2">
           <span className="material-symbols-outlined filled text-primary">shield_person</span>
           <span className="font-headline-md text-headline-md font-bold text-primary">Admin</span>

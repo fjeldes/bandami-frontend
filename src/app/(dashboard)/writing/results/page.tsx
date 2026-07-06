@@ -44,7 +44,7 @@ function LockedPeek({ text }: { text: string }) {
       <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center justify-end pb-2 pt-8 bg-gradient-to-t from-surface-container-lowest to-transparent">
         <span className="material-symbols-outlined text-outline text-[20px] mb-1">lock</span>
         <span className="text-label-sm text-on-surface-variant mb-2">Full detailed feedback is locked</span>
-        <Link href="/pricing" className="bg-primary text-on-primary font-semibold px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
+        <Link href="/pricing" className="bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 font-semibold px-4 py-2 rounded-lg text-sm transition-opacity">
           Unlock Pro · $14.99/mo
         </Link>
       </div>
@@ -104,7 +104,7 @@ function EssayUpgrade({ evaluation, isPremium }: { evaluation: Evaluation; isPre
     return (
       <div className="mt-5 space-y-5">
         {/* Original */}
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
+        <div className="ds-card">
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-[20px] text-on-surface-variant">article</span>
             <h3 className="text-body-md font-semibold text-on-surface">Your Original Essay · {currentCefr} Level</h3>
@@ -141,11 +141,11 @@ function EssayUpgrade({ evaluation, isPremium }: { evaluation: Evaluation; isPre
 
   if (!isPremium) {
     return (
-      <div className="mt-5 bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 text-center">
+        <div className="mt-5 ds-card text-center">
         <span className="material-symbols-outlined text-[32px] text-outline mb-2">lock</span>
         <h3 className="text-body-md font-semibold text-on-surface mb-1">Upgrade Your Essay to {targetCefr} Level</h3>
         <p className="text-label-sm text-on-surface-variant mb-4">Get your essay rewritten at {targetCefr} with improved vocabulary and structure.</p>
-        <Link href="/pricing" className="inline-block bg-primary text-on-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:opacity-90 transition-opacity">
+        <Link href="/pricing" className="inline-block bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 font-semibold px-5 py-2.5 rounded-lg text-sm transition-opacity">
           Unlock Pro · $14.99/mo
         </Link>
       </div>
@@ -161,7 +161,7 @@ function EssayUpgrade({ evaluation, isPremium }: { evaluation: Evaluation; isPre
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <span className="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-label-sm">Current: {currentCefr} (Band {currentBand.toFixed(1)})</span>
         <span className="material-symbols-outlined text-primary text-[20px]">arrow_forward</span>
-        <span className="px-3 py-1 rounded-full bg-primary text-on-primary text-label-sm font-semibold">Target: {targetCefr} (Band 7.0+)</span>
+        <span className="px-3 py-1 rounded-full bg-accent text-on-accent text-label-sm font-semibold">Target: {targetCefr} (Band 7.0+)</span>
       </div>
       <p className="text-label-sm text-on-surface-variant mb-4">Our AI will rewrite your essay at {targetCefr} level — improving vocabulary, grammar, and cohesion while keeping your original ideas.</p>
       {upgradeError && (
@@ -170,7 +170,7 @@ function EssayUpgrade({ evaluation, isPremium }: { evaluation: Evaluation; isPre
       <button
         onClick={handleUpgrade}
         disabled={upgrading}
-        className="flex items-center gap-2 bg-primary text-on-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:opacity-90 transition-opacity disabled:opacity-50">
+        className="flex items-center gap-2 bg-accent text-on-accent hover:bg-accent-hover hover:-translate-y-0.5 font-semibold px-5 py-2.5 rounded-lg text-sm transition-opacity disabled:opacity-50">
         <span className={`material-symbols-outlined text-[16px] ${upgrading ? "animate-spin" : ""}`}>{upgrading ? "progress_activity" : "auto_awesome"}</span>
         {upgrading ? "Rewriting your essay..." : `Rewrite at ${targetCefr} Level`}
       </button>
@@ -256,7 +256,7 @@ export default function WritingResultsPage() {
 
       {/* Question Prompt */}
       {evaluation.prompt_text && (
-        <div className="mb-6 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5">
+        <div className="mb-6 ds-card">
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-primary text-[20px]">quiz</span>
             <h2 className="text-body-md font-semibold text-on-surface">Question</h2>
@@ -267,7 +267,7 @@ export default function WritingResultsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Score Card */}
-        <div className="lg:col-span-4 bg-surface-container-lowest rounded-2xl shadow-sm p-5 flex flex-col items-center justify-center border border-outline-variant/40 relative">
+        <div className="lg:col-span-4 ds-card flex flex-col items-center justify-center relative">
           <div className="absolute top-3 right-3 bg-surface/80 backdrop-blur-sm px-2 py-1 rounded-full flex items-center gap-1 border border-outline-variant/50 shadow-sm">
             <span className="material-symbols-outlined text-[14px] text-primary">verified</span>
             <span className="text-label-sm text-on-surface-variant">AI Evaluated</span>
@@ -303,7 +303,7 @@ export default function WritingResultsPage() {
         <div className="lg:col-span-8 flex flex-col gap-5">
           {/* General Feedback — always visible */}
           {generalFeedback && (
-            <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 border border-outline-variant/40">
+            <div className="ds-card">
               <div className="flex items-center gap-2 mb-3">
                 <span className="material-symbols-outlined text-primary-tint text-[20px]">lightbulb</span>
                 <h3 className="text-body-md font-semibold text-on-surface">Quick Assessment</h3>
@@ -314,14 +314,14 @@ export default function WritingResultsPage() {
 
           {/* Criteria */}
           {!hasCriteria && !locked ? (
-            <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/40 text-center">
+            <div className="ds-card text-center">
               <span className="material-symbols-outlined text-[32px] text-outline mb-2">hourglass_empty</span>
               <p className="text-body-md text-on-surface-variant">Criteria data is being evaluated...</p>
             </div>
           ) : locked && !hasCriteria ? (
             <div className="grid grid-cols-2 gap-3 opacity-60">
               {["Task Response", "Coherence & Cohesion", "Lexical Resource", "Grammatical Range"].map((label) => (
-                <div key={label} className="bg-surface-container-lowest rounded-xl p-3 border border-dashed border-outline-variant/50">
+                <div key={label} className="ds-card p-3">
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-label-sm text-on-surface-variant">{label}</span>
                     <span className="text-label-sm text-outline bg-surface-variant px-2 py-0.5 rounded">--</span>
@@ -339,7 +339,7 @@ export default function WritingResultsPage() {
                 const comment = data?.comment;
                 const colors = score != null ? scoreColor(score) : { badge: "bg-surface-variant text-on-surface-variant", bar: "bg-surface-variant" };
                 return (
-                  <div key={c.key} className="bg-surface-container-lowest rounded-xl shadow-sm p-3.5 border border-outline-variant/40">
+                  <div key={c.key} className="ds-card">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="material-symbols-outlined text-[18px] text-primary-tint">{c.icon}</span>
                       <h4 className="text-label-sm font-semibold text-on-surface">{c.label}</h4>
@@ -471,7 +471,7 @@ export default function WritingResultsPage() {
 
       {/* Paragraph Feedback (Premium) */}
       {paragraphFeedback.length > 0 && !locked && (
-        <div className="mt-5 bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
+        <div className="mt-5 ds-card">
           <h3 className="text-body-md font-semibold text-on-surface mb-4">Paragraph-by-Paragraph Analysis</h3>
           <div className="space-y-3">
             {paragraphFeedback.map((p: any, i: number) => (
@@ -498,7 +498,7 @@ export default function WritingResultsPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
             {corrections.map((c, i) => (
-              <div key={i} className="bg-surface-container-lowest rounded-xl shadow-sm p-4 border border-outline-variant/40 flex flex-col gap-4">
+              <div key={i} className="ds-card flex flex-col gap-4">
                 <div className="bg-error/5 p-3 rounded-lg border border-error/10">
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-error-container text-on-error-container mb-2 inline-block">Original</span>
                   <p className="text-body-md text-on-surface"><span className="line-through decoration-error decoration-2 text-error/80">{c.original}</span></p>
@@ -521,7 +521,7 @@ export default function WritingResultsPage() {
 
       {/* Your Essay — hidden if already showing in upgrade section */}
       {evaluation.user_submission && !evaluation.upgraded_text && (
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5 mb-5 mt-5">
+        <div className="ds-card mb-5 mt-5">
           <div className="flex items-center gap-2 mb-3">
             <span className="material-symbols-outlined text-[20px] text-primary">article</span>
             <h3 className="text-body-md font-semibold text-on-surface">Your Essay</h3>

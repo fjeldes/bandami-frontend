@@ -79,7 +79,7 @@ export default function AdminUserDetailPage() {
       </div>
 
       {/* Profile Card */}
-      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5 mb-6">
+      <div className="ds-card p-5 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
           <div>
             <h2 className="text-headline-md font-bold text-on-surface">{user.full_name || "Unknown"}</h2>
@@ -117,7 +117,7 @@ export default function AdminUserDetailPage() {
           <button
             onClick={saveChanges}
             disabled={saving}
-            className="bg-primary text-on-primary font-semibold px-4 py-1.5 rounded-lg text-label-sm hover:opacity-90 transition-opacity disabled:opacity-60"
+            className="bg-accent text-on-accent hover:bg-accent-hover font-semibold px-4 py-1.5 rounded-lg text-label-sm transition-opacity disabled:opacity-60"
           >
             {saving ? "Saving..." : "Save Changes"}
           </button>
@@ -129,11 +129,11 @@ export default function AdminUserDetailPage() {
         <div className="lg:col-span-2">
           <h3 className="text-headline-md font-bold text-on-surface mb-3">Recent Exams ({exams.length})</h3>
           {exams.length === 0 ? (
-            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 text-center">
+            <div className="ds-card p-6 text-center">
               <p className="text-body-md text-on-surface-variant">No exams found.</p>
             </div>
           ) : (
-            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+            <div className="ds-card overflow-hidden">
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-outline-variant text-label-sm text-on-surface-variant">
@@ -171,13 +171,13 @@ export default function AdminUserDetailPage() {
           <div>
             <h3 className="text-headline-md font-bold text-on-surface mb-3">Subscriptions</h3>
             {subscriptions.length === 0 ? (
-              <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 text-center">
+              <div className="ds-card p-4 text-center">
                 <p className="text-label-sm text-on-surface-variant">No subscriptions</p>
               </div>
             ) : (
               <div className="flex flex-col gap-2">
                 {subscriptions.map((s: any) => (
-                  <div key={s.id} className="bg-surface-container-lowest rounded-xl border border-outline-variant p-3">
+                  <div key={s.id} className="ds-card p-3">
                     <div className="flex justify-between items-center mb-1">
                       <span className={`text-label-sm font-semibold px-2 py-0.5 rounded-full ${
                         s.status === "active" ? "bg-emerald-100 text-emerald-800" : "bg-surface-container-high text-on-surface-variant"
@@ -194,14 +194,14 @@ export default function AdminUserDetailPage() {
 
           <div>
             <h3 className="text-headline-md font-bold text-on-surface mb-3">Credit Packs</h3>
-            {credit_packs.length === 0 ? (
-              <div className="bg-surface-container-lowest rounded-xl border border-outline-variant p-4 text-center">
+{credit_packs.length === 0 ? (
+              <div className="ds-card p-4 text-center">
                 <p className="text-label-sm text-on-surface-variant">No credit packs</p>
               </div>
             ) : (
               <div className="flex flex-col gap-2">
                 {credit_packs.map((c: any) => (
-                  <div key={c.id} className="bg-surface-container-lowest rounded-xl border border-outline-variant p-3">
+                  <div key={c.id} className="ds-card p-3">
                     <div className="flex justify-between items-center">
                       <span className="text-body-md text-on-surface font-semibold">{c.credits_remaining}/{c.credits_total}</span>
                       <span className="text-label-sm text-on-surface-variant">{c.purchased_at ? new Date(c.purchased_at).toLocaleDateString() : ""}</span>

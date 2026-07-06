@@ -76,7 +76,7 @@ export default function AdminExamsPage() {
         </div>
       ) : (
         <>
-          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+          <div className="ds-card overflow-hidden">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-outline-variant text-label-sm text-on-surface-variant">

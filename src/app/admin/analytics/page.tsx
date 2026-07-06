@@ -90,7 +90,7 @@ export default function AdminAnalyticsPage() {
           { label: "Conversions", value: summary.conversions_total, sub: `${conversionRate}% rate · ${summary.conversions_this_month} this month`, icon: "trending_up", color: "text-emerald-600" },
           { label: "Evals This Month", value: summary.monthly_evals_premium, sub: `${summary.monthly_evals_free} free · ${summary.monthly_evals_premium} pro`, icon: "assignment", color: "text-secondary-container" },
         ].map((c) => (
-          <div key={c.label} className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-4">
+          <div key={c.label} className="ds-card p-4">
             <div className="flex items-center gap-2 mb-2">
               <span className={`material-symbols-outlined text-[18px] ${c.color}`}>{c.icon}</span>
               <span className="text-label-sm text-on-surface-variant">{c.label}</span>
@@ -103,12 +103,12 @@ export default function AdminAnalyticsPage() {
 
       {/* DAU Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
+        <div className="ds-card p-5">
           <h3 className="text-body-md font-semibold text-on-surface mb-1">Daily Active Users</h3>
           <p className="text-label-sm text-on-surface-variant mb-4">Last 30 days</p>
           <SparkBars data={dau} colorFree="bg-surface-variant" colorPremium="bg-primary" />
         </div>
-        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
+        <div className="ds-card p-5">
           <h3 className="text-body-md font-semibold text-on-surface mb-1">Daily Evaluations</h3>
           <p className="text-label-sm text-on-surface-variant mb-4">Last 30 days · completed only</p>
           <SparkBars data={evaluations_per_day} colorFree="bg-surface-variant" colorPremium="bg-primary" />
@@ -116,7 +116,7 @@ export default function AdminAnalyticsPage() {
       </div>
 
       {/* Tier Breakdown Table */}
-      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant/40 shadow-sm p-5">
+      <div className="ds-card p-5">
         <h3 className="text-body-md font-semibold text-on-surface mb-4">Tier Breakdown</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-label-sm">

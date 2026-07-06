@@ -54,7 +54,7 @@ export default function AdminExamDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           {/* Meta */}
-          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">
+          <div className="ds-card p-5">
             <div className="flex flex-wrap items-center gap-4 mb-4">
               <span className="capitalize text-body-md font-semibold text-on-surface">{exam.exam_type} {exam.task_type ? `Task ${exam.task_type.replace("task", "")}` : ""}</span>
               <span className={`text-label-sm px-2.5 py-0.5 rounded-full ${exam.status === "completed" ? "bg-emerald-100 text-emerald-800" : exam.status === "failed" ? "bg-error-container text-error" : "bg-surface-container-high text-on-surface-variant"}`}>
@@ -76,7 +76,7 @@ export default function AdminExamDetailPage() {
 
           {/* Criteria */}
           {Object.keys(criteria).length > 0 && (
-            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">
+            <div className="ds-card p-5">
               <h3 className="text-body-md font-semibold text-on-surface mb-4">Criteria Breakdown</h3>
               <div className="grid grid-cols-2 gap-3">
                 {Object.entries(criteria).map(([key, val]: [string, any]) => (
@@ -94,7 +94,7 @@ export default function AdminExamDetailPage() {
 
           {/* Feedback */}
           {ev?.detailed_feedback && (
-            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">
+            <div className="ds-card p-5">
               <h3 className="text-body-md font-semibold text-on-surface mb-3">Detailed Feedback</h3>
               <p className="text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">{ev.detailed_feedback}</p>
             </div>
@@ -102,7 +102,7 @@ export default function AdminExamDetailPage() {
 
           {/* Grammar Corrections */}
           {ev?.grammar_corrections?.length > 0 && (
-            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">
+            <div className="ds-card p-5">
               <h3 className="text-body-md font-semibold text-on-surface mb-3">Grammar Corrections</h3>
               <div className="space-y-3">
                 {ev.grammar_corrections.map((c: any, i: number) => (
@@ -123,7 +123,7 @@ export default function AdminExamDetailPage() {
         {/* Sidebar */}
         <div className="space-y-4">
           {ev && (
-            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">
+            <div className="ds-card p-5">
               <h3 className="text-body-md font-semibold text-on-surface mb-3">Evaluation Info</h3>
               <div className="space-y-2 text-label-sm">
                 <div className="flex justify-between"><span className="text-on-surface-variant">Provider</span><span className="text-on-surface capitalize">{ev.provider_used}</span></div>
@@ -133,7 +133,7 @@ export default function AdminExamDetailPage() {
               </div>
             </div>
           )}
-          <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-5">
+          <div className="ds-card p-5">
             <h3 className="text-body-md font-semibold text-on-surface mb-3">Actions</h3>
             <div className="space-y-2">
               <button onClick={() => { navigator.clipboard.writeText(JSON.stringify(exam, null, 2)); }} className="w-full text-left text-label-sm text-primary hover:underline">
