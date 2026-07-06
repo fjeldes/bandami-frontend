@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
   if (sent) {
     return (
       <div className="bg-surface text-on-surface antialiased min-h-screen flex items-center justify-center p-margin-mobile md:p-gutter">
-        <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-gutter md:p-[32px] text-center">
+        <main className="w-full max-w-md ds-card-interactive p-gutter md:p-[32px] text-center">
           <span className="material-symbols-outlined text-[64px] text-primary mb-4">mark_email_read</span>
           <h1 className="font-heading text-headline-md text-on-surface mb-2">Check your inbox</h1>
           <p className="text-body-md text-on-surface-variant mb-6">
@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
         style={{ backgroundImage: "radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.05), transparent 25%), radial-gradient(circle at 85% 30%, rgba(254, 166, 25, 0.05), transparent 25%)" }}
       />
 
-      <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-gutter md:p-[32px] z-10 relative">
+      <main className="w-full max-w-md ds-card-interactive p-gutter md:p-[32px] z-10 relative">
         <header className="text-center mb-8">
           <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority />
           <p className="text-body-md text-on-surface-variant mt-2">Reset your password</p>

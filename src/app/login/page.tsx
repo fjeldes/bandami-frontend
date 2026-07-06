@@ -66,7 +66,7 @@ export default function LoginPage() {
         }}
       />
 
-      <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-gutter md:p-[32px] z-10 relative animate-scale-in">
+      <main className="w-full max-w-md ds-card-interactive p-gutter md:p-[32px] z-10 relative animate-scale-in">
         <Link href="/" className="inline-flex items-center gap-1 text-label-sm text-on-surface-variant hover:text-on-surface transition-colors mb-6">
           <span className="material-symbols-outlined text-[16px]">arrow_back</span>
           Back to Home

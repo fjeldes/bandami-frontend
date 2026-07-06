@@ -51,7 +51,7 @@ function AuthCallbackInner() {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-surface">
-        <div className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-8 text-center">
+        <div className="w-full max-w-md ds-card-interactive p-8 text-center">
           <span className="material-symbols-outlined text-[48px] text-error mb-4">error</span>
           <h1 className="text-headline-md font-bold text-on-surface mb-2">Authentication Failed</h1>
           <p className="text-body-md text-on-surface-variant mb-6">{error}</p>

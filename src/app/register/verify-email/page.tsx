@@ -34,7 +34,7 @@ export default function VerifyEmailPage() {
       <div className="absolute inset-0 z-0 opacity-40 pointer-events-none"
         style={{ backgroundImage: "radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.05), transparent 25%), radial-gradient(circle at 85% 30%, rgba(254, 166, 25, 0.05), transparent 25%)" }}
       />
-      <main className="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 p-gutter md:p-[32px] z-10 relative text-center">
+      <main className="w-full max-w-md ds-card-interactive p-gutter md:p-[32px] z-10 relative text-center">
         <span className="material-symbols-outlined text-[64px] text-primary mb-4">mark_email_read</span>
         <h1 className="font-heading text-headline-md text-on-surface mb-2">Check your inbox</h1>
         <p className="text-body-md text-on-surface-variant mb-8">

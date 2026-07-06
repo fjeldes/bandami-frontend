@@ -317,7 +317,7 @@ export default function SpeakingResultsPage() {
                 const hasSubData = subs.some((s) => criteria[s.key] != null);
 
                 return (
-                  <div key={c.key} className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/40 hover:shadow-md transition-shadow">
+                  <div key={c.key} className="ds-card-interactive">
                     {/* Main criterion header */}
                     <div className="p-3.5">
                       <div className="flex items-center gap-2 mb-2">

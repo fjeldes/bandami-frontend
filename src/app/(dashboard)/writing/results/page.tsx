@@ -372,7 +372,7 @@ export default function WritingResultsPage() {
                 const isExpanded = expandedCriterion === c.key;
 
                 return (
-                  <div key={c.key} className="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/40 hover:shadow-md transition-shadow">
+                  <div key={c.key} className="ds-card-interactive">
                     <div className="p-3.5">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="material-symbols-outlined text-[18px] text-primary-tint">{c.icon}</span>
