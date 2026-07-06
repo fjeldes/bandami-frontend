@@ -2,9 +2,153 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { Mic, MessageCircle, Brain, Zap, RotateCcw, Play, Lock, BarChart3 } from "lucide-react";
 import { getQuestions, getUserExams } from "@/lib/api";
-import type { Question, ExamWithEvaluation } from "@/lib/types";
+import type { Question } from "@/lib/types";
 import { useAuthStore } from "@/hooks/useAuth";
+
+const PART_CONFIG = {
+  part1: {
+    color: "blue",
+    bgLight: "bg-blue-50",
+    bgContainer: "bg-blue-100/50",
+    textDark: "text-blue-700",
+    textLight: "text-blue-600",
+    ring: "ring-blue-200",
+    border: "border-blue-200",
+    icon: MessageCircle,
+    label: "Part 1",
+    sublabel: "Interview",
+  },
+  part2: {
+    color: "indigo",
+    bgLight: "bg-indigo-50",
+    bgContainer: "bg-indigo-100/50",
+    textDark: "text-indigo-700",
+    textLight: "text-indigo-600",
+    ring: "ring-indigo-200",
+    border: "border-indigo-200",
+    icon: Brain,
+    label: "Part 2",
+    sublabel: "Long Turn",
+  },
+  part3: {
+    color: "amber",
+    bgLight: "bg-amber-50",
+    bgContainer: "bg-amber-100/50",
+    textDark: "text-amber-700",
+    textLight: "text-amber-600",
+    ring: "ring-amber-200",
+    border: "border-amber-200",
+    icon: Zap,
+    label: "Part 3",
+    sublabel: "Discussion",
+  },
+  general: {
+    color: "emerald",
+    bgLight: "bg-emerald-50",
+    bgContainer: "bg-emerald-100/50",
+    textDark: "text-emerald-700",
+    textLight: "text-emerald-600",
+    ring: "ring-emerald-200",
+    border: "border-emerald-200",
+    icon: Mic,
+    label: "General",
+    sublabel: "Practice",
+  },
+} as const;
+
+type PartKey = keyof typeof PART_CONFIG;
+
+function getPartKey(module: string | undefined): PartKey {
+  const key = (module || "part2") as PartKey;
+  return PART_CONFIG[key] ? key : "part2";
+}
+
+function BandBadge({ score }: { score: number }) {
+  const getBandColor = (band: number) => {
+    if (band >= 8) return { bg: "bg-emerald-100", text: "text-emerald-700", ring: "ring-emerald-200" };
+    if (band >= 6.5) return { bg: "bg-blue-100", text: "text-blue-700", ring: "ring-blue-200" };
+    if (band >= 5.5) return { bg: "bg-amber-100", text: "text-amber-700", ring: "ring-amber-200" };
+    return { bg: "bg-red-100", text: "text-red-700", ring: "ring-red-200" };
+  };
+  const colors = getBandColor(score);
+  return (
+    <div className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg font-mono text-sm font-bold ${colors.bg} ${colors.text} ring-1 ${colors.ring}`}>
+      <BarChart3 className="w-3.5 h-3.5" />
+      {score.toFixed(1)}
+    </div>
+  );
+}
+
+function PartBadge({ config }: { config: (typeof PART_CONFIG)[keyof typeof PART_CONFIG] }) {
+  const Icon = config.icon;
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className={`w-7 h-7 rounded-lg ${config.bgLight} flex items-center justify-center`}>
+        <Icon className={`w-4 h-4 ${config.textDark}`} />
+      </div>
+      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${config.bgLight} ${config.textDark} ring-1 ${config.ring}`}>
+        {config.label}
+      </span>
+      <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${config.bgContainer} ${config.textLight}`}>
+        {config.sublabel}
+      </span>
+    </div>
+  );
+}
+
+function SpeakingCard({ question, isTaken, bestScore, index }: { question: Question; isTaken: boolean; bestScore?: number; index: number }) {
+  const partKey = getPartKey(question.module);
+  const config = PART_CONFIG[partKey];
+
+  return (
+    <div
+      className="group relative flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden animate-fade-in-up"
+      style={{ animationDelay: `${Math.min(index * 0.05, 0.5)}s` }}
+    >
+      {/* Color accent bar */}
+      <div className={`absolute left-0 top-0 bottom-0 w-1.5 bg-${config.color}-500`} />
+
+      <div className="p-5 pl-6 flex flex-col flex-grow">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <PartBadge config={config} />
+          {isTaken && bestScore != null && <BandBadge score={bestScore} />}
+        </div>
+
+        {/* Title */}
+        <h3 className="text-base font-semibold text-slate-800 mb-3 group-hover:text-slate-900 transition-colors flex-grow line-clamp-2">
+          {question.title || "Speaking Practice Topic"}
+        </h3>
+
+        {/* Footer */}
+        <div className="pt-4 border-t border-slate-100 mt-auto">
+          {isTaken ? (
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-slate-500 font-medium">Previous best</span>
+              <Link
+                href={`/speaking/test?id=${question.id}`}
+                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${config.bgLight} ${config.textDark} hover:shadow-md active:scale-95 hover:-translate-y-0.5`}
+              >
+                <RotateCcw className="w-4 h-4" />
+                Retake
+              </Link>
+            </div>
+          ) : (
+            <Link
+              href={`/speaking/test?id=${question.id}`}
+              className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md transition-all duration-200 bg-slate-800 hover:bg-slate-900 hover:shadow-lg active:scale-[0.98] hover:-translate-y-0.5 group`}
+            >
+              <Mic className="w-4 h-4 group-hover:animate-pulse transition-transform" />
+              Start Test
+            </Link>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function SpeakingListPage() {
   const user = useAuthStore((s) => s.user);
@@ -42,107 +186,119 @@ export default function SpeakingListPage() {
 
   const filtered = filter === "all" ? questions : questions.filter((q) => (q.module || "part2") === filter);
 
-  const partLabel: Record<string, string> = {
-    part1: "Part 1 · Interview",
-    part2: "Part 2 · Long Turn",
-    part3: "Part 3 · Discussion",
-  };
+  const filterTabs = [
+    { key: "all" as const, label: "All Parts", icon: Mic },
+    { key: "part1" as const, label: "Part 1", icon: MessageCircle },
+    { key: "part2" as const, label: "Part 2", icon: Brain },
+    { key: "part3" as const, label: "Part 3", icon: Zap },
+  ];
 
   return (
-    <div>
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-4">
-          <div>
-            <h1 className="text-headline-md font-bold text-on-surface mb-1">Speaking Practice</h1>
-            <p className="text-body-md text-on-surface-variant max-w-3xl">
-              Practice individual speaking topics to improve your fluency.
-            </p>
+    <div className="min-h-screen bg-slate-50/50">
+      <div className="max-w-6xl mx-auto px-4 py-10">
+        {/* Header */}
+        <div className="mb-10">
+          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-2">Speaking Practice</h2>
+          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">
+            Master IELTS Speaking with timed practice. Build confidence across all three parts of the exam.
+          </p>
+        </div>
+
+        {/* Filter Tabs */}
+        <div className="bg-white rounded-2xl shadow-sm p-1.5 mb-6 inline-flex">
+          {filterTabs
+            .filter((tab) => !(isFree && tab.key !== "part1"))
+            .map((tab) => {
+              const isActive = filter === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setFilter(tab.key)}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                    isActive
+                      ? "bg-slate-900 text-white shadow-md"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+        </div>
+
+        {/* Premium lock banner */}
+        {isFree && (
+          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 flex items-center gap-3 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
+              <Lock className="w-5 h-5 text-indigo-600" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-slate-800">Unlock Speaking Part 2 & 3</p>
+              <p className="text-xs text-slate-500">
+                Get unlimited access with{" "}
+                <a href="/pricing" className="text-indigo-600 font-semibold hover:underline">Pro (3-day free trial — then $14.99/month + tax)</a>
+              </p>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Legend */}
+        {!loading && !error && (
+          <div className="flex items-center gap-4 mb-6 text-sm text-slate-500">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-blue-500" />
+              Part 1
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-indigo-500" />
+              Part 2
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              Part 3
+            </span>
+            <span className="ml-auto">{filtered.length} topics</span>
+          </div>
+        )}
+
+        {/* Content */}
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="w-10 h-10 border-3 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
+            <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl font-bold text-red-500">!</span>
+            </div>
+            <p className="text-body-md text-red-600 mb-4">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
+            <Mic className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+            <p className="text-body-md text-slate-500">No topics found for this filter.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filtered.map((q, idx) => (
+              <SpeakingCard
+                key={q.id}
+                question={q}
+                isTaken={takenIds.has(q.id)}
+                bestScore={scores[q.id]}
+                index={idx}
+              />
+            ))}
+          </div>
+        )}
       </div>
-
-      <div className="flex border-b border-outline-variant/50 mb-8 overflow-x-auto">
-        {(["all", "part1", "part2", "part3"] as const)
-          .filter((f) => !(isFree && f !== "part1"))
-          .map((f) => (
-          <button key={f} onClick={() => setFilter(f)}
-            className={`px-5 py-2.5 text-label-sm whitespace-nowrap transition-colors ${
-              filter === f ? "text-primary border-b-2 border-primary font-semibold" : "text-on-surface-variant hover:text-primary"
-            }`}>
-            {f === "all" ? "All Parts" : partLabel[f] || f}
-          </button>
-        ))}
-      </div>
-
-      {isFree && (
-        <div className="mb-6 p-3 rounded-xl bg-secondary-container/20 border border-secondary-container/30 flex items-center gap-2 text-label-sm text-on-surface-variant">
-          <span className="material-symbols-outlined text-[18px] text-primary">lock</span>
-          <span>Unlock Speaking Part 2 &amp; 3 with <a href="/pricing" className="text-primary font-semibold underline">Pro (3-day free trial — then $14.99/month + tax)</a></span>
-        </div>
-      )}
-
-      {loading ? (
-        <div className="flex justify-center py-16"><span className="material-symbols-outlined text-[36px] text-primary animate-spin">progress_activity</span></div>
-      ) : error ? (
-        <div className="text-center py-16">
-          <span className="material-symbols-outlined text-[48px] text-error mb-4">error</span>
-          <p className="text-body-md text-error mb-4">{error}</p>
-          <button onClick={() => window.location.reload()} className="bg-primary text-on-primary px-4 py-2 rounded-lg text-label-sm font-semibold hover:opacity-90 transition-opacity">Retry</button>
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-body-md text-on-surface-variant">No questions found.</div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {filtered.map((q, idx) => {
-            const isTaken = takenIds.has(q.id);
-            const bestScore = scores[q.id];
-            const module = q.module || "part2";
-
-            return (
-              <div key={q.id} className="group relative bg-surface-container-lowest border border-outline-variant/30 rounded-2xl p-4 hover:shadow-lg hover:border-primary/20 flex flex-col h-full animate-fade-in-up" style={{ animationDelay: `${Math.min(idx * 0.05, 1)}s` }}>
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex flex-wrap gap-1.5">
-                    <span className="px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant text-label-sm uppercase tracking-wide">{partLabel[module] || module}</span>
-                  </div>
-                </div>
-
-                <h3 className="text-body-md font-bold text-on-surface mb-3 group-hover:text-primary transition-colors flex-grow line-clamp-2">
-                  {q.title || "Speaking Topic"}
-                </h3>
-
-                <div className="mt-4 pt-4 border-t border-outline-variant/50 flex items-center justify-between">
-                  {isTaken && bestScore != null ? (
-                    <>
-                      <div className="flex flex-col">
-                        <span className="text-label-sm text-on-surface-variant uppercase tracking-tighter opacity-60">Previous Score</span>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-xl font-bold text-primary">{bestScore.toFixed(1)}</span>
-                          <span className="text-label-sm text-on-surface-variant">Band</span>
-                        </div>
-                      </div>
-                      <Link
-                        href={`/speaking/test?id=${q.id}`}
-                        className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all shadow-sm"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">mic</span>
-                        Retake
-                      </Link>
-                    </>
-                  ) : (
-                    <Link
-                      href={`/speaking/test?id=${q.id}`}
-                      className="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all shadow-sm"
-                    >
-                      <span className="material-symbols-outlined text-[16px]">mic</span>
-                      Start Test
-                    </Link>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }
