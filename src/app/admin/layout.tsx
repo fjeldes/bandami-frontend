@@ -19,6 +19,7 @@ import {
   X,
   Sun,
   Moon,
+  Library,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, any> = {
@@ -28,6 +29,7 @@ const ICON_MAP: Record<string, any> = {
   quiz: HelpCircle,
   sell: Tag,
   bar_chart: BarChart3,
+  library: Library,
 };
 
 const adminNav = [
@@ -35,6 +37,7 @@ const adminNav = [
   { href: "/admin/users", label: "Users", icon: "group" },
   { href: "/admin/exams", label: "Exams", icon: "assignment" },
   { href: "/admin/questions", label: "Questions", icon: "quiz" },
+  { href: "/admin/resources", label: "Resources", icon: "library" },
   { href: "/admin/plans", label: "Plans", icon: "sell" },
   { href: "/admin/analytics", label: "Analytics", icon: "bar_chart" },
 ];
