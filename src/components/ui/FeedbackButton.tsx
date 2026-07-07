@@ -7,60 +7,25 @@ const FORM_URL =
 
 export default function FeedbackButton() {
   const [open, setOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
 
   return (
     <>
-      <div className="fixed bottom-6 right-0 z-[60] flex items-end">
-        <div
-          className={`transition-all duration-500 ease-out ${
-            isVisible
-              ? "translate-x-0 opacity-100"
-              : "translate-x-full opacity-0 pointer-events-none"
-          }`}
-        >
-          <div className="flex flex-col items-center rounded-l-lg bg-primary text-on-primary shadow-lg overflow-hidden">
-            <button
-              onClick={() => setOpen(true)}
-              className="px-3 py-4 hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out font-label-sm text-label-sm font-medium"
-              style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
-              aria-label="Open feedback form"
-            >
-              Feedback
-            </button>
-            <button
-              onClick={() => setIsVisible(false)}
-              className="w-full h-8 flex items-center justify-center hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out border-t border-white/10"
-              aria-label="Hide feedback button"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                chevron_right
-              </span>
-            </button>
-          </div>
-        </div>
-
-        {!isVisible && (
-          <button
-            onClick={() => setIsVisible(true)}
-            className="fixed bottom-6 right-0 w-8 h-10 rounded-l-lg bg-primary text-on-primary shadow-lg hover:bg-white/10 active:bg-white/20 transition-all duration-500 ease-out flex items-center justify-center"
-            aria-label="Show feedback button"
-          >
-            <span className="material-symbols-outlined text-[18px]">
-              chevron_left
-            </span>
-          </button>
-        )}
-      </div>
+      <button
+        onClick={() => setOpen(true)}
+        className="fixed bottom-4 right-4 z-50 px-3 py-2 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-gray-200 dark:border-slate-700 shadow-sm text-label-sm text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-300 hover:shadow-md transition-all"
+        aria-label="Open feedback form"
+      >
+        Feedback
+      </button>
 
       {open && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" onClick={() => setOpen(false)}>
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="relative bg-white dark:bg-slate-900 rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center shadow"
+              className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-white/80 dark:bg-slate-800 hover:bg-white dark:hover:bg-slate-700 flex items-center justify-center shadow"
             >
-              <span className="material-symbols-outlined text-[20px] text-gray-600">close</span>
+              <span className="material-symbols-outlined text-[20px] text-gray-600 dark:text-slate-400">close</span>
             </button>
             <iframe
               src={FORM_URL}

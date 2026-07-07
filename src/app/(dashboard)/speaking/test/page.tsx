@@ -493,49 +493,70 @@ export default function SpeakingTestPage() {
         )}
         {phase === "mic-test" && (
         <div className="max-w-2xl mx-auto mt-8 md:mt-12">
-            <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-8 md:p-10 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
-              <div className="text-center mb-8">
-                <span className="material-symbols-outlined text-[48px] text-primary mb-3">mic</span>
-                <h2 className="text-headline-md font-bold text-on-surface mb-2">Microphone Check</h2>
-                <p className="text-body-md text-on-surface-variant max-w-md mx-auto">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-700/50 shadow-[0_10px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.2)] p-8 md:p-10 relative overflow-hidden">
+              <div className="text-center mb-10">
+                <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mx-auto mb-5">
+                  <span className="material-symbols-outlined text-[32px] text-blue-600 dark:text-blue-400">mic</span>
+                </div>
+                <h1 className="text-headline-md font-bold text-slate-800 dark:text-white mb-2">Microphone Check</h1>
+                <p className="text-body-md text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
                   Let&apos;s make sure your voice is captured clearly before you start.
                 </p>
               </div>
 
-              {/* Steps */}
-              <div className="grid grid-cols-3 gap-4 mb-8">
+              {/* Status Cards */}
+              <div className="grid grid-cols-3 gap-4 mb-10">
                 {[
-                  { n: 1, label: "Permission", icon: "check", active: micOk, done: micOk },
-                  { n: 2, label: "Speak Now", icon: "mic", active: micOk, done: false },
-                  { n: 3, label: "Confirm", icon: "check_circle", active: false, done: false },
+                  { icon: "check", label: "Permission", active: micOk, done: micOk },
+                  { icon: "mic", label: "Speak Now", active: micOk, done: false },
+                  { icon: "check_circle", label: "Confirm", active: false, done: false },
                 ].map((s, i) => (
-                  <div key={i} className={`flex flex-col items-center text-center p-3 rounded-lg border transition-all ${
-                    s.active ? "border-primary bg-primary-container/5 scale-105 shadow-sm" : s.done ? "border-outline-variant/30 bg-surface-container-low" : "border-outline-variant/30 bg-surface-container-low opacity-60"
-                  }`}>
-                    <div className={`w-9 h-9 rounded-full flex items-center justify-center mb-2 text-[18px] ${s.active ? "bg-primary text-on-primary" : s.done ? "bg-primary text-on-primary" : "bg-surface-container-highest text-on-surface-variant"}`}>
-                      <span className="material-symbols-outlined text-[18px]" style={s.active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{s.icon}</span>
+                  <div key={i} className="bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700/50 p-4 flex flex-col items-center text-center transition-all duration-500">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 transition-all duration-500 ${
+                      s.done
+                        ? "bg-emerald-100 dark:bg-emerald-500/20"
+                        : s.active
+                        ? "bg-blue-100 dark:bg-blue-500/20 animate-pulse"
+                        : "bg-gray-100 dark:bg-slate-700"
+                    }`}>
+                      <span className={`material-symbols-outlined text-[20px] transition-all duration-500 ${
+                        s.done
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : s.active
+                          ? "text-blue-600 dark:text-blue-400"
+                          : "text-gray-400 dark:text-slate-500"
+                      }`} style={s.active || s.done ? { fontVariationSettings: "'FILL' 1" } : undefined}>
+                        {s.icon}
+                      </span>
                     </div>
-                    <span className="text-label-sm text-on-surface font-bold">{s.label}</span>
-                    <span className="text-[10px] text-on-surface-variant mt-0.5">{s.active ? "Active" : s.done ? "Done" : "Pending"}</span>
+                    <span className="text-label-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">{s.label}</span>
+                    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-500 ${
+                      s.done
+                        ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+                        : s.active
+                        ? "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
+                        : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400"
+                    }`}>
+                      {s.done ? "Done" : s.active ? "Active" : "Pending"}
+                    </span>
                   </div>
                 ))}
               </div>
 
               {error && (
-                <div className="bg-error-container/30 border border-error/20 rounded-lg px-4 py-2 mb-6 text-label-sm text-error text-center">{error}</div>
+                <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl px-4 py-3 mb-6 text-label-sm text-red-700 dark:text-red-400 text-center">{error}</div>
               )}
 
               {micOk ? (
                 <>
-                  <div className="bg-surface-container-high/50 rounded-xl p-6 mb-6 text-center">
-                    <p className="italic text-primary font-medium text-body-lg mb-2">&ldquo;I am ready to start my IELTS practice&rdquo;</p>
-                    <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Read the phrase aloud</p>
+                  <div className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-800/50 rounded-2xl border border-blue-100 dark:border-blue-500/20 p-6 mb-6 text-center">
+                    <p className="italic text-blue-700 dark:text-blue-300 font-medium text-body-lg mb-2">&ldquo;I am ready to start my IELTS practice&rdquo;</p>
+                    <p className="text-[10px] text-blue-500/60 dark:text-blue-400/60 uppercase tracking-widest font-bold">Read the phrase aloud</p>
                   </div>
 
                   <div className="h-20 flex items-center justify-center gap-1 px-2 mb-6 overflow-hidden">
                     {micBars.map((h, i) => (
-                      <div key={i} className="w-1.5 rounded-full transition-all" style={{
+                      <div key={i} className="w-1.5 rounded-full transition-all duration-100" style={{
                         height: `${h}px`,
                         backgroundColor: `hsl(${160 + (h / 80) * 40}, ${60 + (h / 80) * 20}%, ${30 + (h / 80) * 25}%)`,
                         opacity: 0.3 + (h / 80) * 0.7,
@@ -543,30 +564,36 @@ export default function SpeakingTestPage() {
                     ))}
                   </div>
 
-                  <p className="text-label-sm text-on-surface-variant text-center mb-6">
-                    {micLevel > 10 ? "✅ We can hear you clearly!" : "🔊 Speak a bit louder — we need to calibrate"}
+                  <p className="text-label-sm text-slate-500 dark:text-slate-400 text-center mb-8">
+                    {micLevel > 10
+                      ? <span className="flex items-center justify-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" /> We can hear you clearly!</span>
+                      : <span className="flex items-center justify-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" /> Speak a bit louder — we need to calibrate</span>
+                    }
                   </p>
 
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <button onClick={() => { streamRef.current?.getTracks().forEach((t) => t.stop()); setMicOk(false); setMicLevel(0); setMicBars(Array(40).fill(4)); }}
-                      className="px-5 py-2.5 rounded-full border border-outline-variant text-on-surface-variant text-label-sm hover:bg-surface-container transition-colors">
+                      className="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-label-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
                       Test Again
                     </button>
                     <button onClick={isSingleMode ? startSingleTest : () => setPhase("intro")}
-                      className="px-6 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity active:scale-95 shadow-sm">
+                      className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-sm font-semibold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/25">
                       Continue
                     </button>
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="bg-surface-container-high/50 rounded-xl p-6 mb-6 text-center">
-                    <p className="text-body-md text-on-surface-variant">Click the button below to allow microphone access</p>
-                  </div>
-                  <div className="flex justify-center">
-                    <button onClick={testMic} className="w-20 h-20 rounded-full bg-primary text-on-primary flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-lg">
-                      <span className="material-symbols-outlined text-[40px]" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
-                    </button>
+                  <div className="text-center mb-8">
+                    <p className="text-body-md text-slate-500 dark:text-slate-400 mb-8">Click the button below to allow microphone access</p>
+                    <div className="relative inline-flex items-center justify-center">
+                      <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-pulse-ring" style={{ animationDelay: "0s" }} />
+                      <div className="absolute inset-0 rounded-full bg-blue-500/15 animate-pulse-ring" style={{ animationDelay: "0.5s" }} />
+                      <button onClick={testMic}
+                        className="relative w-16 h-16 rounded-full bg-gradient-to-br from-blue-700 to-blue-500 text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-blue-500/25 z-10">
+                        <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
+                      </button>
+                    </div>
                   </div>
                 </>
               )}
@@ -575,19 +602,19 @@ export default function SpeakingTestPage() {
         )}
 
         {phase === "ready" && !recordingActive && (
-          <div className="space-y-6">
-            <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-label-sm uppercase">{targetQuestion.module || "part2"}</span>
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-sm p-8">
+              <div className="flex items-center gap-2 mb-5">
+                <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-[11px] font-bold uppercase tracking-wider">{targetQuestion.module || "part2"}</span>
               </div>
-              <h2 className="text-headline-md font-bold text-on-surface mb-3">{targetQuestion.title || "Speaking Topic"}</h2>
-              <RichTextRenderer content={targetQuestion.prompt_text} className="text-body-lg text-on-surface-variant leading-relaxed" />
-            </div>
-            <div className="flex justify-center gap-3">
-              <button onClick={() => setPhase("mic-test")} className="px-5 py-2.5 rounded-full border border-outline-variant text-on-surface-variant text-label-sm hover:bg-surface-container transition-colors">Back</button>
-              <button onClick={beginSingleRecording} className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
-                <span className="material-symbols-outlined text-[18px]">fiber_manual_record</span> Start Recording
-              </button>
+              <h2 className="text-headline-lg font-extrabold text-slate-800 dark:text-white mb-4">{targetQuestion.title || "Speaking Topic"}</h2>
+              <RichTextRenderer content={targetQuestion.prompt_text} className="text-body-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-8" />
+              <div className="flex justify-center gap-4">
+                <button onClick={() => setPhase("mic-test")} className="px-6 py-3 rounded-xl border border-gray-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-label-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">Back</button>
+                <button onClick={beginSingleRecording} className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-sm font-semibold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/25 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-[18px]">fiber_manual_record</span> Start Recording
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -774,48 +801,70 @@ export default function SpeakingTestPage() {
       {/* Mic Test */}
       {phase === "mic-test" && (
         <div className="max-w-2xl mx-auto mt-8 md:mt-12">
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-8 md:p-10 relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
-            <div className="text-center mb-8">
-              <span className="material-symbols-outlined text-[48px] text-primary mb-3">mic</span>
-              <h2 className="text-headline-md font-bold text-on-surface mb-2">Microphone Check</h2>
-              <p className="text-body-md text-on-surface-variant max-w-md mx-auto">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-700/50 shadow-[0_10px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.2)] p-8 md:p-10 relative overflow-hidden">
+            <div className="text-center mb-10">
+              <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center mx-auto mb-5">
+                <span className="material-symbols-outlined text-[32px] text-blue-600 dark:text-blue-400">mic</span>
+              </div>
+              <h1 className="text-headline-md font-bold text-slate-800 dark:text-white mb-2">Microphone Check</h1>
+              <p className="text-body-md text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
                 Let&apos;s make sure your voice is captured clearly before starting the IELTS Speaking test.
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-4 mb-8">
+            {/* Status Cards */}
+            <div className="grid grid-cols-3 gap-4 mb-10">
               {[
-                { n: 1, label: "Permission", icon: "check", active: micOk, done: micOk },
-                { n: 2, label: "Speak Now", icon: "mic", active: micOk, done: false },
-                { n: 3, label: "Confirm", icon: "check_circle", active: false, done: false },
+                { icon: "check", label: "Permission", active: micOk, done: micOk },
+                { icon: "mic", label: "Speak Now", active: micOk, done: false },
+                { icon: "check_circle", label: "Confirm", active: false, done: false },
               ].map((s, i) => (
-                <div key={i} className={`flex flex-col items-center text-center p-3 rounded-lg border transition-all ${
-                  s.active ? "border-primary bg-primary-container/5 scale-105 shadow-sm" : s.done ? "border-outline-variant/30 bg-surface-container-low" : "border-outline-variant/30 bg-surface-container-low opacity-60"
-                }`}>
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center mb-2 ${s.active ? "bg-primary text-on-primary" : s.done ? "bg-primary text-on-primary" : "bg-surface-container-highest text-on-surface-variant"}`}>
-                    <span className="material-symbols-outlined text-[18px]" style={s.active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{s.icon}</span>
+                <div key={i} className="bg-white dark:bg-slate-800/50 rounded-2xl border border-gray-200 dark:border-slate-700/50 p-4 flex flex-col items-center text-center transition-all duration-500">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-3 transition-all duration-500 ${
+                    s.done
+                      ? "bg-emerald-100 dark:bg-emerald-500/20"
+                      : s.active
+                      ? "bg-blue-100 dark:bg-blue-500/20 animate-pulse"
+                      : "bg-gray-100 dark:bg-slate-700"
+                  }`}>
+                    <span className={`material-symbols-outlined text-[20px] transition-all duration-500 ${
+                      s.done
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : s.active
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-gray-400 dark:text-slate-500"
+                    }`} style={s.active || s.done ? { fontVariationSettings: "'FILL' 1" } : undefined}>
+                      {s.icon}
+                    </span>
                   </div>
-                  <span className="text-label-sm text-on-surface font-bold">{s.label}</span>
-                  <span className="text-[10px] text-on-surface-variant mt-0.5">{s.active ? "Active" : s.done ? "Done" : "Pending"}</span>
+                  <span className="text-label-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">{s.label}</span>
+                  <span className={`inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-500 ${
+                    s.done
+                      ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+                      : s.active
+                      ? "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
+                      : "bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400"
+                  }`}>
+                    {s.done ? "Done" : s.active ? "Active" : "Pending"}
+                  </span>
                 </div>
               ))}
             </div>
 
             {error && (
-              <div className="bg-error-container/30 border border-error/20 rounded-lg px-4 py-2 mb-6 text-label-sm text-error text-center">{error}</div>
+              <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl px-4 py-3 mb-6 text-label-sm text-red-700 dark:text-red-400 text-center">{error}</div>
             )}
 
             {micOk ? (
               <>
-                <div className="bg-surface-container-high/50 rounded-xl p-6 mb-6 text-center">
-                  <p className="italic text-primary font-medium text-body-lg mb-2">&ldquo;I am ready to start my IELTS practice&rdquo;</p>
-                  <p className="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Read the phrase aloud</p>
+                <div className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-800/50 rounded-2xl border border-blue-100 dark:border-blue-500/20 p-6 mb-6 text-center">
+                  <p className="italic text-blue-700 dark:text-blue-300 font-medium text-body-lg mb-2">&ldquo;I am ready to start my IELTS practice&rdquo;</p>
+                  <p className="text-[10px] text-blue-500/60 dark:text-blue-400/60 uppercase tracking-widest font-bold">Read the phrase aloud</p>
                 </div>
 
                 <div className="h-20 flex items-center justify-center gap-1 px-2 mb-6 overflow-hidden">
                   {micBars.map((h, i) => (
-                    <div key={i} className="w-1.5 rounded-full transition-all" style={{
+                    <div key={i} className="w-1.5 rounded-full transition-all duration-100" style={{
                       height: `${h}px`,
                       backgroundColor: `hsl(${160 + (h / 80) * 40}, ${60 + (h / 80) * 20}%, ${30 + (h / 80) * 25}%)`,
                       opacity: 0.3 + (h / 80) * 0.7,
@@ -823,30 +872,36 @@ export default function SpeakingTestPage() {
                   ))}
                 </div>
 
-                <p className="text-label-sm text-on-surface-variant text-center mb-6">
-                  {micLevel > 10 ? "✅ We can hear you clearly!" : "🔊 Speak a bit louder — we need to calibrate"}
+                <p className="text-label-sm text-slate-500 dark:text-slate-400 text-center mb-8">
+                  {micLevel > 10
+                    ? <span className="flex items-center justify-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500" /> We can hear you clearly!</span>
+                    : <span className="flex items-center justify-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" /> Speak a bit louder — we need to calibrate</span>
+                  }
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
                   <button onClick={() => { streamRef.current?.getTracks().forEach((t) => t.stop()); setMicOk(false); setMicLevel(0); setMicBars(Array(40).fill(4)); }}
-                    className="px-5 py-2.5 rounded-full border border-outline-variant text-on-surface-variant text-label-sm hover:bg-surface-container transition-colors">
+                    className="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 text-label-sm font-medium hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors">
                     Test Again
                   </button>
                   <button onClick={() => setPhase("intro")}
-                    className="px-6 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity active:scale-95 shadow-sm">
+                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-sm font-semibold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/25">
                     Continue
                   </button>
                 </div>
               </>
             ) : (
               <>
-                <div className="bg-surface-container-high/50 rounded-xl p-6 mb-6 text-center">
-                  <p className="text-body-md text-on-surface-variant">Click the button below to allow microphone access</p>
-                </div>
-                <div className="flex justify-center">
-                  <button onClick={testMic} className="w-20 h-20 rounded-full bg-primary text-on-primary flex items-center justify-center hover:opacity-90 active:scale-95 transition-all shadow-lg">
-                    <span className="material-symbols-outlined text-[40px]" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
-                  </button>
+                <div className="text-center mb-8">
+                  <p className="text-body-md text-slate-500 dark:text-slate-400 mb-8">Click the button below to allow microphone access</p>
+                  <div className="relative inline-flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full bg-blue-500/20 animate-pulse-ring" style={{ animationDelay: "0s" }} />
+                    <div className="absolute inset-0 rounded-full bg-blue-500/15 animate-pulse-ring" style={{ animationDelay: "0.5s" }} />
+                    <button onClick={testMic}
+                      className="relative w-16 h-16 rounded-full bg-gradient-to-br from-blue-700 to-blue-500 text-white flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg shadow-blue-500/25 z-10">
+                      <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
+                    </button>
+                  </div>
                 </div>
               </>
             )}
