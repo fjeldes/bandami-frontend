@@ -17,6 +17,17 @@ async function getAuthHeaders(): Promise<HeadersInit> {
   return {};
 }
 
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs = 120_000): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal });
+    return res;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   let authHeaders = await getAuthHeaders();
   const userHeaders = options.headers || {};
@@ -30,7 +41,7 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
     resolvedHeaders["Content-Type"] = "application/json";
   }
 
-  let res = await fetch(`${API_BASE}${endpoint}`, {
+  let res = await fetchWithTimeout(`${API_BASE}${endpoint}`, {
     ...options,
     headers: resolvedHeaders,
   });
@@ -41,7 +52,7 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
 
     if (newToken) {
       resolvedHeaders["Authorization"] = `Bearer ${newToken}`;
-      res = await fetch(`${API_BASE}${endpoint}`, {
+      res = await fetchWithTimeout(`${API_BASE}${endpoint}`, {
         ...options,
         headers: resolvedHeaders,
       });

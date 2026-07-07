@@ -106,6 +106,7 @@ export default function SpeakingTestPage() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [submittingSlow, setSubmittingSlow] = useState(false);
 
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -177,6 +178,15 @@ export default function SpeakingTestPage() {
 
   useEffect(() => {
     if (typeof window !== "undefined") window.speechSynthesis?.cancel();
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "submitting") {
+      setSubmittingSlow(false);
+      return;
+    }
+    const t = setTimeout(() => setSubmittingSlow(true), 60_000);
+    return () => clearTimeout(t);
   }, [phase]);
 
   const testMic = async () => {
@@ -312,6 +322,9 @@ export default function SpeakingTestPage() {
         router.push("/");
       } else if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("try again")) {
         setShow503Modal(true);
+      } else if (err instanceof DOMException && err.name === "AbortError") {
+        setError("The request timed out. Please try again.");
+        setPhase("preview");
       } else {
         setError(msg);
         setPhase("preview");
@@ -417,6 +430,9 @@ export default function SpeakingTestPage() {
         router.push("/");
       } else if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("try again")) {
         setShow503Modal(true);
+      } else if (err instanceof DOMException && err.name === "AbortError") {
+        setError("The request timed out. Please try again.");
+        setPhase("preview");
       } else {
         setError(msg);
         setPhase("preview");
@@ -486,12 +502,20 @@ export default function SpeakingTestPage() {
         {error === "provider_overloaded" ? (
           <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
             <p className="text-body-md text-error mb-3">The AI evaluation service is temporarily unavailable. This happens when many users are practicing at the same time. Your work is safe — please try again in a moment.</p>
-            <button onClick={handleSubmit} className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold">Retry</button>
+            <button onClick={isSingleMode ? handleSingleSubmit : handleSubmit} className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold">Retry</button>
           </div>
         ) : error ? (
           <div className="mt-6 bg-error-container/30 border border-error/20 rounded-xl p-5 w-full max-w-md">
             <p className="text-body-md text-error mb-3">{error}</p>
-            <button onClick={handleSubmit} className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold">Retry</button>
+            <button onClick={isSingleMode ? handleSingleSubmit : handleSubmit} className="bg-primary text-on-primary px-5 py-2.5 rounded-lg text-label-sm font-semibold">Retry</button>
+          </div>
+        ) : submittingSlow ? (
+          <div className="mt-6 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-xl p-5 w-full max-w-md">
+            <p className="text-body-md text-amber-800 dark:text-amber-300 mb-3">This is taking longer than expected. You can wait a bit more or try again later from the reports page.</p>
+            <div className="flex gap-3">
+              <button onClick={() => { setPhase("preview"); setSubmittingSlow(false); }} className="flex-1 py-2.5 rounded-lg border border-amber-300 dark:border-amber-600 text-amber-800 dark:text-amber-300 text-label-sm font-semibold hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors">Go Back</button>
+              <button onClick={isSingleMode ? handleSingleSubmit : handleSubmit} className="flex-1 py-2.5 rounded-lg bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity">Retry</button>
+            </div>
           </div>
         ) : null}
       </div>
