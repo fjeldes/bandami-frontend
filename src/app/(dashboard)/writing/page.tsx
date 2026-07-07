@@ -261,9 +261,37 @@ export default function WritingListPage() {
 
         {/* Content */}
         {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-slate-800 rounded-full animate-spin" />
-          </div>
+          <>
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm p-1.5 mb-6 inline-flex gap-1">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="w-24 h-10 rounded-xl bg-slate-200 dark:bg-slate-800 animate-pulse" />
+              ))}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="dark:bg-slate-900 rounded-2xl shadow-sm overflow-hidden animate-pulse">
+                  <div className="p-5 pl-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-slate-200 dark:bg-slate-800" />
+                        <div className="flex flex-col gap-2">
+                          <div className="w-16 h-4 rounded-full bg-slate-200 dark:bg-slate-800" />
+                          <div className="w-12 h-3 rounded-full bg-slate-200 dark:bg-slate-800" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-2 mb-4">
+                      <div className="w-full h-4 rounded bg-slate-200 dark:bg-slate-800" />
+                      <div className="w-3/4 h-4 rounded bg-slate-200 dark:bg-slate-800" />
+                    </div>
+                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                      <div className="w-full h-10 rounded-xl bg-slate-200 dark:bg-slate-800" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         ) : error ? (
           <div className="text-center py-16">
             <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
