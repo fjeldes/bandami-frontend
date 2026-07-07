@@ -310,7 +310,7 @@ export default function SpeakingTestPage() {
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg === "auth_required") {
         router.push("/");
-      } else if (msg.includes("503") || msg.includes("UNAVAILABLE")) {
+      } else if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("try again")) {
         setShow503Modal(true);
       } else {
         setError(msg);
@@ -415,7 +415,7 @@ export default function SpeakingTestPage() {
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg === "auth_required") {
         router.push("/");
-      } else if (msg.includes("503") || msg.includes("UNAVAILABLE")) {
+      } else if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("try again")) {
         setShow503Modal(true);
       } else {
         setError(msg);
