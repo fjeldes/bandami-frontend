@@ -288,7 +288,9 @@ export default function SpeakingTestPage() {
       router.push(`/speaking/results?examId=${exam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
-      if (msg.includes("503") || msg.includes("UNAVAILABLE")) {
+      if (msg === "auth_required") {
+        router.push("/");
+      } else if (msg.includes("503") || msg.includes("UNAVAILABLE")) {
         router.push("/history");
       } else {
         setError(msg);
@@ -391,7 +393,9 @@ export default function SpeakingTestPage() {
       router.push(`/speaking/results?examId=${exam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
-      if (msg.includes("503") || msg.includes("UNAVAILABLE")) {
+      if (msg === "auth_required") {
+        router.push("/");
+      } else if (msg.includes("503") || msg.includes("UNAVAILABLE")) {
         router.push("/history");
       } else {
         setError(msg);
@@ -422,25 +426,25 @@ export default function SpeakingTestPage() {
   if (phase === "submitting") {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-6 max-w-[720px] mx-auto pt-10 md:pt-16">
-        <div className="ds-card p-10 md:p-14 flex flex-col items-center w-full">
+        <div className="bg-white dark:bg-slate-900 rounded-[20px] border border-gray-200 dark:border-slate-700/50 shadow-[0_10px_40px_rgba(0,0,0,0.02)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.08)] p-10 md:p-14 flex flex-col items-center w-full">
           {/* Pulse Animation */}
           <div className="relative w-[120px] h-[120px] mb-10">
-            <div className="absolute inset-0 rounded-full bg-primary-container animate-pulse-ring" style={{ animationDelay: "0s" }} />
-            <div className="absolute inset-0 rounded-full bg-primary-container animate-pulse-ring" style={{ animationDelay: "0.5s" }} />
-            <div className="absolute inset-[25%] rounded-full bg-primary flex items-center justify-center shadow-lg animate-pulse-dot z-10" style={{ boxShadow: "0 0 25px rgba(0, 105, 72, 0.3)" }}>
-              <span className="material-symbols-outlined text-on-primary text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+            <div className="absolute inset-0 rounded-full bg-blue-500/10 animate-pulse-ring" style={{ animationDelay: "0s" }} />
+            <div className="absolute inset-0 rounded-full bg-blue-500/10 animate-pulse-ring" style={{ animationDelay: "0.5s" }} />
+            <div className="absolute inset-[25%] rounded-full bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse-dot z-10">
+              <span className="material-symbols-outlined text-white text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
             </div>
           </div>
 
-          <h1 className="text-headline-lg font-bold text-primary mb-4">Analyzing your response...</h1>
-          <p className="text-body-md text-on-surface-variant max-w-md mb-10">
+          <h1 className="text-headline-lg font-bold text-slate-900 dark:text-white mb-4">Analyzing your response...</h1>
+          <p className="text-body-md text-slate-500 dark:text-slate-400 max-w-md mb-10">
             Our AI is evaluating your fluency, pronunciation, and vocabulary. This usually takes 30-60 seconds.
           </p>
 
           {/* Waveform bars */}
           <div className="flex items-end justify-center gap-1.5 h-10 mb-10">
             {Array.from({ length: 8 }, (_, i) => (
-              <div key={i} className="w-1 bg-primary-container rounded-full" style={{
+              <div key={i} className="w-1 bg-blue-400 dark:bg-blue-500 rounded-full" style={{
                 animation: `waveformBar 1.2s ease-in-out infinite`,
                 animationDelay: `${i * 0.15}s`,
               }} />
@@ -620,32 +624,32 @@ export default function SpeakingTestPage() {
         )}
 
         {phase === "single-prep" && !recordingActive && targetQuestion && (
-          <div className="space-y-6 text-center">
+          <div className="max-w-3xl mx-auto space-y-6 text-center">
             <div className="flex items-center justify-between">
-              <span className="px-3 py-1 rounded-full bg-primary-container/30 text-primary text-label-sm font-semibold">Part 2 · Long Turn</span>
+              <span className="px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 text-[11px] font-bold uppercase tracking-wider">Part 2 · Long Turn</span>
               <span className={`font-mono font-bold transition-all duration-300 ${
                 timeLeft <= 10
-                  ? "text-display-lg text-error animate-pulse"
-                  : "text-display-md text-on-surface"
+                  ? "text-display-lg text-red-500 animate-pulse"
+                  : "text-display-md text-slate-800 dark:text-white"
               }`}>
                 {fmt(timeLeft)}
               </span>
             </div>
-            <div className="bg-surface-container-lowest rounded-2xl border-2 border-primary/20 p-6 text-left shadow-md">
-              <h3 className="text-label-sm font-semibold text-primary mb-3 uppercase tracking-widest">Topic Card</h3>
-              <RichTextRenderer content={targetQuestion.prompt_text} className="text-body-lg text-on-surface leading-relaxed" />
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-amber-200 dark:border-amber-800/30 p-6 text-left shadow-[0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.1)]">
+              <h3 className="text-label-sm font-semibold text-amber-600 dark:text-amber-400 mb-3 uppercase tracking-widest">Topic Card</h3>
+              <RichTextRenderer content={targetQuestion.prompt_text} className="text-body-lg text-slate-600 dark:text-slate-300 leading-relaxed"  />
             </div>
             <div className="w-full max-w-md mx-auto space-y-3">
-              <div className="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+              <div className="w-full h-2.5 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-1000 ${
-                    timeLeft <= 10 ? "bg-error" : "bg-primary"
+                    timeLeft <= 10 ? "bg-red-500" : "bg-gradient-to-r from-amber-500 to-amber-400"
                   }`}
                   style={{ width: `${((PART_TIMERS["single-prep"] - timeLeft) / PART_TIMERS["single-prep"]) * 100}%` }}
                 />
               </div>
               <p className={`text-body-md flex items-center justify-center gap-2 ${
-                timeLeft <= 10 ? "text-error font-semibold animate-pulse" : "text-on-surface-variant"
+                timeLeft <= 10 ? "text-red-500 font-semibold animate-pulse" : "text-slate-500 dark:text-slate-400"
               }`}>
                 <span className="material-symbols-outlined text-[18px]">
                   {timeLeft <= 10 ? "alarm" : "hourglass_bottom"}
@@ -655,49 +659,66 @@ export default function SpeakingTestPage() {
             </div>
             <button
               onClick={beginSingleRecordingAfterPrep}
-              className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity"
-            >
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-700 to-amber-600 dark:from-amber-600 dark:to-amber-500 text-white text-label-sm font-bold hover:from-amber-800 hover:to-amber-700 dark:hover:from-amber-500 dark:hover:to-amber-400 hover:-translate-y-0.5 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-amber-500/25">
               Skip Timer · Start Speaking
             </button>
           </div>
         )}
 
         {isSingleMode && recordingActive && (
-          <div className="space-y-6">
-            <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6">
+          <div className="max-w-3xl mx-auto space-y-6">
+            {/* Question Panel */}
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-[0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-6">
               <div className="flex items-center gap-2 mb-3">
-                <span className="px-3 py-1 rounded-full bg-surface-container text-on-surface-variant text-label-sm uppercase">{targetQuestion?.module || "part2"}</span>
+                <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-800 dark:text-blue-400 text-[11px] font-bold uppercase tracking-wider">
+                  {targetQuestion?.module || "part2"}
+                </span>
               </div>
-              <RichTextRenderer content={targetQuestion?.prompt_text || ""} className="text-body-md text-on-surface-variant leading-relaxed line-clamp-3" />
+              <RichTextRenderer content={targetQuestion?.prompt_text || ""} className="text-body-lg text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3"  />
             </div>
-            <div className="bg-surface-container-low rounded-2xl border border-outline-variant/20 p-10 flex flex-col items-center relative overflow-hidden">
-              <div className="absolute inset-0 opacity-5 pointer-events-none">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-3xl -mr-32 -mt-32" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary rounded-full blur-3xl -ml-32 -mb-32" />
-              </div>
-              <div className="flex items-end justify-center gap-1.5 h-16 mb-10 w-full max-w-md relative z-10 overflow-hidden">
+
+            {/* Recording Panel */}
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-700/50 shadow-[0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-10 flex flex-col items-center relative overflow-hidden">
+              {/* Waveform */}
+              <div className="flex items-end justify-center gap-1.5 h-20 mb-8 w-full max-w-md relative z-10 overflow-hidden">
                 {micBars.map((h, i) => (
-                  <div key={i} className="w-1.5 rounded-full transition-all duration-100" style={{
+                  <div key={i} className="w-1.5 rounded-full animate-wave-pulse" style={{
                     height: `${Math.max(3, h)}px`,
                     opacity: 0.25 + (h / 90) * 0.75,
                     backgroundColor: `hsl(${155 + (h / 90) * 40}, ${55 + (h / 90) * 35}%, ${25 + (h / 90) * 35}%)`,
+                    animationDelay: `${i * 0.05}s`,
+                    borderRadius: "9999px",
                   }} />
                 ))}
               </div>
-              <div className="relative z-10">
-                <div className="absolute inset-0 rounded-full border-4 border-primary/20 scale-150 animate-pulse" style={{ animationDuration: "2s" }} />
-                <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center shadow-lg relative z-10">
-                  <span className="material-symbols-outlined text-[36px] text-on-primary" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
+
+              {/* Mic with breathing effect */}
+              <div className="relative z-10 mb-6">
+                <div className="absolute inset-0 rounded-full bg-blue-500/10 animate-pulse-ring" />
+                <div className="absolute inset-0 rounded-full bg-blue-500/5 animate-pulse-ring" style={{ animationDelay: "1s" }} />
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center shadow-[inset_0_-4px_8px_rgba(0,0,0,0.15),0_8px_24px_rgba(59,130,246,0.35)] relative z-10">
+                  <span className="material-symbols-outlined text-[36px] text-white" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
                 </div>
               </div>
-              <p className="mt-8 text-label-sm text-primary font-bold tracking-widest uppercase relative z-10">Recording Active</p>
-              <p className="mt-1 text-body-md text-on-surface-variant relative z-10">
-                <span className={`font-mono text-data-md font-bold ${timeLeft < 15 ? "text-error" : "text-on-surface"}`}>{fmt(timeLeft)}</span>
+
+              <p className="text-label-sm text-blue-600 dark:text-blue-400 font-bold tracking-widest uppercase relative z-10">Recording Active</p>
+              <p className="mt-1 text-body-md text-slate-500 dark:text-slate-400 relative z-10">
+                <span className={`font-mono text-data-lg font-bold ${timeLeft < 15 ? "text-red-500" : "text-slate-800 dark:text-white"}`}>{fmt(timeLeft)}</span>
               </p>
-              <div className="w-full max-w-xs h-1.5 bg-surface-container-high rounded-full overflow-hidden mt-4 mb-6 relative z-10">
-                <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${((PART_TIMERS["single"] - timeLeft) / PART_TIMERS["single"]) * 100}%` }} />
+
+              {/* Progress bar with glow */}
+              <div className="w-full max-w-xs relative mt-4 mb-6 z-10">
+                <div className="w-full h-2 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all" style={{ width: `${((PART_TIMERS["single"] - timeLeft) / PART_TIMERS["single"]) * 100}%` }} />
+                </div>
+                <div className="absolute top-1/2 -translate-y-1/2 pointer-events-none" style={{ left: `${((PART_TIMERS["single"] - timeLeft) / PART_TIMERS["single"]) * 100}%` }}>
+                  <div className="w-4 h-4 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(37,99,235,0.5)] -translate-x-1/2" />
+                </div>
               </div>
-              <button onClick={stopSingleRecording} className="px-6 py-3 rounded-full bg-secondary text-on-secondary text-label-sm font-bold hover:opacity-90 transition-all active:scale-95 relative z-10 flex items-center gap-2">
+
+              {/* Stop button */}
+              <button onClick={stopSingleRecording}
+                className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-sm font-bold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 hover:-translate-y-0.5 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/25 relative z-10 flex items-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">stop_circle</span>
                 Stop &amp; Review
               </button>
@@ -911,67 +932,94 @@ export default function SpeakingTestPage() {
 
       {/* Intro */}
       {phase === "intro" && (
-        <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-8 text-center">
-          <span className="material-symbols-outlined text-[56px] text-primary mb-4">record_voice_over</span>
-          <h2 className="text-headline-md font-bold text-on-surface mb-4">IELTS Speaking Test</h2>
-          <div className="space-y-3 text-left max-w-md mx-auto mb-8">
+        <div className="bg-white dark:bg-slate-900 rounded-[20px] border border-gray-200 dark:border-slate-700/50 shadow-[0_10px_40px_rgba(0,0,0,0.02)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.08)] p-8 text-center max-w-2xl mx-auto">
+          <span className="material-symbols-outlined text-[56px] text-blue-500 mb-4" style={{ fontVariationSettings: "'FILL' 1" }}>record_voice_over</span>
+          <h2 className="text-[28px] font-bold text-slate-900 dark:text-white mb-2" style={{ fontFamily: "Inter, system-ui, sans-serif" }}>IELTS Speaking Test</h2>
+          <p className="text-[15px] text-slate-500 dark:text-slate-400 leading-relaxed mb-8 max-w-sm mx-auto">A continuación, se te presentarán 3 partes de evaluación con preguntas y tiempos asignados.</p>
+          <div className="space-y-4 text-left max-w-md mx-auto mb-8">
             {partOrder.includes("part1") && (
-              <div className="flex gap-3">
-                <span className="bg-primary-container text-on-primary-container rounded-full w-7 h-7 flex items-center justify-center text-label-sm font-bold shrink-0">1</span>
-                <div><p className="text-body-md font-semibold text-on-surface">Interview</p><p className="text-label-sm text-on-surface-variant">{grouped.part1.length} questions · 2 min continuous recording</p></div>
+              <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-4 flex gap-4 items-start">
+                <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-blue-500 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>question_answer</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-body-md font-semibold text-slate-800 dark:text-white">Interview</p>
+                    <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider">Pending</span>
+                  </div>
+                  <p className="text-label-sm text-slate-500 dark:text-slate-400">{grouped.part1.length} questions · 2 min continuous recording</p>
+                </div>
               </div>
             )}
             {partOrder.includes("part2") && (
-              <div className="flex gap-3">
-                <span className="bg-primary-container text-on-primary-container rounded-full w-7 h-7 flex items-center justify-center text-label-sm font-bold shrink-0">2</span>
-                <div><p className="text-body-md font-semibold text-on-surface">Long Turn</p><p className="text-label-sm text-on-surface-variant">1 min prep · 2 min speaking</p></div>
+              <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-4 flex gap-4 items-start">
+                <div className="w-10 h-10 rounded-full bg-amber-50 dark:bg-amber-500/10 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-amber-500 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>campaign</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-body-md font-semibold text-slate-800 dark:text-white">Long Turn</p>
+                    <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider">Pending</span>
+                  </div>
+                  <p className="text-label-sm text-slate-500 dark:text-slate-400">1 min prep · 2 min speaking</p>
+                </div>
               </div>
             )}
             {partOrder.includes("part3") && (
-              <div className="flex gap-3">
-                <span className="bg-primary-container text-on-primary-container rounded-full w-7 h-7 flex items-center justify-center text-label-sm font-bold shrink-0">3</span>
-                <div><p className="text-body-md font-semibold text-on-surface">Discussion</p><p className="text-label-sm text-on-surface-variant">{grouped.part3.length} questions · 3 min continuous recording</p></div>
+              <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700/50 p-4 flex gap-4 items-start">
+                <div className="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-emerald-500 text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>forum</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-body-md font-semibold text-slate-800 dark:text-white">Discussion</p>
+                    <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-[10px] font-bold uppercase tracking-wider">Pending</span>
+                  </div>
+                  <p className="text-label-sm text-slate-500 dark:text-slate-400">{grouped.part3.length} questions · 3 min continuous recording</p>
+                </div>
               </div>
             )}
           </div>
           <div className="flex gap-3 justify-center">
-            <button onClick={() => setPhase("mic-test")} className="px-5 py-2.5 rounded-full border border-outline-variant text-on-surface-variant text-label-sm hover:bg-surface-container transition-colors">Back</button>
-            <button onClick={beginExam} className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity">Start Test</button>
+            <button onClick={() => setPhase("mic-test")} className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-label-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Back</button>
+            <button onClick={beginExam} className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-sm font-bold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 hover:-translate-y-0.5 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/25">Start Test</button>
           </div>
         </div>
       )}
 
       {/* Part 1/3 Speaking */}
       {(phase === "part1-speak" || phase === "part3-speak") && currentQuestion && (
-        <div className="space-y-5">
+        <div className="max-w-3xl mx-auto space-y-5">
           <div className="flex items-center justify-between">
-            <span className="px-3 py-1 rounded-full bg-primary-container/30 text-primary text-label-sm font-semibold">
+            <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-800 dark:text-blue-400 text-[11px] font-bold uppercase tracking-wider">
               {currentPart === "part1" ? "Part 1" : "Part 3"} · {questionIdx + 1}/{currentQuestions.length}
             </span>
             {recordingActive && (
-              <span className={`font-mono text-data-md font-bold ${timeLeft < 15 ? "text-error" : "text-on-surface"}`}>{fmt(timeLeft)}</span>
+              <span className={`font-mono text-data-lg font-bold ${timeLeft < 15 ? "text-red-500" : "text-slate-800 dark:text-white"}`}>{fmt(timeLeft)}</span>
             )}
           </div>
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6">
-            <RichTextRenderer content={currentQuestion.prompt_text} className="text-body-lg text-on-surface leading-relaxed" />
+          {/* Question Card */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-[0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-6">
+            <RichTextRenderer content={currentQuestion.prompt_text} className="text-body-lg text-slate-600 dark:text-slate-300 leading-relaxed"  />
           </div>
           <div className="flex items-center justify-between">
-            <button onClick={() => speakText(currentQuestion.prompt_text)} className="flex items-center gap-1.5 text-primary text-label-sm hover:underline">
+            <button onClick={() => speakText(currentQuestion.prompt_text)} className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 text-label-sm font-medium hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
               <span className="material-symbols-outlined text-[18px]">volume_up</span> Read aloud
             </button>
             {recordingActive ? (
-              <button onClick={nextQuestion} className="px-5 py-2.5 rounded-full bg-surface-container-high text-on-surface text-label-sm font-semibold hover:bg-error-container hover:text-error transition-colors">
+              <button onClick={nextQuestion} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 dark:from-rose-500 dark:to-rose-400 text-white text-label-sm font-bold hover:from-rose-700 hover:to-rose-600 dark:hover:from-rose-400 dark:hover:to-rose-300 hover:-translate-y-0.5 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-rose-500/25">
                 {questionIdx + 1 < currentQuestions.length ? "Stop & Next" : "Stop & Finish"}
               </button>
             ) : (
-              <button onClick={() => { startTimer(PART_TIMERS[currentPart], nextQuestion); startRecording(); }} className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity">
+              <button onClick={() => { startTimer(PART_TIMERS[currentPart], nextQuestion); startRecording(); }}
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-sm font-bold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 hover:-translate-y-0.5 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/25">
                 Start Answer
               </button>
             )}
           </div>
           {recordingActive && (
-            <div className="flex items-center gap-2 text-error text-label-sm justify-center">
-              <span className="w-2 h-2 rounded-full bg-error animate-pulse" /> Recording...
+            <div className="flex items-center gap-2 text-rose-500 text-label-sm justify-center font-medium">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" /> Recording...
             </div>
           )}
         </div>
@@ -979,56 +1027,65 @@ export default function SpeakingTestPage() {
 
       {/* Part 2 Prep */}
       {phase === "part2-prep" && currentQuestion && (
-        <div className="space-y-6 text-center">
+        <div className="max-w-3xl mx-auto space-y-6 text-center">
           <div className="flex items-center justify-between">
-            <span className="px-3 py-1 rounded-full bg-primary-container/30 text-primary text-label-sm font-semibold">Part 2 · Preparation</span>
-            <span className={`font-mono text-data-md font-bold ${timeLeft < 10 ? "text-error" : "text-on-surface"}`}>{fmt(timeLeft)}</span>
+            <span className="px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 text-[11px] font-bold uppercase tracking-wider">Part 2 · Preparation</span>
+            <span className={`font-mono text-data-lg font-bold ${timeLeft < 10 ? "text-red-500" : "text-slate-800 dark:text-white"}`}>{fmt(timeLeft)}</span>
           </div>
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 text-left">
-            <h3 className="text-body-md font-semibold text-on-surface mb-3">Topic Card</h3>
-            <RichTextRenderer content={currentQuestion.prompt_text} className="text-body-lg text-on-surface leading-relaxed" />
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-[0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-6 text-left">
+            <h3 className="text-body-md font-semibold text-slate-800 dark:text-white mb-3">Topic Card</h3>
+            <RichTextRenderer content={currentQuestion.prompt_text} className="text-body-lg text-slate-600 dark:text-slate-300 leading-relaxed"  />
           </div>
-          <p className="text-body-md text-on-surface-variant">Prepare your response. Do not speak yet.</p>
-          <button onClick={beginPart2Speak} className="px-5 py-2.5 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity">Skip Timer · Start Speaking</button>
+          <p className="text-body-md text-slate-500 dark:text-slate-400">Prepare your response. Do not speak yet.</p>
+          <button onClick={beginPart2Speak} className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-sm font-bold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 hover:-translate-y-0.5 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/25">Skip Timer · Start Speaking</button>
         </div>
       )}
 
       {/* Part 2 Speak */}
       {phase === "part2-speak" && currentQuestion && (
-        <div className="space-y-6">
+        <div className="max-w-3xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
-            <span className="px-3 py-1 rounded-full bg-primary-container/30 text-primary text-label-sm font-semibold">Part 2 · Speaking</span>
-            <span className={`font-mono text-display-md font-extrabold ${timeLeft < 15 ? "text-error animate-pulse" : "text-on-surface"}`}>{fmt(timeLeft)}</span>
+            <span className="px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 text-[11px] font-bold uppercase tracking-wider">Part 2 · Speaking</span>
+            <span className={`font-mono text-display-md font-extrabold ${timeLeft < 15 ? "text-red-500 animate-pulse" : "text-slate-800 dark:text-white"}`}>{fmt(timeLeft)}</span>
           </div>
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6">
-            <RichTextRenderer content={currentQuestion.prompt_text} className="text-body-md text-on-surface-variant leading-relaxed line-clamp-4" />
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-[0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-6">
+            <RichTextRenderer content={currentQuestion.prompt_text} className="text-body-md text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-4"  />
           </div>
-          <div className="bg-surface-container-low rounded-2xl border border-outline-variant/20 p-8 flex flex-col items-center relative overflow-hidden">
-            <div className="absolute inset-0 opacity-5 pointer-events-none">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary rounded-full blur-3xl -mr-32 -mt-32" />
-            </div>
-            <div className="flex items-end justify-center gap-1 h-16 mb-8 w-full max-w-md relative z-10 overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-700/50 shadow-[0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-8 flex flex-col items-center relative overflow-hidden">
+            <div className="flex items-end justify-center gap-1.5 h-20 mb-8 w-full max-w-md relative z-10 overflow-hidden">
               {micBars.map((h, i) => (
-                <div key={i} className="w-1.5 rounded-full transition-all duration-100" style={{
+                <div key={i} className="w-1.5 rounded-full animate-wave-pulse" style={{
                   height: `${Math.max(3, h)}px`,
                   opacity: 0.25 + (h / 90) * 0.75,
                   backgroundColor: `hsl(${155 + (h / 90) * 40}, ${55 + (h / 90) * 35}%, ${25 + (h / 90) * 35}%)`,
+                  animationDelay: `${i * 0.05}s`,
+                  borderRadius: "9999px",
                 }} />
               ))}
             </div>
-            <div className="relative z-10">
-              <div className="absolute inset-0 rounded-full border-4 border-primary/20 scale-150 animate-pulse" style={{ animationDuration: "2s" }} />
-              <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center shadow-lg relative z-10">
-                <span className="material-symbols-outlined text-[32px] text-on-primary" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
+            <div className="relative z-10 mb-6">
+              <div className="absolute inset-0 rounded-full bg-blue-500/10 animate-pulse-ring" />
+              <div className="absolute inset-0 rounded-full bg-blue-500/5 animate-pulse-ring" style={{ animationDelay: "1s" }} />
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center shadow-[inset_0_-4px_8px_rgba(0,0,0,0.15),0_8px_24px_rgba(59,130,246,0.35)] relative z-10">
+                <span className="material-symbols-outlined text-[36px] text-white" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
               </div>
             </div>
-            <p className="mt-6 text-label-sm text-primary font-bold tracking-widest uppercase relative z-10">Recording</p>
+            <p className="text-label-sm text-blue-600 dark:text-blue-400 font-bold tracking-widest uppercase relative z-10">Recording</p>
+            <p className="mt-2 text-body-md text-slate-500 dark:text-slate-400 relative z-10">Speaking... Click when done or wait for timer.</p>
+            <div className="w-full max-w-xs relative mt-6 mb-4 z-10">
+              <div className="w-full h-2 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full transition-all" style={{ width: `${((PART_TIMERS["part2"] - timeLeft) / PART_TIMERS["part2"]) * 100}%` }} />
+              </div>
+              <div className="absolute top-1/2 -translate-y-1/2 pointer-events-none" style={{ left: `${((PART_TIMERS["part2"] - timeLeft) / PART_TIMERS["part2"]) * 100}%` }}>
+                <div className="w-4 h-4 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(217,119,6,0.5)] -translate-x-1/2" />
+              </div>
+            </div>
+            <button onClick={finishPart2}
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-700 to-amber-600 dark:from-amber-600 dark:to-amber-500 text-white text-label-sm font-bold hover:from-amber-800 hover:to-amber-700 dark:hover:from-amber-500 dark:hover:to-amber-400 hover:-translate-y-0.5 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-amber-500/25 relative z-10 flex items-center gap-2">
+              <span className="material-symbols-outlined text-[18px]">stop_circle</span>
+              Stop Recording · Continue
+            </button>
           </div>
-          <p className="text-label-sm text-on-surface-variant text-center">Speaking... Click when done or wait for timer.</p>
-          <button onClick={finishPart2} className="w-full px-5 py-3 rounded-full bg-secondary text-on-secondary text-label-sm font-bold hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2">
-            <span className="material-symbols-outlined text-[18px]">stop_circle</span>
-            Stop Recording · Continue
-          </button>
         </div>
       )}
 
@@ -1036,23 +1093,23 @@ export default function SpeakingTestPage() {
       {phase === "preview" && (
         <div className="max-w-2xl mx-auto space-y-6">
           <div className="text-center">
-            <span className="material-symbols-outlined text-[48px] text-primary mb-3">check_circle</span>
-            <h2 className="text-headline-md font-bold text-on-surface mb-1">Test Complete</h2>
-            <p className="text-body-md text-on-surface-variant">Listen to your recording before submitting.</p>
+            <span className="material-symbols-outlined text-[48px] text-emerald-500 mb-3" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+            <h2 className="text-[28px] font-bold text-slate-900 dark:text-white mb-1" style={{ fontFamily: "Inter, system-ui, sans-serif" }}>Test Complete</h2>
+            <p className="text-[15px] text-slate-500 dark:text-slate-400">Listen to your recording before submitting.</p>
           </div>
 
-          <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-8">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-[0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-8">
             <div className="h-16 flex items-end justify-center gap-1 px-2 mb-6 overflow-hidden">
               {Array.from({ length: 48 }, (_, i) => (
                 <div key={i} className="w-1.5 rounded-full" style={{
                   height: `${Math.max(6, Math.abs(Math.sin(i * 0.5) * 50 + Math.random() * 30))}px`,
-                  backgroundColor: i < 24 ? "var(--c-primary)" : "var(--c-outline-variant)",
+                  backgroundColor: i < 24 ? "#3b82f6" : "#e2e8f0",
                   opacity: i < 24 ? 1 : 0.4,
                 }} />
               ))}
             </div>
             <div className="flex items-center justify-center gap-6 mb-4">
-              <button className="w-16 h-16 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all"
+              <button className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all"
                 onClick={() => { const a = document.getElementById("previewAudioFull") as HTMLAudioElement; if (a) a.paused ? a.play() : a.pause(); }}>
                 <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
               </button>
@@ -1061,10 +1118,10 @@ export default function SpeakingTestPage() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <button onClick={() => router.push("/speaking")} className="flex-1 py-3 rounded-xl border-2 border-outline-variant text-on-surface text-label-sm font-semibold hover:bg-surface-variant/20 transition-all flex items-center justify-center gap-2">
+            <button onClick={() => router.push("/speaking")} className="flex-1 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-label-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-[18px]">delete</span> Discard
             </button>
-            <button onClick={handleSubmit} className="flex-[1.5] py-3 rounded-xl bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+            <button onClick={handleSubmit} className="flex-[1.5] py-3 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-sm font-bold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 hover:-translate-y-0.5 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span>
               Submit for AI Analysis
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -1075,11 +1132,11 @@ export default function SpeakingTestPage() {
 
       {/* Fallback start */}
       {!["load", "submitting", "mic-test", "intro", "part1-speak", "part2-prep", "part2-speak", "part3-speak", "preview", "ready", "single-prep"].includes(phase) && allQuestions.length > 0 && (
-        <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-8 text-center">
-          <span className="material-symbols-outlined text-[56px] text-primary mb-4">record_voice_over</span>
-          <h2 className="text-headline-md font-bold text-on-surface mb-2">Speaking Test</h2>
-          <p className="text-body-md text-on-surface-variant mb-8 max-w-md mx-auto">{allQuestions.length} questions across {partOrder.length} parts.</p>
-          <button onClick={() => setPhase("mic-test")} className="px-6 py-3 rounded-full bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 mx-auto">
+        <div className="bg-white dark:bg-slate-900 rounded-[20px] border border-gray-200 dark:border-slate-700/50 shadow-[0_10px_40px_rgba(0,0,0,0.02)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.08)] p-8 text-center max-w-2xl mx-auto">
+          <span className="material-symbols-outlined text-[56px] text-blue-500 mb-4" style={{ fontVariationSettings: "'FILL' 1" }}>record_voice_over</span>
+          <h2 className="text-headline-md font-bold text-slate-900 dark:text-white mb-2">Speaking Test</h2>
+          <p className="text-body-md text-slate-500 dark:text-slate-400 mb-8 max-w-md mx-auto">{allQuestions.length} questions across {partOrder.length} parts.</p>
+          <button onClick={() => setPhase("mic-test")} className="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-sm font-bold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 hover:-translate-y-0.5 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/25 flex items-center gap-2 mx-auto">
             <span className="material-symbols-outlined text-[20px]">mic</span> Start Speaking Test
           </button>
         </div>
