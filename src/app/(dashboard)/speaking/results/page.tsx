@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { API_ORIGIN as API_BASE } from "@/lib/config";
 import { getSpeakingEvaluation } from "@/lib/api";
-import type { Evaluation } from "@/lib/types";
+import type { Evaluation, CriterionScore } from "@/lib/types";
 import { useAuthStore } from "@/hooks/useAuth";
 import { redirectToCheckout } from "@/lib/payments";
 
@@ -185,299 +185,344 @@ export default function SpeakingResultsPage() {
   const transcription = evaluation.user_submission;
 
   return (
-    <div>
-      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-        <h1 className="text-headline-md font-bold text-primary">Speaking Results</h1>
-        <div className="flex items-center gap-3">
-          <button onClick={() => window.print()} className="flex items-center gap-1 text-label-sm text-on-surface-variant hover:text-primary transition-colors">
-            <span className="material-symbols-outlined text-[16px]">print</span> Print
-          </button>
-          <div className="flex items-center gap-1.5 text-label-sm bg-surface/80 backdrop-blur-sm px-2.5 py-1 rounded-full border border-outline-variant/40 shadow-sm">
-          <span className="material-symbols-outlined text-[14px] text-primary">verified</span>
-          <span className="text-on-surface-variant">AI Evaluated</span>
-        </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Left Column */}
-        <div className="lg:col-span-4 flex flex-col gap-5">
-          <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 flex flex-col items-center justify-center relative overflow-hidden border border-outline-variant/40">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-fixed/20 to-transparent pointer-events-none" />
-            <h3 className="text-body-md text-on-surface-variant mb-4 text-center z-10">Overall Band Score</h3>
-
-            <div className="relative w-28 h-28 flex items-center justify-center mb-3 z-10">
-              <svg className="w-full h-full -rotate-90 drop-shadow-lg" viewBox="0 0 100 100">
-                <defs>
-                  <linearGradient id="speakingBandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#004ac6" />
-                    <stop offset="100%" stopColor="#2563eb" />
-                  </linearGradient>
-                </defs>
-                <circle cx="50" cy="50" fill="none" r="45" stroke="#e0e3e5" strokeWidth="5" />
-                <circle cx="50" cy="50" fill="none" r="45" stroke="url(#speakingBandGradient)"
-                  strokeDasharray="282.7"
-                  strokeDashoffset={282.7 - (band / 9) * 282.7}
-                  strokeLinecap="round" strokeWidth="5" />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-mono text-[36px] leading-none text-primary font-extrabold tracking-tighter">{band.toFixed(1)}</span>
-              </div>
-            </div>
-
-            <span className="text-data-md font-semibold text-primary bg-primary-fixed px-2.5 py-1 rounded-md mb-3 z-10">{cefrLevel(band)}</span>
-
-            <p className="text-label-sm text-on-surface-variant/50 text-center mb-3 z-10">AI estimate — not an official IELTS score</p>
-
-            <p className="text-label-sm text-on-surface-variant text-center z-10">
-              {band >= 7.5 ? "Strong performance!" : band >= 6 ? "Good effort." : "Keep practicing."}
-            </p>
-
-            <div className="w-full grid grid-cols-2 gap-2.5 mt-4 z-10">
-              <Link href="/speaking" className="w-full bg-primary-container text-on-primary-container py-2 rounded-lg text-label-sm font-semibold text-center hover:scale-[0.98] active:scale-[0.97] transition-all">Try Another</Link>
-              <Link href="/dashboard" className="w-full bg-primary text-on-primary py-2 rounded-lg text-label-sm font-semibold text-center hover:scale-[0.98] active:scale-[0.97] transition-all">Dashboard</Link>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8 px-4">
+      <div className="max-w-6xl mx-auto bg-white/80 backdrop-blur-lg rounded-3xl border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.04)] p-6 md:p-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-[28px] font-bold text-slate-900" style={{ fontFamily: "Inter, system-ui, sans-serif" }}>Speaking Results</h1>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-[13px] text-slate-500">
+              {evaluation.created_at && (
+                <span className="flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[14px]">calendar_today</span>
+                  {new Date(evaluation.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                </span>
+              )}
+              <span className="flex items-center gap-1">
+                <span className="material-symbols-outlined text-[14px]">tag</span>
+                ID: {examId?.slice(0, 8)}...
+              </span>
+              <span className="flex items-center gap-1.5 bg-sky-50 text-sky-700 px-2.5 py-0.5 rounded-full text-[11px] font-semibold">
+                <span className="material-symbols-outlined text-[12px]">verified</span>
+                AI Evaluated
+              </span>
             </div>
           </div>
+          <button onClick={() => window.print()} className="flex items-center gap-1.5 text-[13px] text-slate-400 hover:text-slate-600 transition-colors px-3 py-1.5 rounded-lg border border-slate-200 hover:border-slate-300">
+            <span className="material-symbols-outlined text-[16px]">print</span>
+            Print
+          </button>
         </div>
 
-        {/* Right Column */}
-        <div className="lg:col-span-8 flex flex-col gap-5">
-          {/* General Feedback */}
-          {generalFeedback && (
-            <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 border border-outline-variant/40">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="material-symbols-outlined text-primary-tint text-[20px]">lightbulb</span>
-                <h3 className="text-body-md font-semibold text-on-surface">Quick Assessment</h3>
-              </div>
-              <p className="text-body-md text-on-surface-variant leading-relaxed">{generalFeedback}</p>
-            </div>
-          )}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Column — Score */}
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            {/* Neumorphic Score Card */}
+            <div className="rounded-2xl p-6 flex flex-col items-center text-center shadow-[6px_6px_14px_rgba(0,0,0,0.04),-6px_-6px_14px_rgba(255,255,255,0.8)] bg-white/60 border border-slate-100/60">
+              <p className="text-[13px] font-medium text-slate-500 mb-5 uppercase tracking-wider">Overall Band Score</p>
 
-          {/* Criteria */}
-          {!hasCriteria && !locked ? (
-            <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/40 text-center">
-              <span className="material-symbols-outlined text-[32px] text-outline mb-2">hourglass_empty</span>
-              <p className="text-body-md text-on-surface-variant">Criteria data is being evaluated...</p>
-            </div>
-          ) : locked && !hasCriteria ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 opacity-60">
-              {SPEAKING_CRITERIA.map((c) => (
-                <div key={c.key} className="bg-surface-container-lowest rounded-xl p-3 border border-dashed border-outline-variant/50">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-label-sm text-on-surface-variant">{c.label}</span>
-                    <span className="text-label-sm text-outline bg-surface-variant px-2 py-0.5 rounded">--</span>
-                  </div>
-                  <div className="w-full bg-surface-container rounded-full h-1.5 mb-2"><div className="bg-surface-variant h-full rounded-full w-1/3" /></div>
-                  <span className="material-symbols-outlined text-[14px] text-outline">lock</span>
+              <div className="relative w-28 h-28 flex items-center justify-center mb-4">
+                <svg className="w-full h-full -rotate-90 drop-shadow-lg" viewBox="0 0 100 100">
+                  <defs>
+                    <linearGradient id="speakingBandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#004ac6" />
+                      <stop offset="100%" stopColor="#2563eb" />
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" fill="none" r="45" stroke="#e2e8f0" strokeWidth="5" />
+                  <circle cx="50" cy="50" fill="none" r="45" stroke="url(#speakingBandGradient)"
+                    strokeDasharray="282.7"
+                    strokeDashoffset={282.7 - (band / 9) * 282.7}
+                    strokeLinecap="round" strokeWidth="5" />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="font-mono text-[36px] leading-none text-slate-900 font-extrabold tracking-tighter">{band.toFixed(1)}</span>
                 </div>
-              ))}
+              </div>
+
+              <span className="text-[13px] font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full mb-3">{cefrLevel(band)}</span>
+
+              <p className="text-[12px] text-slate-400 mb-1">AI estimate — not an official IELTS score</p>
+              <p className="text-[13px] text-slate-600 font-medium">
+                {band >= 7.5 ? "Strong performance!" : band >= 6 ? "Good effort." : "Keep practicing."}
+              </p>
+
+              <div className="w-full grid grid-cols-2 gap-3 mt-6">
+                <Link href="/speaking" className="w-full py-2.5 rounded-xl border border-slate-200 text-slate-600 text-[13px] font-semibold text-center hover:bg-slate-50 transition-colors">Practice Again</Link>
+                <Link href="/dashboard" className="w-full py-2.5 rounded-xl bg-slate-900 text-white text-[13px] font-semibold text-center hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-md hover:shadow-lg">Dashboard</Link>
+              </div>
             </div>
-          ) : locked ? (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {SPEAKING_CRITERIA.map((c) => {
-                  const data = criteria[c.key] as { score: number; comment: string } | undefined;
-                  const score = data?.score;
-                  const comment = data?.comment;
-                  const colors = score != null ? scoreColor(score) : { badge: "bg-surface-variant text-on-surface-variant", bar: "bg-surface-variant" };
-                  return (
-                    <div key={c.key} className="bg-surface-container-lowest rounded-xl shadow-sm p-3.5 border border-outline-variant/40">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="material-symbols-outlined text-[18px] text-primary-tint">{c.icon}</span>
-                        <h4 className="text-label-sm font-semibold text-on-surface">{c.label}</h4>
-                        {score != null ? (
-                          <span className={`font-mono text-xs font-semibold px-2 py-0.5 rounded-full ml-auto ${colors.badge}`}>{score.toFixed(1)}</span>
+          </div>
+
+          {/* Right Column */}
+          <div className="lg:col-span-8 flex flex-col gap-6">
+            {/* Quick Assessment */}
+            {generalFeedback && (
+              <div className="rounded-2xl bg-white/60 border border-slate-100/60 p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[18px] text-blue-600">lightbulb</span>
+                  </div>
+                  <h3 className="text-[15px] font-semibold text-slate-800">Quick Assessment</h3>
+                </div>
+                <p className="text-[14px] text-slate-600 leading-relaxed">{generalFeedback}</p>
+              </div>
+            )}
+
+            {/* Criteria */}
+            {!hasCriteria && !locked ? (
+              <div className="rounded-2xl bg-white/60 border border-slate-100/60 p-6 text-center">
+                <span className="material-symbols-outlined text-[32px] text-slate-300 mb-2">hourglass_empty</span>
+                <p className="text-[14px] text-slate-500">Criteria data is being evaluated...</p>
+              </div>
+            ) : locked && !hasCriteria ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 opacity-60">
+                {SPEAKING_CRITERIA.map((c) => (
+                  <div key={c.key} className="rounded-2xl bg-white/40 border border-dashed border-slate-200 p-4">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-[13px] text-slate-500">{c.label}</span>
+                      <span className="text-[12px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded">--</span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-1.5 mb-2"><div className="bg-slate-200 h-full rounded-full w-1/3" /></div>
+                    <span className="material-symbols-outlined text-[14px] text-slate-300">lock</span>
+                  </div>
+                ))}
+              </div>
+            ) : locked ? (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {SPEAKING_CRITERIA.map((c) => {
+                    const data = criteria[c.key] as CriterionScore | undefined;
+                    const score = data?.score;
+                    const comment = data?.comment;
+                    const colors = score != null ? scoreColor(score) : { badge: "bg-slate-100 text-slate-500", bar: "bg-slate-200" };
+                    return (
+                      <div key={c.key} className="rounded-2xl bg-white/60 border border-slate-100/60 p-4 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="material-symbols-outlined text-[18px] text-blue-500">{c.icon}</span>
+                          <h4 className="text-[13px] font-semibold text-slate-800">{c.label}</h4>
+                          {score != null ? (
+                            <span className={`font-mono text-[11px] font-bold px-2 py-0.5 rounded-full ml-auto ${colors.badge}`}>{score.toFixed(1)}</span>
+                          ) : (
+                            <span className="font-mono text-[11px] px-2 py-0.5 rounded-full ml-auto bg-slate-100 text-slate-500">--</span>
+                          )}
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-1.5 mb-2 overflow-hidden">
+                          <div className={`${colors.bar} h-full rounded-full transition-all duration-1000 ease-out`} style={{ width: score != null ? `${(score / 9) * 100}%` : "0%" }} />
+                        </div>
+                        {comment ? (
+                          <p className="text-[13px] text-slate-500 leading-relaxed line-clamp-1">{comment}</p>
                         ) : (
-                          <span className="font-mono text-xs px-2 py-0.5 rounded-full ml-auto bg-surface-variant text-on-surface-variant">--</span>
+                          <p className="text-[13px] text-slate-400 italic">{c.description}</p>
                         )}
                       </div>
-                      <div className="w-full bg-surface-container rounded-full h-1.5 mb-2 overflow-hidden">
-                        <div className={`${colors.bar} h-full rounded-full transition-all duration-700`} style={{ width: score != null ? `${(score / 9) * 100}%` : "0%" }} />
+                    );
+                  })}
+                </div>
+                {/* Premium upsell */}
+                <div className="rounded-2xl bg-white/60 border border-slate-100/60 p-5 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-white/80 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center gap-2 rounded-2xl">
+                    <span className="material-symbols-outlined text-[28px] text-slate-300">lock</span>
+                    <span className="text-[14px] font-semibold text-slate-600">Detailed Scoring (Pro)</span>
+                    <p className="text-[13px] text-slate-400 text-center max-w-[280px]">Get detailed scoring for all sub-criteria: fluency, coherence, vocabulary, grammar, and pronunciation.</p>
+                    <button onClick={() => redirectToCheckout("premium")} className="mt-2 bg-slate-900 text-white font-semibold px-5 py-2 rounded-xl text-[13px] hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-md">
+                      Unlock Pro · $14.99/mo
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 opacity-30 select-none pointer-events-none">
+                    {SPEAKING_CRITERIA.map((c) => {
+                      const subs = SPEAKING_SUB_CRITERIA[c.key] || [];
+                      return (
+                        <div key={c.key} className="space-y-2">
+                          <p className="text-[13px] font-semibold text-slate-600">{c.label}</p>
+                          {subs.map((sub) => (
+                            <div key={sub.key} className="flex items-center gap-2 pl-3 border-l-2 border-slate-200">
+                              <span className="material-symbols-outlined text-[14px] text-slate-300">{sub.icon}</span>
+                              <span className="text-[13px] text-slate-500">{sub.label}</span>
+                              <span className="font-mono text-[11px] text-slate-400 ml-auto bg-slate-100 px-1.5 py-0.5 rounded">--</span>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
+                {SPEAKING_CRITERIA.map((c) => {
+                  const data = criteria[c.key] as CriterionScore | undefined;
+                  const score = data?.score;
+                  const comment = data?.comment;
+                  const colors = score != null ? scoreColor(score) : { badge: "bg-slate-100 text-slate-500", bar: "bg-slate-200" };
+                  const subs = SPEAKING_SUB_CRITERIA[c.key] || [];
+                  const isExpanded = expandedCriterion === c.key;
+                  const hasSubData = subs.some((s) => criteria[s.key] != null);
+
+                  const barGradient = score != null && score >= 7
+                    ? "bg-gradient-to-r from-blue-500 to-emerald-400"
+                    : score != null && score >= 6
+                    ? "bg-gradient-to-r from-blue-500 to-blue-400"
+                    : "bg-gradient-to-r from-amber-400 to-amber-300";
+
+                  return (
+                    <div key={c.key} className="rounded-2xl bg-white/60 border border-slate-100/60 overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                      <div className="p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="material-symbols-outlined text-[18px] text-blue-500">{c.icon}</span>
+                          <h4 className="text-[13px] font-semibold text-slate-800">{c.label}</h4>
+                          {score != null ? (
+                            <span className={`font-mono text-[11px] font-bold px-2 py-0.5 rounded-full ml-auto ${colors.badge}`}>{score.toFixed(1)}</span>
+                          ) : (
+                            <span className="font-mono text-[11px] px-2 py-0.5 rounded-full ml-auto bg-slate-100 text-slate-500">--</span>
+                          )}
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-1.5 mb-2 overflow-hidden">
+                          <div className={`h-full rounded-full transition-all duration-1000 ease-out ${barGradient}`} style={{ width: score != null ? `${(score / 9) * 100}%` : "0%" }} />
+                        </div>
+                        {comment ? (
+                          <p className="text-[13px] text-slate-500 leading-relaxed">{comment}</p>
+                        ) : (
+                          <p className="text-[13px] text-slate-400 italic">{c.description}</p>
+                        )}
                       </div>
-                      {comment ? (
-                        <p className="text-label-sm text-on-surface-variant leading-relaxed line-clamp-1">{comment}</p>
-                      ) : (
-                        <p className="text-label-sm text-on-surface-variant/60 italic">{c.description}</p>
+
+                      {/* Sub-criteria toggle */}
+                      {subs.length > 0 && (
+                        <>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setExpandedCriterion(isExpanded ? null : c.key); }}
+                            className="w-full flex items-center gap-1.5 px-4 py-2.5 border-t border-slate-100 text-[12px] text-blue-600 hover:bg-blue-50/50 transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-[15px]">{hasSubData ? "analytics" : "visibility"}</span>
+                            <span className="font-medium">Detailed Breakdown</span>
+                            <span className="material-symbols-outlined text-[14px] ml-auto transition-transform duration-200" style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
+                              expand_more
+                            </span>
+                          </button>
+
+                          {isExpanded && (
+                            <div className="px-4 pb-4 space-y-2.5 border-t border-slate-100 pt-3">
+                              {subs.map((sub) => {
+                                const subData = criteria[sub.key] as CriterionScore | undefined;
+                                const subScore = subData?.score;
+                                const subComment = subData?.comment;
+                                const subColors = subScore != null ? scoreColor(subScore) : { badge: "bg-slate-100 text-slate-500", bar: "bg-slate-200" };
+                                const subGradient = subScore != null && subScore >= 7
+                                  ? "bg-gradient-to-r from-blue-500 to-emerald-400"
+                                  : subScore != null && subScore >= 6
+                                  ? "bg-gradient-to-r from-blue-500 to-blue-400"
+                                  : "bg-gradient-to-r from-amber-400 to-amber-300";
+                                return (
+                                  <div key={sub.key} className="flex items-start gap-2 pl-2 border-l-2 border-slate-100">
+                                    <span className="material-symbols-outlined text-[15px] text-slate-400 mt-0.5 shrink-0">{sub.icon}</span>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center gap-1.5 mb-1">
+                                        <span className="text-[13px] text-slate-700">{sub.label}</span>
+                                        {subScore != null ? (
+                                          <span className={`font-mono text-[10px] font-bold px-1.5 py-0.5 rounded ${subColors.badge} ml-auto shrink-0`}>{subScore.toFixed(1)}</span>
+                                        ) : (
+                                          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 ml-auto shrink-0">--</span>
+                                        )}
+                                      </div>
+                                      <div className="w-full bg-slate-100 rounded-full h-1 mb-1.5 overflow-hidden">
+                                        <div className={`h-full rounded-full transition-all duration-700 ${subGradient}`} style={{ width: subScore != null ? `${(subScore / 9) * 100}%` : "0%" }} />
+                                      </div>
+                                      {subComment ? (
+                                        <p className="text-[12px] text-slate-500 leading-relaxed">{subComment}</p>
+                                      ) : (
+                                        <p className="text-[12px] text-slate-400 italic">{sub.description}</p>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   );
                 })}
               </div>
-              {/* Premium Detailed Scoring upsell — blurred */}
-              <div className="bg-surface-container-lowest rounded-2xl p-5 border border-outline-variant/40 relative overflow-hidden">
-                <div className="absolute inset-0 bg-surface-container-lowest/70 backdrop-blur-[3px] z-10 flex flex-col items-center justify-center gap-2">
-                  <span className="material-symbols-outlined text-[28px] text-outline">lock</span>
-                  <span className="text-label-md font-semibold text-on-surface-variant">Detailed Scoring (Pro)</span>
-                  <p className="text-label-sm text-on-surface-variant/70 text-center max-w-[280px]">Get detailed scoring for all sub-criteria: fluency, coherence, vocabulary, grammar, and pronunciation.</p>
-                  <button onClick={() => redirectToCheckout("premium")} className="mt-2 bg-primary text-on-primary font-semibold px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
-                    Unlock Pro · $14.99/mo
-                  </button>
+            )}
+
+            {/* Feedback Sections */}
+            {locked && !detailedFeedback ? null : locked ? (
+              <div className="rounded-2xl bg-white/60 border border-slate-100/60 p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[18px] text-blue-600">lightbulb</span>
+                  </div>
+                  <h3 className="text-[15px] font-semibold text-slate-800">Detailed Feedback</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 opacity-30 select-none pointer-events-none">
-                  {SPEAKING_CRITERIA.map((c) => {
-                    const subs = SPEAKING_SUB_CRITERIA[c.key] || [];
-                    return (
-                      <div key={c.key} className="space-y-2">
-                        <p className="text-label-sm font-semibold text-on-surface">{c.label}</p>
-                        {subs.map((sub) => (
-                          <div key={sub.key} className="flex items-center gap-2 pl-3 border-l-2 border-outline-variant/40">
-                            <span className="material-symbols-outlined text-[14px] text-outline">{sub.icon}</span>
-                            <span className="text-label-sm text-on-surface-variant">{sub.label}</span>
-                            <span className="font-mono text-xs text-outline ml-auto bg-surface-variant px-1.5 py-0.5 rounded">--</span>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })}
-                </div>
+                <LockedPeek text={detailedFeedback || generalFeedback || ""} />
               </div>
-            </>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-start">
-              {SPEAKING_CRITERIA.map((c) => {
-                const data = criteria[c.key] as { score: number; comment: string } | undefined;
-                const score = data?.score;
-                const comment = data?.comment;
-                const colors = score != null ? scoreColor(score) : { badge: "bg-surface-variant text-on-surface-variant", bar: "bg-surface-variant" };
-                const subs = SPEAKING_SUB_CRITERIA[c.key] || [];
-                const isExpanded = expandedCriterion === c.key;
-                const hasSubData = subs.some((s) => criteria[s.key] != null);
-
-                return (
-                  <div key={c.key} className="ds-card-interactive">
-                    {/* Main criterion header */}
-                    <div className="p-3.5">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="material-symbols-outlined text-[18px] text-primary-tint">{c.icon}</span>
-                        <h4 className="text-label-sm font-semibold text-on-surface">{c.label}</h4>
-                        {score != null ? (
-                          <span className={`font-mono text-xs font-semibold px-2 py-0.5 rounded-full ml-auto ${colors.badge}`}>{score.toFixed(1)}</span>
-                        ) : (
-                          <span className="font-mono text-xs px-2 py-0.5 rounded-full ml-auto bg-surface-variant text-on-surface-variant">--</span>
-                        )}
+            ) : (
+              <div className="space-y-4">
+                {detailedFeedback && (
+                  <div className="rounded-2xl bg-gradient-to-br from-emerald-50/80 to-emerald-50/40 border border-emerald-200/60 p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                    <div className="flex items-center gap-2.5 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[18px] text-emerald-600">emoji_objects</span>
                       </div>
-                      <div className="w-full bg-surface-container rounded-full h-1.5 mb-2 overflow-hidden">
-                        <div className={`${colors.bar} h-full rounded-full transition-all duration-700`} style={{ width: score != null ? `${(score / 9) * 100}%` : "0%" }} />
-                      </div>
-                      {comment ? (
-                        <p className="text-label-sm text-on-surface-variant leading-relaxed">{comment}</p>
-                      ) : (
-                        <p className="text-label-sm text-on-surface-variant/60 italic">{c.description}</p>
-                      )}
+                      <h3 className="text-[15px] font-semibold text-emerald-800">Detailed Feedback</h3>
                     </div>
-
-                    {/* Sub-criteria toggle */}
-                    {subs.length > 0 && (
-                      <>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setExpandedCriterion(isExpanded ? null : c.key); }}
-                          className="w-full flex items-center gap-1.5 px-3.5 py-2 border-t border-outline-variant/30 text-label-sm text-primary-tint hover:bg-primary/5 transition-colors"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">{hasSubData ? "analytics" : "visibility"}</span>
-                          <span>Detailed Breakdown</span>
-                          <span className="material-symbols-outlined text-[14px] ml-auto transition-transform duration-200" style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}>
-                            expand_more
-                          </span>
-                        </button>
-
-                        {isExpanded && (
-                          <div className="px-3.5 pb-3.5 space-y-2 border-t border-outline-variant/30 pt-2">
-                            {subs.map((sub) => {
-                              const subData = criteria[sub.key] as { score: number; comment: string } | undefined;
-                              const subScore = subData?.score;
-                              const subComment = subData?.comment;
-                              const subColors = subScore != null ? scoreColor(subScore) : { badge: "bg-surface-variant text-on-surface-variant", bar: "bg-surface-variant/60" };
-                              return (
-                                <div key={sub.key} className="flex items-start gap-2 pl-2 border-l-2 border-outline-variant/30">
-                                  <span className="material-symbols-outlined text-[15px] text-outline mt-0.5 shrink-0">{sub.icon}</span>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-1.5 mb-1">
-                                      <span className="text-label-sm text-on-surface">{sub.label}</span>
-                                      {subScore != null ? (
-                                        <span className={`font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded ${subColors.badge} ml-auto shrink-0`}>{subScore.toFixed(1)}</span>
-                                      ) : (
-                                        <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-surface-variant text-on-surface-variant ml-auto shrink-0">--</span>
-                                      )}
-                                    </div>
-                                    <div className="w-full bg-surface-container rounded-full h-1 mb-1 overflow-hidden">
-                                      <div className={`${subColors.bar} h-full rounded-full transition-all duration-500`} style={{ width: subScore != null ? `${(subScore / 9) * 100}%` : "0%" }} />
-                                    </div>
-                                    {subComment ? (
-                                      <p className="text-label-sm text-on-surface-variant/80 leading-relaxed">{subComment}</p>
-                                    ) : (
-                                      <p className="text-label-sm text-on-surface-variant/50 italic">{sub.description}</p>
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </>
-                    )}
+                    <p className="text-[14px] text-emerald-700 leading-relaxed whitespace-pre-wrap">{detailedFeedback}</p>
                   </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* Transcription — always visible */}
-          {transcription && (
-            <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 border border-outline-variant/40 mb-5">
-              <button
-                onClick={() => setShowTranscription(!showTranscription)}
-                className="w-full flex items-center gap-2 text-label-sm text-on-surface-variant hover:text-on-surface transition-colors"
-              >
-                <div className="bg-surface-variant p-1.5 rounded-lg text-on-surface-variant">
-                  <span className="material-symbols-outlined text-[16px]">closed_caption</span>
-                </div>
-                <span className="font-semibold text-on-surface">Transcription</span>
-                <span className="material-symbols-outlined text-[16px] ml-auto transition-transform duration-200" style={{ transform: showTranscription ? "rotate(180deg)" : "rotate(0deg)" }}>
-                  expand_more
-                </span>
-              </button>
-              {showTranscription && (
-                <p className="text-body-sm text-on-surface-variant leading-relaxed mt-3 pl-9 border-l-2 border-outline-variant/30 ml-1.5 whitespace-pre-wrap">{transcription}</p>
-              )}
-            </div>
-          )}
-
-          {/* Detailed Feedback + Audio */}
-          {!detailedFeedback && !locked ? null : locked ? (
-            <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 border border-outline-variant/40">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="material-symbols-outlined text-primary-tint text-[20px]">lightbulb</span>
-                <h3 className="text-body-md font-semibold text-on-surface">Detailed Feedback</h3>
+                )}
+                {audioUrl && (
+                  <div className="rounded-2xl bg-white/60 border border-slate-100/60 p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+                        <span className="material-symbols-outlined text-[18px] text-blue-600">mic</span>
+                      </div>
+                      <h3 className="text-[15px] font-semibold text-slate-800">Your Recording</h3>
+                    </div>
+                    <audio controls className="w-full h-10" src={audioUrl}>
+                      Your browser does not support the audio element.
+                    </audio>
+                  </div>
+                )}
               </div>
-              <LockedPeek text={detailedFeedback || generalFeedback || ""} />
-            </div>
-          ) : (
-            <div className="bg-surface-container-lowest rounded-2xl shadow-sm p-5 border border-outline-variant/40">
-              {detailedFeedback && (
-                <div className="bg-primary/5 rounded-xl p-4 border border-primary/20 relative overflow-hidden mb-4">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-primary/80 rounded-l-full" />
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="bg-primary-container p-2 rounded-lg text-on-primary-container shadow-sm">
-                      <span className="material-symbols-outlined text-[20px]">lightbulb</span>
-                    </div>
-                    <h3 className="text-body-md font-semibold text-on-surface">Detailed Feedback</h3>
+            )}
+
+            {/* Transcription */}
+            {transcription && (
+              <div className="rounded-2xl bg-white/60 border border-slate-100/60 p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
+                <button
+                  onClick={() => setShowTranscription(!showTranscription)}
+                  className="w-full flex items-center gap-2 text-[13px] text-slate-600 hover:text-slate-800 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-[16px] text-slate-500">closed_caption</span>
                   </div>
-                  <p className="text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">{detailedFeedback}</p>
-                </div>
-              )}
-              {audioUrl && (
-                <div className="bg-surface-variant/50 rounded-xl p-4 border border-outline-variant/30">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="material-symbols-outlined text-[18px] text-primary-tint">mic</span>
-                    <h4 className="text-label-sm font-semibold text-on-surface">Your Recording</h4>
-                  </div>
-                  <audio controls className="w-full h-10" src={audioUrl}>
-                    Your browser does not support the audio element.
-                  </audio>
-                </div>
-              )}
+                  <span className="font-semibold text-slate-800">Transcription</span>
+                  <span className="material-symbols-outlined text-[14px] ml-auto transition-transform duration-200" style={{ transform: showTranscription ? "rotate(180deg)" : "rotate(0deg)" }}>
+                    expand_more
+                  </span>
+                </button>
+                {showTranscription && (
+                  <p className="text-[13px] text-slate-500 leading-relaxed mt-3 pl-10 border-l-2 border-slate-100 whitespace-pre-wrap">{transcription}</p>
+                )}
+              </div>
+            )}
+
+            {/* Bottom Actions */}
+            <div className="flex flex-col sm:flex-row gap-3 mt-2">
+              <Link href="/speaking"
+                className="flex-1 py-3 rounded-xl border-2 border-slate-200 text-slate-600 text-[13px] font-semibold text-center hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 flex items-center justify-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">refresh</span>
+                Practice Again
+              </Link>
+              <Link href="/history"
+                className="flex-[1.5] py-3 rounded-xl bg-slate-900 text-white text-[13px] font-bold text-center hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-slate-900/20 flex items-center justify-center gap-2">
+                <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span>
+                Review Detailed Analytics
+                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </Link>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
