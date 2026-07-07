@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useTheme } from "@/hooks/useTheme";
@@ -19,7 +20,7 @@ function PublicHeader() {
         </Link>
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center shrink-0">
-            <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-8 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
+            <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-8 w-auto" priority />
           </Link>
         </div>
         <button
@@ -34,26 +35,27 @@ function PublicHeader() {
   );
 }
 
+function LoadingSpinner() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <div className="w-10 h-10 border-4 border-slate-200 dark:border-slate-700 border-t-blue-600 rounded-full animate-spin" />
+    </div>
+  );
+}
+
 export default function ResourcesLayout({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <div className="w-10 h-10 border-4 border-slate-200 dark:border-slate-700 border-t-blue-600 rounded-full animate-spin" />
-      </div>
-    );
-  }
+  useEffect(() => { setMounted(true); }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <PublicHeader />
       <main className="max-w-5xl mx-auto px-4 py-8">
-        <ErrorBoundary>{children}</ErrorBoundary>
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingSpinner />}>
+            {children}
+          </Suspense>
+        </ErrorBoundary>
       </main>
     </div>
   );

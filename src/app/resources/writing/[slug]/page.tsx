@@ -1,14 +1,11 @@
-"use client";
-
-import { use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTipBySlug } from "@/data/tips";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import { ChevronRight, ArrowLeft, PenTool } from "lucide-react";
 
-export default function TipPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = use(params);
+export default async function TipPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const tip = getTipBySlug("writing", slug);
 
   if (!tip) {
