@@ -194,7 +194,7 @@ export default function WritingTestPage() {
             </div>
             <div className="space-y-3.5">
               {[
-                { icon: "word_add", text: `Write at least ${question.task_type === "task1" ? "150" : "250"} words` },
+                { icon: "text_snippet", text: `Write at least ${question.task_type === "task1" ? "150" : "250"} words` },
                 { icon: "edit_note", text: "Plan your response before writing" },
                 { icon: "timer", text: "Leave time to review your answer" },
               ].map((tip, i) => (
