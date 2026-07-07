@@ -159,7 +159,7 @@ export default function DashboardPage() {
   const bandHistory = exams
     .filter((e) => e.evaluations?.[0]?.overall_band != null)
     .map((e) => ({
-      band: e.evaluations[0].overall_band,
+      band: e.evaluations[0].overall_band!,
       date: new Date(e.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
       type: e.exam_type,
     }));
@@ -238,8 +238,8 @@ export default function DashboardPage() {
   };
 
   const recentExams = exams.slice(-10);
-  const writingBands = recentExams.filter((e) => e.exam_type === "writing" && e.evaluations?.[0]?.overall_band != null).map((e) => ({ b: e.evaluations[0].overall_band, d: new Date(e.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) }));
-  const speakingBands = recentExams.filter((e) => e.exam_type === "speaking" && e.evaluations?.[0]?.overall_band != null).map((e) => ({ b: e.evaluations[0].overall_band, d: new Date(e.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) }));
+  const writingBands = recentExams.filter((e) => e.exam_type === "writing" && e.evaluations?.[0]?.overall_band != null).map((e) => ({ b: e.evaluations[0].overall_band!, d: new Date(e.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) }));
+  const speakingBands = recentExams.filter((e) => e.exam_type === "speaking" && e.evaluations?.[0]?.overall_band != null).map((e) => ({ b: e.evaluations[0].overall_band!, d: new Date(e.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) }));
 
   const lastEval = exams.filter((e) => e.evaluations?.[0]?.criteria_scores).slice(-1)[0];
   const weakCriteria: string[] = [];

@@ -66,7 +66,7 @@ export interface Evaluation {
   exam_id: string;
   user_submission: string;
   prompt_text?: string | null;
-  overall_band: number;
+  overall_band: number | null;
   criteria_scores: Record<string, CriterionScore>;
   general_feedback: string | null;
   detailed_feedback: string | null;
@@ -79,6 +79,7 @@ export interface Evaluation {
   is_feedback_visible: boolean;
   upgraded_text?: string;
   created_at: string;
+  exam_status?: string;
 }
 
 export interface DashboardStats {

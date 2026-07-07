@@ -212,17 +212,17 @@ export default function ReportsPage() {
   useEffect(() => { fetchExams(); }, []);
 
   const completed = exams.filter((e) => e.evaluations?.[0]?.overall_band != null && e.status === "completed");
-  const bands = completed.map((e) => e.evaluations[0].overall_band);
+  const bands = completed.map((e) => e.evaluations[0].overall_band!);
   const avgBand = bands.length > 0 ? bands.reduce((a, b) => a + b, 0) / bands.length : null;
   const bestBand = bands.length > 0 ? Math.max(...bands) : null;
   const latestBand = bands.length > 0 ? bands[bands.length - 1] : null;
 
   const writingExams = completed.filter((e) => e.exam_type === "writing");
   const speakingExams = completed.filter((e) => e.exam_type === "speaking");
-  const writingAvg = writingExams.length > 0 ? writingExams.reduce((a, e) => a + e.evaluations[0].overall_band, 0) / writingExams.length : null;
-  const speakingAvg = speakingExams.length > 0 ? speakingExams.reduce((a, e) => a + e.evaluations[0].overall_band, 0) / speakingExams.length : null;
+  const writingAvg = writingExams.length > 0 ? writingExams.reduce((a, e) => a + e.evaluations[0].overall_band!, 0) / writingExams.length : null;
+  const speakingAvg = speakingExams.length > 0 ? speakingExams.reduce((a, e) => a + e.evaluations[0].overall_band!, 0) / speakingExams.length : null;
 
-  const trendPoints = completed.slice(-10).reverse().map((e) => e.evaluations[0].overall_band);
+  const trendPoints = completed.slice(-10).reverse().map((e) => e.evaluations[0].overall_band!);
 
   const filtered = filter === "all" ? exams : exams.filter((e) => e.exam_type === filter);
   const paginated = filtered.slice((listPage - 1) * PAGE_SIZE, listPage * PAGE_SIZE);

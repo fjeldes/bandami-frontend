@@ -76,6 +76,7 @@ export default function SpeakingResultsPage() {
   const [evaluation, setEvaluation] = useState<Evaluation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [examFailed, setExamFailed] = useState(false);
   const [showTranscription, setShowTranscription] = useState(false);
   const [expandedCriterion, setExpandedCriterion] = useState<string | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -94,6 +95,11 @@ export default function SpeakingResultsPage() {
         const evalData = await getSpeakingEvaluation(examId);
         if (evalData.overall_band != null) {
           setEvaluation(evalData);
+          setLoading(false);
+          return;
+        }
+        if (evalData.exam_status === "failed") {
+          setExamFailed(true);
           setLoading(false);
           return;
         }
@@ -139,10 +145,31 @@ export default function SpeakingResultsPage() {
     </div>
   );
 
+  if (examFailed) return (
+    <div className="flex flex-col items-center justify-center py-16 gap-4">
+      <span className="material-symbols-outlined text-[48px] text-error">error_outline</span>
+      <h2 className="text-headline-sm font-bold text-on-surface">Evaluation Failed</h2>
+      <p className="text-body-md text-on-surface-variant text-center max-w-md">
+        Our AI agent encountered an error while evaluating your speaking. This may be due to audio quality or high demand. Please try again.
+      </p>
+      <div className="flex gap-3 mt-2">
+        <button onClick={() => router.push("/speaking")} className="bg-primary text-on-primary font-semibold px-6 py-2.5 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all">
+          Try Again
+        </button>
+        <button onClick={() => router.push("/dashboard")} className="bg-surface-variant text-on-surface-variant font-semibold px-6 py-2.5 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all">
+          Dashboard
+        </button>
+      </div>
+    </div>
+  );
+
   if (error) return (
-    <div className="text-center py-12">
-      <p className="text-body-md text-error mb-4">{error}</p>
-      <button onClick={() => router.push("/speaking")} className="text-primary font-semibold">Back to Speaking</button>
+    <div className="flex flex-col items-center justify-center py-16 gap-4">
+      <span className="material-symbols-outlined text-[48px] text-error">warning</span>
+      <p className="text-body-md text-on-surface-variant text-center">{error}</p>
+      <button onClick={() => router.push("/speaking")} className="bg-primary text-on-primary font-semibold px-6 py-2.5 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all">
+        Back to Speaking
+      </button>
     </div>
   );
 
@@ -438,7 +465,17 @@ export default function SpeakingResultsPage() {
                   <p className="text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">{detailedFeedback}</p>
                 </div>
               )}
-              {/* Recording section hidden — audio playback issues */}
+              {audioUrl && (
+                <div className="bg-surface-variant/50 rounded-xl p-4 border border-outline-variant/30">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="material-symbols-outlined text-[18px] text-primary-tint">mic</span>
+                    <h4 className="text-label-sm font-semibold text-on-surface">Your Recording</h4>
+                  </div>
+                  <audio controls className="w-full h-10" src={audioUrl}>
+                    Your browser does not support the audio element.
+                  </audio>
+                </div>
+              )}
             </div>
           )}
         </div>
