@@ -177,8 +177,12 @@ function ExamRow({ exam }: { exam: ExamWithEvaluation }) {
           </>
         ) : null}
         <Link
-          href={`/${exam.exam_type}/results?examId=${exam.id}`}
-          className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-800 dark:hover:bg-slate-700 hover:text-white transition-all duration-200 group-hover:scale-105"
+          href={isPending ? `/${exam.exam_type}/test?examId=${exam.id}` : `/${exam.exam_type}/results?examId=${exam.id}`}
+          className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-105 ${
+            isPending
+              ? "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/50"
+              : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-800 dark:hover:bg-slate-700 hover:text-white"
+          }`}
         >
           <ArrowRight className="w-4 h-4" />
         </Link>

@@ -80,6 +80,7 @@ export default function SpeakingTestPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const questionId = searchParams.get("id");
+  const retryExamId = searchParams.get("examId");
 
   const [allQuestions, setAllQuestions] = useState<Question[]>([]);
   const [targetQuestion, setTargetQuestion] = useState<Question | null>(null);
@@ -116,10 +117,27 @@ export default function SpeakingTestPage() {
 
   useEffect(() => {
     if (exam) return;
-    // Check for interrupted previous session
     if (typeof window !== "undefined" && localStorage.getItem("speaking_test_in_progress")) {
       setShowInterruptedBanner(true);
     }
+
+    if (retryExamId) {
+      setExam({ id: retryExamId } as Exam);
+      getQuestions({ exam_type: "speaking" })
+        .then((qs) => {
+          if (!qs.length) throw new Error("No speaking questions available");
+          setAllQuestions(qs);
+          if (questionId) {
+            const found = qs.find((q) => q.id === questionId);
+            if (!found) throw new Error("Question not found");
+            setTargetQuestion(found);
+          }
+        })
+        .then(() => setPhase("mic-test"))
+        .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
+      return;
+    }
+
     getQuestions({ exam_type: "speaking" })
       .then((qs) => {
         if (!qs.length) throw new Error("No speaking questions available");
@@ -139,7 +157,7 @@ export default function SpeakingTestPage() {
       })
       .then(() => setPhase("mic-test"))
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
-  }, [questionId]);
+  }, [questionId, retryExamId]);
 
   useEffect(() => {
     return () => {
@@ -271,11 +289,11 @@ export default function SpeakingTestPage() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg.includes("503") || msg.includes("UNAVAILABLE")) {
-        setError("provider_overloaded");
+        router.push("/history");
       } else {
         setError(msg);
+        setPhase("preview");
       }
-      setPhase("preview");
     }
   }, [exam, audioBlob, router]);
 
@@ -374,11 +392,11 @@ export default function SpeakingTestPage() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg.includes("503") || msg.includes("UNAVAILABLE")) {
-        setError("provider_overloaded");
+        router.push("/history");
       } else {
         setError(msg);
+        setPhase("preview");
       }
-      setPhase("preview");
     }
   }, [exam, audioBlob, router]);
 
