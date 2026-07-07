@@ -75,7 +75,7 @@ export default function LoginPage() {
           Back to Home
         </Link>
 <header className="text-center mb-8">
-          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
+          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
           <h1 className="text-base text-slate-600 dark:text-slate-400 mt-2">
             Welcome back
           </h1>
