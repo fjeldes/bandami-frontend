@@ -162,58 +162,103 @@ export default function WritingTestPage() {
         </div>
       )}
       <div className="flex flex-col lg:flex-row gap-6 min-h-[60vh] md:h-[calc(100dvh-9rem)]">
-      <div className="lg:w-1/2 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 overflow-y-auto ghost-shadow">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex gap-2">
-            <span className="px-3 py-1 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm tracking-wide uppercase">{question.task_type?.replace("task", "Task ")}</span>
-            <span className="px-3 py-1 rounded-full bg-primary-container/10 text-primary font-label-sm text-label-sm tracking-wide uppercase">{question.module || "general"}</span>
+
+        {/* LEFT PANEL — Prompt & Instructions */}
+        <div className="lg:w-1/2 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 md:p-8 overflow-y-auto ghost-shadow">
+          <div className="flex items-center flex-wrap gap-2 mb-5">
+            <span className="px-3 py-1 rounded-full bg-surface-container-low text-on-surface-variant text-label-sm tracking-wide uppercase">
+              {question.task_type?.replace("task", "Task ")}
+            </span>
+            <span className="px-3 py-1 rounded-full bg-primary-container/10 text-primary text-label-sm tracking-wide uppercase">
+              {question.module || "general"}
+            </span>
+          </div>
+
+          <h1 className="text-headline-lg font-bold text-on-surface mb-5 leading-tight">
+            {question.title || "Writing Prompt"}
+          </h1>
+
+          {question.img_url && (
+            <img src={question.img_url} alt="Question visual" className="w-full max-h-96 object-contain rounded-xl border border-outline-variant/50 mb-5" />
+          )}
+
+          <RichTextRenderer content={question.prompt_text} className="text-body-lg text-on-surface-variant leading-relaxed mb-6" />
+
+          {/* Tips Card — redesigned */}
+          <div className="rounded-xl bg-blue-50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/20 p-5 space-y-3">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="material-symbols-outlined text-blue-500 text-[20px]">lightbulb</span>
+              <span className="text-label-sm font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider">Quick Tips</span>
+            </div>
+            {[
+              { icon: "word_add", text: `Write at least ${question.task_type === "task1" ? "150" : "250"} words` },
+              { icon: "edit_note", text: "Plan your response before writing" },
+              { icon: "timer", text: "Leave time to review your answer" },
+            ].map((tip, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <span className="material-symbols-outlined text-blue-400 text-[18px] mt-0.5 shrink-0">{tip.icon}</span>
+                <span className="text-body-md text-blue-800 dark:text-blue-300">{tip.text}</span>
+              </div>
+            ))}
           </div>
         </div>
-        <h2 className="font-headline-md text-headline-md text-on-surface mb-4">{question.title || "Writing Prompt"}</h2>
-        {question.img_url && (
-          <img src={question.img_url} alt="Question visual" className="w-full max-h-96 object-contain rounded-lg border border-outline-variant mb-4" />
-        )}
-        <RichTextRenderer content={question.prompt_text} className="font-body-md text-body-md text-on-surface-variant leading-relaxed" />
-        <div className="mt-6 p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
-          <p className="font-label-md text-label-md text-on-surface-variant mb-2">Tips</p>
-          <ul className="font-label-md text-label-md text-on-surface-variant space-y-1 list-disc pl-4">
-            <li>Write at least {question.task_type === "task1" ? "150" : "250"} words</li>
-            <li>Plan your response before writing</li>
-            <li>Leave time to review your answer</li>
-          </ul>
+
+        {/* RIGHT PANEL — Writing area */}
+        <div className="lg:w-1/2 flex flex-col gap-4">
+
+          {/* Status bar — unified timer + word count */}
+          <div className="flex items-center justify-between bg-surface-container-lowest rounded-xl border border-outline-variant/30 px-5 py-3 ghost-shadow">
+            <div className="flex items-center gap-2.5">
+              <span className={`material-symbols-outlined text-[22px] ${timeLeft < 300 ? "text-amber-500" : "text-outline"}`}>
+                {timeLeft < 60 ? "timer_off" : timeLeft < 300 ? "timer_alert" : "timer"}
+              </span>
+              <span className={`font-mono text-data-lg font-bold tracking-tight ${
+                timeLeft < 60 ? "text-error" : timeLeft < 300 ? "text-amber-600 dark:text-amber-400" : "text-on-surface"
+              }`}>
+                {formatTime(timeLeft)}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="px-3 py-1 rounded-full bg-primary-container/10 text-primary text-label-sm font-semibold">
+                {wordCount} {wordCount === 1 ? "word" : "words"}
+              </span>
+              <span className="text-label-sm text-on-surface-variant/50">
+                / {question.task_type === "task1" ? "150+" : "250+"}
+              </span>
+            </div>
+          </div>
+
+          {/* Textarea — modern editor */}
+          <div className="flex-1 relative group">
+            <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-b from-primary/20 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
+            <textarea
+              aria-label="Writing response"
+              className="relative w-full h-full min-h-[300px] bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 text-body-lg text-on-surface resize-none focus:border-primary/30 focus:outline-none ghost-shadow transition-all duration-200 placeholder:text-on-surface-variant/50"
+              style={{ lineHeight: "1.6" }}
+              placeholder="Start writing your response here..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+          </div>
+
+          {error && (
+            <div className="bg-error-container/30 border border-error/20 rounded-xl p-4">
+              <p className="text-label-md text-error">{error}</p>
+            </div>
+          )}
+
+          {/* Submit button — right-aligned */}
+          <div className="flex justify-end">
+            <button onClick={handleSubmit} disabled={!text.trim()}
+              className="px-8 py-3.5 rounded-xl bg-primary text-on-primary text-label-md font-semibold hover:bg-primary/90 active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-primary/20">
+              <span className="material-symbols-outlined text-[20px]">how_to_reg</span>
+              Submit for Evaluation
+              <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+          </div>
         </div>
       </div>
-
-      <div className="lg:w-1/2 flex flex-col gap-4">
-        <div className="flex items-center justify-between bg-surface-container-lowest rounded-2xl border border-outline-variant/30 px-5 py-3 ghost-shadow">
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-outline text-[20px]">timer</span>
-            <span className={`font-mono text-data-lg ${timeLeft < 300 ? "text-error" : "text-on-surface"}`}>{formatTime(timeLeft)}</span>
-          </div>
-          <span className="font-label-md text-label-md text-on-surface-variant">{wordCount} words</span>
-        </div>
-
-        <textarea
-          aria-label="Writing response"
-          className="flex-1 w-full bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-5 font-body-md text-body-md text-on-surface resize-none focus:border-primary/40 focus:ring-0 outline-none ghost-shadow placeholder:text-on-surface-variant/50"
-          placeholder="Start writing your response here..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-
-        {error && (
-          <div className="bg-error-container/30 border border-error/20 rounded-xl p-4">
-            <p className="font-label-md text-label-md text-error">{error}</p>
-          </div>
-        )}
-
-        <button onClick={handleSubmit} disabled={!text.trim()}
-          className="w-full bg-primary text-on-primary font-label-md text-label-md py-3.5 rounded-full hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-50 flex items-center justify-center gap-2">
-          <span className="material-symbols-outlined text-[20px]">send</span>
-          Submit for Evaluation
-        </button>
-      </div>
-    </div>
     </div>
   );
 }
