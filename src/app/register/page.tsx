@@ -5,6 +5,7 @@ import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { showSuccess } from "@/components/ui/Toast";
 import { API_ORIGIN as API_BASE } from "@/lib/config";
 import { Mail, Lock, User, AlertCircle, Gift } from "lucide-react";
@@ -23,6 +24,7 @@ function RegisterForm() {
   const user = useAuthStore((s) => s.user);
   const isLoading = useAuthStore((s) => s.isLoading);
   const router = useRouter();
+  const { dark } = useTheme();
 
   const [redirecting, setRedirecting] = useState(false);
   const [acceptTos, setAcceptTos] = useState(false);
@@ -96,7 +98,7 @@ function RegisterForm() {
 
       <main className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl p-6 md:p-8 z-10 relative animate-scale-in">
         <header className="text-center mb-8">
-          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority />
+          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
           <h1 className="text-base text-slate-600 dark:text-slate-400 mt-2">Create your free account</h1>
         </header>
 

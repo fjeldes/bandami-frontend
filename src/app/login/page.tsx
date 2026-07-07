@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { API_ORIGIN as API_BASE } from "@/lib/config";
 import { ArrowLeft, Mail, Lock, AlertCircle } from "lucide-react";
 
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const user = useAuthStore((s) => s.user);
   const isLoading = useAuthStore((s) => s.isLoading);
   const router = useRouter();
+  const { dark } = useTheme();
 
   useEffect(() => {
     if (user) {
@@ -72,8 +74,8 @@ export default function LoginPage() {
           <ArrowLeft className="w-4 h-4" />
           Back to Home
         </Link>
-        <header className="text-center mb-8">
-          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority />
+<header className="text-center mb-8">
+          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
           <h1 className="text-base text-slate-600 dark:text-slate-400 mt-2">
             Welcome back
           </h1>

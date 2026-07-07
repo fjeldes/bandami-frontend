@@ -5,12 +5,14 @@ import { useState } from "react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTheme } from "@/hooks/useTheme";
 import { API_ORIGIN as API_BASE } from "@/lib/config";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const token = searchParams.get("token");
+  const { dark } = useTheme();
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -71,7 +73,7 @@ function ResetPasswordForm() {
       <div className="absolute inset-0 z-0 opacity-40 pointer-events-none" style={{ backgroundImage: "radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.05), transparent 25%), radial-gradient(circle at 85% 30%, rgba(254, 166, 25, 0.05), transparent 25%)" }} />
       <main className="w-full max-w-md ds-card-interactive p-gutter md:p-[32px] z-10 relative">
         <header className="text-center mb-8">
-          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority />
+          <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
           <p className="text-body-md text-on-surface-variant mt-2">Choose a new password</p>
         </header>
         {error && <p className="text-body-md text-error bg-error-container/30 rounded-lg px-4 py-3 mb-4 text-center">{error}</p>}
