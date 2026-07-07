@@ -80,73 +80,100 @@
   --radius-element: 0.5rem;
   --radius-container: 1rem;
   --radius-pill: 9999px;
+
+  /* Vibrant Accent Colors for Badges */
+  --c-blue-accent: #3b82f6;
+  --c-emerald-accent: #10b981;
+  --c-indigo-accent: #6366f1;
+  --c-amber-accent: #f59e0b;
+  --c-rose-accent: #f43f5e;
+  --c-purple-accent: #a855f7;
 }
 
-/* ---- Dark Mode ---- */
+/* ---- Dark Mode Premium ---- */
 .dark {
-  --c-primary: #60a5fa;
+  /* Primary - Vibrant Blue */
+  --c-primary: #3b82f6;
   --c-primary-container: #1e3a5f;
   --c-primary-fixed: #1e3a5f;
-  --c-primary-fixed-dim: #15294a;
-  --c-on-primary: #0f172a;
-  --c-on-primary-container: #bfdbfe;
-  --c-on-primary-fixed: #bfdbfe;
+  --c-primary-fixed-dim: #1e40af;
+  --c-on-primary: #ffffff;
+  --c-on-primary-container: #dbeafe;
+  --c-on-primary-fixed: #dbeafe;
   --c-on-primary-fixed-variant: #93c5fd;
-  --c-inverse-primary: #062a60;
+  --c-inverse-primary: #1d4ed8;
 
-  --c-secondary: #38bdf8;
-  --c-secondary-container: #0c4a6e;
-  --c-on-secondary: #0c1929;
-  --c-on-secondary-container: #bae6fd;
-  --c-on-secondary-fixed: #bae6fd;
-  --c-on-secondary-fixed-variant: #7dd3fc;
+  /* Secondary - Cyan */
+  --c-secondary: #22d3ee;
+  --c-secondary-container: #164e63;
+  --c-on-secondary: #0c4a6e;
+  --c-on-secondary-container: #cffafe;
+  --c-on-secondary-fixed: #cffafe;
+  --c-on-secondary-fixed-variant: #67e8f9;
 
+  /* Tertiary - Teal */
   --c-tertiary: #2dd4bf;
   --c-tertiary-container: #134e4a;
   --c-on-tertiary: #022c22;
   --c-on-tertiary-container: #99f6e4;
 
-  --c-surface: #0f172a;
-  --c-surface-bright: #1e293b;
+  /* Surface System - Layered Elevation */
+  --c-surface: #020617;
+  --c-surface-bright: #0f172a;
   --c-surface-dim: #020617;
   --c-surface-variant: #1e293b;
-  --c-surface-container-lowest: #0b1120;
+  --c-surface-container-lowest: #0f172a;
   --c-surface-container-low: #0f172a;
   --c-surface-container: #1e293b;
-  --c-surface-container-high: #293449;
+  --c-surface-container-high: #273548;
   --c-surface-container-highest: #334155;
-  --c-surface-tint: #60a5fa;
+  --c-surface-tint: #3b82f6;
 
-  --c-on-surface: #e2e8f0;
+  /* Text - High Contrast */
+  --c-on-surface: #f1f5f9;
   --c-on-surface-variant: #94a3b8;
-  --c-on-background: #e2e8f0;
+  --c-on-background: #f1f5f9;
 
+  /* Borders - Subtle */
   --c-outline: #475569;
-  --c-outline-variant: #334155;
+  --c-outline-variant: #1e293b;
 
-  --c-background: #0f172a;
+  /* Background */
+  --c-background: #020617;
   --c-inverse-surface: #f1f5f9;
   --c-inverse-on-surface: #1e293b;
 
+  /* Band Scores - Vibrant */
   --c-band-excellent: #34d399;
   --c-band-good: #60a5fa;
-  --c-band-average: #38bdf8;
-  --c-band-low: #f87171;
+  --c-band-average: #22d3ee;
+  --c-band-low: #fb7185;
 
+  /* Referral */
   --c-referral-bg: #1e3a5f;
-  --c-referral-border: #60a5fa;
-  --c-referral-text: #bfdbfe;
+  --c-referral-border: #3b82f6;
+  --c-referral-text: #93c5fd;
 
+  /* Accent - Orange */
   --c-accent: #fb923c;
   --c-accent-hover: #f97316;
   --c-accent-container: #431407;
-  --c-on-accent: #0c0a09;
+  --c-on-accent: #ffffff;
   --c-on-accent-container: #fed7aa;
 
-  --shadow-card: 0px 4px 20px rgba(0, 0, 0, 0.3);
-  --shadow-card-hover: 0px 12px 32px rgba(0, 0, 0, 0.4);
-  --shadow-card-float: 0px 20px 40px rgba(0, 0, 0, 0.5);
-  --shadow-dialog: 0px 16px 48px rgba(0, 0, 0, 0.5);
+  /* Shadows - Deeper for dark mode */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --shadow-card-float: 0 20px 50px rgba(0, 0, 0, 0.6);
+  --shadow-dialog: 0 16px 60px rgba(0, 0, 0, 0.6);
+
+  /* Vibrant Accent Colors for Badges */
+  --c-blue-accent: #3b82f6;
+  --c-emerald-accent: #10b981;
+  --c-indigo-accent: #6366f1;
+  --c-amber-accent: #f59e0b;
+  --c-rose-accent: #f43f5e;
+  --c-purple-accent: #a855f7;
 }
 
 @layer base {
@@ -401,12 +428,22 @@
     color: var(--c-on-surface);
   }
   .ds-input:focus {
-    @apply bg-surface-container-lowest border-primary;
-    box-shadow: 0 0 0 3px rgba(0, 74, 172, 0.1);
+    background: var(--c-surface-container-lowest);
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
   }
   .ds-input::placeholder {
     color: var(--c-on-surface-variant);
-    opacity: 0.5;
+    opacity: 0.6;
+  }
+
+  .dark .ds-input {
+    background: var(--c-surface-container);
+  }
+  .dark .ds-input:focus {
+    background: var(--c-surface-container-lowest);
+    border-color: var(--c-blue-accent);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
   }
 
   .ds-tag {
@@ -429,6 +466,38 @@
     color: var(--c-on-secondary-container);
   }
 
+  /* Premium Badge Variants */
+  .ds-badge-blue {
+    background: rgba(59, 130, 246, 0.1);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+  }
+  .ds-badge-emerald {
+    background: rgba(16, 185, 129, 0.1);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+  .ds-badge-indigo {
+    background: rgba(99, 102, 241, 0.1);
+    color: #818cf8;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+  }
+  .ds-badge-amber {
+    background: rgba(245, 158, 11, 0.1);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+  .ds-badge-rose {
+    background: rgba(244, 63, 94, 0.1);
+    color: #fb7185;
+    border: 1px solid rgba(244, 63, 94, 0.2);
+  }
+  .ds-badge-purple {
+    background: rgba(168, 85, 247, 0.1);
+    color: #c084fc;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+  }
+
   .ds-btn-primary {
     @apply bg-primary text-on-primary px-5 py-2.5 rounded-xl text-label-sm font-semibold shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200;
   }
@@ -443,6 +512,15 @@
 
   .ds-btn-ghost {
     @apply text-primary hover:bg-primary/10 px-4 py-2 rounded-lg text-label-sm font-medium transition-all duration-200;
+  }
+
+  /* Dark mode table styles */
+  .dark .ds-table-header {
+    background: var(--c-surface-container);
+    color: var(--c-on-surface-variant);
+  }
+  .dark .ds-table-row:hover {
+    background: rgba(30, 41, 59, 0.5);
   }
 }
 

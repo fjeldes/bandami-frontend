@@ -67,14 +67,14 @@ function UserAvatar({ name, email }: { name: string | null; email: string }) {
 function ExamTypeBadge({ type }: { type: string }) {
   if (type === "writing") {
     return (
-      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700">
+      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg dark:bg-emerald-900/30 bg-emerald-50 dark:text-emerald-400 text-emerald-700">
         <FileText className="w-3.5 h-3.5" />
         <span className="text-xs font-semibold capitalize">Writing</span>
       </div>
     );
   }
   return (
-    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-50 text-violet-700">
+    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg dark:bg-violet-900/30 bg-violet-50 dark:text-violet-400 text-violet-700">
       <Mic className="w-3.5 h-3.5" />
       <span className="text-xs font-semibold capitalize">Speaking</span>
     </div>
@@ -84,7 +84,7 @@ function ExamTypeBadge({ type }: { type: string }) {
 function StatusBadge({ status }: { status: string }) {
   if (status === "completed") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold ring-1 ring-emerald-200">
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full dark:bg-emerald-900/30 bg-emerald-50 dark:text-emerald-400 text-emerald-700 text-xs font-semibold ring-1 dark:ring-emerald-900/50 ring-emerald-200">
         <CheckCircle className="w-3.5 h-3.5" />
         Completed
       </span>
@@ -92,7 +92,7 @@ function StatusBadge({ status }: { status: string }) {
   }
   if (status === "processing") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold ring-1 ring-amber-200 animate-pulse">
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full dark:bg-amber-900/30 bg-amber-50 dark:text-amber-400 text-amber-700 text-xs font-semibold ring-1 dark:ring-amber-900/50 ring-amber-200 animate-pulse">
         <Clock className="w-3.5 h-3.5" />
         Processing
       </span>
@@ -100,14 +100,14 @@ function StatusBadge({ status }: { status: string }) {
   }
   if (status === "failed") {
     return (
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-50 text-red-700 text-xs font-semibold ring-1 ring-red-200">
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full dark:bg-red-900/30 bg-red-50 dark:text-red-400 text-red-700 text-xs font-semibold ring-1 dark:ring-red-900/50 ring-red-200">
         <XCircle className="w-3.5 h-3.5" />
         Failed
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full dark:bg-slate-800 bg-slate-100 dark:text-slate-400 text-slate-600 text-xs font-medium">
       <AlertCircle className="w-3.5 h-3.5" />
       {status}
     </span>
@@ -117,10 +117,10 @@ function StatusBadge({ status }: { status: string }) {
 function BandScore({ score }: { score: number | undefined }) {
   if (score == null) {
     return (
-      <span className="text-xs text-slate-400 font-medium italic">Awaiting grade</span>
+      <span className="text-xs dark:text-slate-500 text-slate-400 font-medium italic">Awaiting grade</span>
     );
   }
-  const color = score >= 7.5 ? "bg-emerald-100 text-emerald-700" : score >= 6 ? "bg-blue-100 text-blue-700" : "bg-amber-100 text-amber-700";
+  const color = score >= 7.5 ? "dark:bg-emerald-900/30 bg-emerald-100 dark:text-emerald-400 text-emerald-700" : score >= 6 ? "dark:bg-blue-900/30 bg-blue-100 dark:text-blue-400 text-blue-700" : "dark:bg-amber-900/30 bg-amber-100 dark:text-amber-700 text-amber-700";
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-lg ${color} text-xs font-bold`}>
       Band {score.toFixed(1)}
@@ -152,53 +152,50 @@ export default function AdminExamsPage() {
   const totalPages = Math.ceil(total / 20);
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen dark:bg-slate-950 bg-slate-50/50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight mb-1">Exams</h1>
-          <p className="text-sm text-slate-500">{total} total exams</p>
+          <h1 className="text-2xl font-extrabold dark:text-white text-slate-900 tracking-tight mb-1">Exams</h1>
+          <p className="text-sm dark:text-slate-400 text-slate-500">{total} total exams</p>
         </div>
 
-        {/* Error State */}
         {error && (
-          <div className="mb-6 p-4 rounded-2xl bg-red-50 border border-red-200 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
+          <div className="mb-6 p-4 rounded-2xl dark:bg-red-900/20 bg-red-50 border dark:border-red-900/30 border-red-200 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl dark:bg-red-900/30 bg-red-100 flex items-center justify-center">
               <span className="text-red-600 font-bold">!</span>
             </div>
-            <p className="text-sm text-red-700">{error}</p>
+            <p className="text-sm dark:text-red-400 text-red-700">{error}</p>
             <button onClick={() => fetchExams(page)} className="ml-auto text-sm font-semibold text-red-600 hover:text-red-700">
               Retry
             </button>
           </div>
         )}
 
-        {/* Table */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+        <div className="dark:bg-slate-900 bg-white rounded-2xl border dark:border-slate-800 border-slate-100 shadow-sm overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-20">
-              <div className="w-10 h-10 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+              <div className="w-10 h-10 border-4 dark:border-slate-700 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
             </div>
           ) : (
             <>
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="bg-slate-50 border-b border-slate-100">
-                      <th className="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider">User</th>
-                      <th className="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Type</th>
-                      <th className="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Status</th>
-                      <th className="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Band Score</th>
-                      <th className="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Date</th>
-                      <th className="py-4 px-6 text-[11px] font-bold text-slate-400 uppercase tracking-wider text-right">Actions</th>
+                    <tr className="dark:bg-slate-800/50 bg-slate-50 border-b dark:border-slate-800 border-slate-100">
+                      <th className="py-4 px-6 text-[11px] font-bold dark:text-slate-400 text-slate-400 uppercase tracking-wider">User</th>
+                      <th className="py-4 px-6 text-[11px] font-bold dark:text-slate-400 text-slate-400 uppercase tracking-wider">Type</th>
+                      <th className="py-4 px-6 text-[11px] font-bold dark:text-slate-400 text-slate-400 uppercase tracking-wider">Status</th>
+                      <th className="py-4 px-6 text-[11px] font-bold dark:text-slate-400 text-slate-400 uppercase tracking-wider">Band Score</th>
+                      <th className="py-4 px-6 text-[11px] font-bold dark:text-slate-400 text-slate-400 uppercase tracking-wider">Date</th>
+                      <th className="py-4 px-6 text-[11px] font-bold dark:text-slate-400 text-slate-400 uppercase tracking-wider text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y dark:divide-slate-800 divide-slate-100">
                     {exams.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="py-16 text-center">
-                          <FileText className="w-12 h-12 text-slate-200 mx-auto mb-3" />
-                          <p className="text-sm text-slate-500">No exams found</p>
+                          <FileText className="w-12 h-12 dark:text-slate-600 text-slate-200 mx-auto mb-3" />
+                          <p className="text-sm dark:text-slate-400 text-slate-500">No exams found</p>
                         </td>
                       </tr>
                     ) : (
@@ -206,13 +203,13 @@ export default function AdminExamsPage() {
                         const eval_ = e.evaluations;
                         const user = e.user_profiles;
                         return (
-                          <tr key={e.id} className="hover:bg-slate-50/80 transition-colors">
+                          <tr key={e.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors">
                             <td className="py-4 px-6">
                               <div className="flex items-center gap-3">
                                 <UserAvatar name={user?.full_name ?? null} email={user?.email || "?"} />
                                 <div>
-                                  <p className="text-sm font-medium text-slate-900">{user?.full_name || "Anonymous"}</p>
-                                  <p className="text-xs text-slate-500">{user?.email || "—"}</p>
+                                  <p className="text-sm font-medium dark:text-white text-slate-900">{user?.full_name || "Anonymous"}</p>
+                                  <p className="text-xs dark:text-slate-400 text-slate-500">{user?.email || "—"}</p>
                                 </div>
                               </div>
                             </td>
@@ -226,14 +223,14 @@ export default function AdminExamsPage() {
                               <BandScore score={eval_?.overall_band} />
                             </td>
                             <td className="py-4 px-6">
-                              <span className="text-sm text-slate-600">
+                              <span className="text-sm dark:text-slate-400 text-slate-600">
                                 {new Date(e.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })}
                               </span>
                             </td>
                             <td className="py-4 px-6 text-right">
                               <Link
                                 href={`/admin/exams/${e.id}`}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium dark:text-slate-400 text-slate-600 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                               >
                                 <Eye className="w-4 h-4" />
                                 View
@@ -247,24 +244,23 @@ export default function AdminExamsPage() {
                 </table>
               </div>
 
-              {/* Pagination */}
               {totalPages > 1 && (
-                <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-sm text-slate-500">
+                <div className="px-6 py-4 border-t dark:border-slate-800 border-slate-100 flex items-center justify-between">
+                  <span className="text-sm dark:text-slate-400 text-slate-500">
                     Page {page} of {totalPages}
                   </span>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1}
-                      className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      className="w-9 h-9 rounded-xl dark:bg-slate-800 bg-slate-100 flex items-center justify-center dark:text-slate-400 text-slate-600 hover:dark:bg-slate-700 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                       disabled={page >= totalPages}
-                      className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                      className="w-9 h-9 rounded-xl dark:bg-slate-800 bg-slate-100 flex items-center justify-center dark:text-slate-400 text-slate-600 hover:dark:bg-slate-700 hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>

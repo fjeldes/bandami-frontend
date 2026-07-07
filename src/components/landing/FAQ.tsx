@@ -1,3 +1,5 @@
+import { ChevronDown } from "lucide-react";
+
 const faqs = [
   { q: "How accurate is the evaluation?", a: "Our scoring system is calibrated against official IELTS band descriptors to provide reliable feedback aligned with what examiners look for. It's designed to give you a clear understanding of your current level and what to improve." },
   { q: "What do I get on the Free plan?", a: "The Free plan gives you instant band scores, basic feedback, and identification of your main strengths and weaknesses. You get full access to Writing and Speaking Part 1. To unlock Speaking Part 2 & 3, grammar corrections, and detailed feedback, try Pro ($14.99/month — 3-day free trial)." },
@@ -18,23 +20,27 @@ const faqSchema = {
 
 export function FAQ() {
   return (
-    <section className="py-section-gap px-margin-mobile md:px-gutter bg-surface" id="faq">
+    <section className="py-20 md:py-28 px-4 md:px-8 bg-slate-50 dark:bg-slate-950" id="faq">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Frequently Asked Questions</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-4">Frequently Asked Questions</h2>
         </div>
         <div className="space-y-4">
           {faqs.map((faq, idx) => (
-            <details key={faq.q} className="group ds-card-interactive p-card-padding cursor-pointer [&_summary::-webkit-details-marker]:hidden animate-fade-in-up" style={{ animationDelay: `${0.3 + idx * 0.1}s` }}>
-              <summary className="flex items-center justify-between font-body-lg text-body-lg text-on-surface font-medium">
+            <details
+              key={faq.q}
+              className="group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 cursor-pointer animate-fade-in-up hover:border-slate-300 dark:hover:border-slate-700 transition-colors"
+              style={{ animationDelay: `${0.3 + idx * 0.1}s` }}
+            >
+              <summary className="flex items-center justify-between font-medium text-slate-900 dark:text-white cursor-pointer list-none">
                 <span>{faq.q}</span>
-                <span className="material-symbols-outlined transition duration-300 group-open:-rotate-180">expand_more</span>
+                <ChevronDown className="w-5 h-5 text-slate-400 transition-transform duration-300 group-open:rotate-180 shrink-0" />
               </summary>
-              <div className="mt-4 font-body-md text-body-md text-on-surface-variant">{faq.a}</div>
+              <div className="mt-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{faq.a}</div>
             </details>
           ))}
         </div>

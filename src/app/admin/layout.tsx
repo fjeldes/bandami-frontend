@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import {
   LayoutDashboard,
   Users,
@@ -16,6 +17,8 @@ import {
   ShieldAlert,
   Menu,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, any> = {
@@ -38,7 +41,7 @@ const adminNav = [
 
 function AdminBadge() {
   return (
-    <div className="mx-3 p-4 rounded-xl bg-gradient-to-br from-indigo-950 to-slate-900 text-white shadow-lg">
+    <div className="mx-3 p-4 rounded-xl bg-gradient-to-br from-indigo-950 to-slate-900 text-white shadow-lg border border-indigo-500/30">
       <div className="flex items-center gap-2.5 mb-1">
         <ShieldAlert className="w-4 h-4 text-indigo-400" />
         <span className="text-xs font-bold uppercase tracking-wider">Admin Portal</span>
@@ -54,13 +57,15 @@ function NavItem({ href, label, icon, isActive }: { href: string; label: string;
   return (
     <Link
       href={href}
-      className={`group flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-        isActive
-          ? "bg-indigo-50 border-l-4 border-indigo-600 text-indigo-950 font-semibold pl-[10px]"
-          : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 hover:pl-1"
-      }`}
+      className={`
+        group flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+        ${isActive
+          ? "bg-indigo-500/10 border-l-4 border-indigo-500 text-indigo-400 font-semibold pl-[10px]"
+          : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:pl-1"
+        }
+      `}
     >
-      <Icon className={`w-5 h-5 mr-3 ${isActive ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"}`} />
+      <Icon className={`w-5 h-5 mr-3 ${isActive ? "text-indigo-500" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"}`} />
       {label}
     </Link>
   );
@@ -72,6 +77,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const user = useAuthStore((s) => s.user);
   const isLoading = useAuthStore((s) => s.isLoading);
   const logout = useAuthStore((s) => s.logout);
+  const { dark, toggle } = useTheme();
 
   const [mobileNav, setMobileNav] = useState(false);
 
@@ -87,8 +93,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (isLoading || !user || user.role !== "admin") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="w-10 h-10 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <div className="w-10 h-10 border-4 border-slate-200 dark:border-slate-700 border-t-indigo-600 rounded-full animate-spin" />
       </div>
     );
   }
@@ -98,26 +104,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <button
         onClick={() => setMobileNav(true)}
         aria-label="Open admin menu"
-        className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-xl bg-white shadow-lg flex items-center justify-center"
+        className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-xl bg-white dark:bg-slate-800 shadow-lg flex items-center justify-center"
       >
-        <Menu className="w-5 h-5 text-slate-600" />
+        <Menu className="w-5 h-5 text-slate-600 dark:text-slate-300" />
       </button>
 
       {mobileNav && (
         <div className="md:hidden fixed inset-0 z-50">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setMobileNav(false)} />
-          <nav className="absolute left-0 top-0 bottom-0 w-72 max-w-[85vw] bg-white shadow-2xl flex flex-col">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between gap-2">
+          <nav className="absolute left-0 top-0 bottom-0 w-72 max-w-[85vw] bg-white dark:bg-slate-900 shadow-2xl flex flex-col">
+            <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-700 flex items-center justify-center">
                   <ShieldAlert className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-base font-bold text-slate-900">Admin</span>
+                <span className="text-base font-bold text-slate-900 dark:text-white">Admin</span>
               </div>
               <button
                 onClick={() => setMobileNav(false)}
                 aria-label="Close menu"
-                className="w-8 h-8 hover:bg-slate-100 rounded-lg flex items-center justify-center shrink-0"
+                className="w-8 h-8 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg flex items-center justify-center shrink-0"
               >
                 <X className="w-5 h-5 text-slate-500" />
               </button>
@@ -135,19 +141,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 ))}
               </div>
             </div>
-            <div className="p-4 border-t border-slate-100 space-y-3">
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
               <AdminBadge />
               <Link
                 href="/dashboard"
                 onClick={() => setMobileNav(false)}
-                className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all duration-200"
+                className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span className="text-sm font-medium">Back to App</span>
               </Link>
               <button
                 onClick={handleSignOut}
-                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 <span className="text-sm font-medium">Sign Out</span>
@@ -157,13 +163,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       )}
 
-      <nav className="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-white border-r border-slate-200 flex-col z-50">
+      <nav className="hidden md:flex h-screen w-64 fixed left-0 top-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-col z-50">
         <div className="my-6 px-4 flex justify-center">
           <div className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-700 flex items-center justify-center shadow-md">
               <ShieldAlert className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg font-bold text-slate-900">Admin</span>
+            <span className="text-lg font-bold text-slate-900 dark:text-white">Admin</span>
           </div>
         </div>
 
@@ -180,24 +186,31 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <div className="mt-auto px-3 pb-4 space-y-3">
+          <button
+            onClick={toggle}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+          >
+            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            <span className="text-sm font-medium">{dark ? "Light Mode" : "Dark Mode"}</span>
+          </button>
           <AdminBadge />
           <Link
             href="/dashboard"
-            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all duration-200"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-all duration-200"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm font-medium">Back to App</span>
           </Link>
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
           >
             <LogOut className="w-4 h-4" />
             <span className="text-sm font-medium">Sign Out</span>
           </button>
         </div>
       </nav>
-      <main className="flex-1 p-6 ml-64 overflow-y-auto bg-slate-50">{children}</main>
+      <main className="flex-1 p-6 ml-64 overflow-y-auto bg-slate-50 dark:bg-slate-950">{children}</main>
     </div>
   );
 }

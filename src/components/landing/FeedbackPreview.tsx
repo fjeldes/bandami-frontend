@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PenTool, Mic, Info, Star, CheckCircle } from "lucide-react";
 
 const WRITING_PREVIEW = {
   band: 7.0,
@@ -41,16 +42,16 @@ const SPEAKING_PREVIEW = {
 function BandScore({ band, cefr }: { band: number; cefr: string }) {
   return (
     <div className="flex flex-col items-center justify-center shrink-0">
-      <div className="relative w-12 h-12 xs:w-14 xs:h-14 mb-0.5 xs:mb-1">
+      <div className="relative w-14 h-14 mb-1">
         <svg className="w-full h-full" viewBox="0 0 36 36">
           <g transform="rotate(-90 18 18)">
             <path
-              className="fill-none stroke-surface-variant"
+              className="fill-none stroke-slate-200 dark:stroke-slate-700"
               strokeWidth="2.5"
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
             />
             <path
-              className="fill-none stroke-primary"
+              className="fill-none stroke-blue-600 dark:stroke-blue-400"
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeDasharray={`${(band / 9) * 77.7}, 100`}
@@ -58,7 +59,7 @@ function BandScore({ band, cefr }: { band: number; cefr: string }) {
             />
           </g>
           <text
-            className="fill-primary font-mono font-bold"
+            className="fill-blue-600 dark:fill-blue-400 font-mono font-bold"
             x="18"
             y="20"
             textAnchor="middle"
@@ -68,40 +69,30 @@ function BandScore({ band, cefr }: { band: number; cefr: string }) {
           </text>
         </svg>
       </div>
-      <span className="text-label-sm font-semibold text-primary bg-primary-container/30 px-1.5 py-0.5 rounded">
+      <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-500/10 px-1.5 py-0.5 rounded">
         {cefr}
       </span>
     </div>
   );
 }
 
-function CriterionRow({
-  label,
-  score,
-  comment,
-}: {
-  label: string;
-  score: number;
-  comment: string;
-}) {
-  const barColor =
-    score >= 7.5
-      ? "bg-band-excellent"
-      : score >= 6.5
-        ? "bg-primary"
-        : "bg-band-average";
-  const badgeClass =
-    score >= 7.5
-      ? "bg-primary-container text-on-primary-container"
-      : score >= 6.5
-        ? "bg-primary text-on-primary"
-        : "bg-tertiary-container text-on-tertiary-container";
+function CriterionRow({ label, score, comment }: { label: string; score: number; comment: string }) {
+  const barColor = score >= 7.5
+    ? "bg-emerald-500"
+    : score >= 6.5
+      ? "bg-blue-600 dark:bg-blue-400"
+      : "bg-cyan-500";
+  const badgeClass = score >= 7.5
+    ? "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400"
+    : score >= 6.5
+      ? "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400"
+      : "bg-cyan-100 dark:bg-cyan-500/20 text-cyan-700 dark:text-cyan-400";
 
   return (
     <div className="flex items-start gap-2">
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-0.5">
-          <span className="text-label-sm font-medium text-on-surface-variant">
+          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
             {label}
           </span>
           <span
@@ -110,13 +101,13 @@ function CriterionRow({
             {score.toFixed(1)}
           </span>
         </div>
-        <div className="h-1 bg-surface-variant rounded-full overflow-hidden mb-1">
+        <div className="h-1 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden mb-1">
           <div
             className={`h-full ${barColor} rounded-full`}
             style={{ width: `${(score / 9) * 100}%` }}
           />
         </div>
-        <span className="text-label-sm text-on-surface-variant/60 leading-snug">
+        <span className="text-xs text-slate-500 dark:text-slate-500 leading-snug">
           {comment}
         </span>
       </div>
@@ -130,36 +121,34 @@ export function FeedbackPreview() {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-3 py-1.5 border-b border-outline-variant/30 shrink-0">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 px-3 py-1.5 border-b border-slate-200 dark:border-slate-800 shrink-0 bg-slate-50 dark:bg-slate-800/50">
         <div className="flex gap-1.5">
           <button
             onClick={() => setActiveTab("writing")}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-label-sm font-medium transition-all ${
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
               activeTab === "writing"
-                ? "bg-primary text-on-primary shadow-sm"
-                : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-high/80"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600"
             }`}
           >
-            <span className="material-symbols-outlined text-[12px]">edit_note</span>
+            <PenTool className="w-3.5 h-3.5" />
             Writing
           </button>
           <button
             onClick={() => setActiveTab("speaking")}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-label-sm font-medium transition-all ${
+            className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
               activeTab === "speaking"
-                ? "bg-primary text-on-primary shadow-sm"
-                : "bg-surface-container-high text-on-surface-variant hover:bg-surface-container-high/80"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600"
             }`}
           >
-            <span className="material-symbols-outlined text-[12px]">mic</span>
+            <Mic className="w-3.5 h-3.5" />
             Speaking
           </button>
         </div>
-        <div className="flex items-center gap-1 bg-surface-container-high px-2 py-0.5 rounded-full">
-          <span className="material-symbols-outlined text-[12px] text-on-surface-variant">
-            info
-          </span>
-          <span className="text-label-sm text-on-surface-variant font-medium">
+        <div className="flex items-center gap-1 bg-slate-200 dark:bg-slate-700 px-2 py-0.5 rounded-full">
+          <Info className="w-3 h-3 text-slate-500 dark:text-slate-400" />
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
             Sample Preview
           </span>
         </div>
@@ -169,13 +158,13 @@ export function FeedbackPreview() {
         <div className="flex items-start gap-3">
           <BandScore band={data.band} cefr={data.cefr} />
           <div className="flex-1 min-w-0 pt-0.5">
-            <p className="text-label-sm text-on-surface-variant leading-relaxed line-clamp-3">
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-3">
               {data.quickFeedback}
             </p>
           </div>
         </div>
 
-        <div className="bg-surface-container-low rounded-lg p-2.5 border border-outline-variant/20 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+        <div className="bg-slate-100 dark:bg-slate-800/50 rounded-lg p-2.5 border border-slate-200 dark:border-slate-700 grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
           {data.criteria.map((c) => (
             <CriterionRow
               key={c.label}
@@ -186,15 +175,13 @@ export function FeedbackPreview() {
           ))}
         </div>
 
-        <div className="bg-primary-container/20 rounded-lg px-2.5 py-2 border border-primary/30">
+        <div className="bg-blue-50 dark:bg-blue-500/10 rounded-lg px-2.5 py-2 border border-blue-200 dark:border-blue-500/20">
           <div className="flex items-center gap-1.5 mb-1.5">
-            <span className="material-symbols-outlined text-[12px] text-primary">
-              stars
-            </span>
-            <span className="text-label-sm font-semibold text-primary">
+            <Star className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
+            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
               Pro Features
             </span>
-            <span className="bg-primary text-on-primary text-[10px] font-bold px-1 py-0.5 rounded-full ml-auto">
+            <span className="bg-blue-600 dark:bg-blue-500 text-white dark:text-slate-900 text-[10px] font-bold px-1.5 py-0.5 rounded-full ml-auto">
               PRO
             </span>
           </div>
@@ -202,11 +189,9 @@ export function FeedbackPreview() {
             {data.proFeatures.map((feature) => (
               <div
                 key={feature}
-                className="flex items-center gap-1 text-label-sm text-on-surface-variant"
+                className="flex items-center gap-1 text-xs text-slate-600 dark:text-slate-400"
               >
-                <span className="material-symbols-outlined text-[12px] text-primary">
-                  check_circle
-                </span>
+                <CheckCircle className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
                 <span>{feature}</span>
               </div>
             ))}

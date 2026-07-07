@@ -54,24 +54,24 @@ function KPICard({ label, value, sub, icon: Icon, color }: { label: string; valu
   };
   const c = colorMap[color] || colorMap.blue;
   return (
-    <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-5 border border-slate-100">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-5 border border-slate-100 dark:border-slate-800">
       <div className="flex items-start justify-between mb-3">
-        <div className={`w-11 h-11 rounded-xl ${c.icon} flex items-center justify-center shadow-sm`}>
+        <div className={`w-11 h-11 rounded-xl ${c.icon} dark:${c.icon?.replace("bg-", "dark:bg-")} flex items-center justify-center shadow-sm`}>
           <Icon className={`w-5 h-5 ${c.text}`} />
         </div>
       </div>
-      <p className="text-2xl font-bold text-slate-800 mb-1">{value}</p>
-      <p className="text-sm font-medium text-slate-500 mb-0.5">{label}</p>
-      <p className="text-xs text-slate-400">{sub}</p>
+      <p className="text-2xl font-bold text-slate-800 dark:text-white mb-1">{value}</p>
+      <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-0.5">{label}</p>
+      <p className="text-xs text-slate-400 dark:text-slate-500">{sub}</p>
     </div>
   );
 }
 
 function ErrorPatternCard({ pattern }: { pattern: any }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-4 hover:shadow-md transition-all duration-200">
+    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-all duration-200">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm font-semibold text-slate-700">{pattern.type}</span>
+        <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{pattern.type}</span>
         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-50 text-amber-700 text-xs font-bold ring-1 ring-amber-200">
           <AlertTriangle className="w-3 h-3" />
           {pattern.count}x
@@ -102,16 +102,16 @@ function ExamRow({ exam }: { exam: ExamWithEvaluation }) {
   const Icon = exam.exam_type === "writing" ? Edit3 : Mic;
 
   return (
-    <div className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors group">
+    <div className="flex items-center justify-between p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
       <div className="flex items-center gap-4">
-        <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${band != null ? colors?.bg : "bg-slate-100"}`}>
-          <Icon className={`w-5 h-5 ${band != null ? colors?.text : "text-slate-400"}`} />
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${band != null ? colors?.bg : "bg-slate-100 dark:bg-slate-800"}`}>
+          <Icon className={`w-5 h-5 ${band != null ? colors?.text : "text-slate-400 dark:text-slate-500"}`} />
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-800 capitalize">
+          <p className="text-sm font-semibold text-slate-800 dark:text-white capitalize">
             {exam.exam_type}{exam.task_type ? ` Task ${exam.task_type.replace("task", "")}` : ""}
           </p>
-          <p className="text-xs text-slate-500">{formatDate(exam.created_at)}</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">{formatDate(exam.created_at)}</p>
         </div>
       </div>
       <div className="flex items-center gap-3">
@@ -126,14 +126,14 @@ function ExamRow({ exam }: { exam: ExamWithEvaluation }) {
               <BarChart3 className="w-4 h-4" />
               {band.toFixed(1)}
             </div>
-            <span className="text-xs font-semibold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">
+            <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">
               {cefrLevel(band)}
             </span>
           </>
         ) : null}
         <Link
           href={`/${exam.exam_type}/results?examId=${exam.id}`}
-          className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-800 hover:text-white transition-all duration-200 group-hover:scale-105"
+          className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-800 dark:hover:bg-slate-700 hover:text-white transition-all duration-200 group-hover:scale-105"
         >
           <ArrowRight className="w-4 h-4" />
         </Link>
@@ -190,25 +190,25 @@ export default function ReportsPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950">
       <div className="max-w-6xl mx-auto px-4 py-10">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-headline-lg font-bold text-slate-800 mb-1">Reports</h1>
-          <p className="text-slate-500">Track your progress, trends, and performance breakdown.</p>
+          <h1 className="text-headline-lg font-bold text-slate-800 dark:text-white mb-1">Reports</h1>
+          <p className="text-slate-500 dark:text-slate-400">Track your progress, trends, and performance breakdown.</p>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="w-10 h-10 border-3 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
+            <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-slate-800 rounded-full animate-spin" />
           </div>
         ) : error ? (
-          <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
-            <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+          <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
+            <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl font-bold text-red-500">!</span>
             </div>
             <p className="text-red-600 mb-4">{error}</p>
-            <button onClick={fetchExams} className="bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-700 transition-colors">
+            <button onClick={fetchExams} className="bg-slate-800 dark:bg-slate-700 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-700 dark:hover:bg-slate-600 transition-colors">
               Retry
             </button>
           </div>
@@ -248,14 +248,14 @@ export default function ReportsPage() {
 
             {/* Error Patterns (Premium) */}
             {isPremium && errorPatterns.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-8">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 mb-8">
                 <div className="flex items-center gap-2 mb-5">
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center">
-                    <AlertTriangle className="w-5 h-5 text-amber-600" />
+                  <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                   </div>
                   <div>
-                    <h3 className="text-base font-bold text-slate-800">Common Error Patterns</h3>
-                    <p className="text-xs text-slate-500">Focus areas to improve your score</p>
+                    <h3 className="text-base font-bold text-slate-800 dark:text-white">Common Error Patterns</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Focus areas to improve your score</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -269,16 +269,16 @@ export default function ReportsPage() {
             {/* Trend + Breakdown */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
               {/* Trend Chart */}
-              <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+              <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
                 <div className="flex items-center justify-between mb-5">
                   <div>
-                    <h3 className="text-base font-bold text-slate-800">Band Score Trend</h3>
-                    <p className="text-xs text-slate-500">Your recent performance</p>
+                    <h3 className="text-base font-bold text-slate-800 dark:text-white">Band Score Trend</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Your recent performance</p>
                   </div>
                   {trendPoints.length >= 2 && (
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-blue-500" />
-                      <span className="text-xs text-slate-500">Latest: {trendPoints[trendPoints.length - 1].toFixed(1)}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">Latest: {trendPoints[trendPoints.length - 1].toFixed(1)}</span>
                     </div>
                   )}
                 </div>
@@ -286,49 +286,49 @@ export default function ReportsPage() {
                   <Sparkline points={trendPoints} height={100} color="#004ac6" />
                 ) : (
                   <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <BookOpen className="w-12 h-12 text-slate-200 mb-3" />
-                    <p className="text-sm text-slate-500">Complete at least 2 exams to see your trend.</p>
+                    <BookOpen className="w-12 h-12 text-slate-200 dark:text-slate-700 mb-3" />
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Complete at least 2 exams to see your trend.</p>
                   </div>
                 )}
               </div>
 
               {/* Type Breakdown */}
-              <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-                <h3 className="text-base font-bold text-slate-800 mb-5">By Exam Type</h3>
+              <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
+                <h3 className="text-base font-bold text-slate-800 dark:text-white mb-5">By Exam Type</h3>
                 <div className="space-y-5">
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Edit3 className="w-4 h-4 text-slate-500" />
-                        <span className="text-sm font-medium text-slate-600">Writing</span>
+                        <Edit3 className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Writing</span>
                       </div>
-                      <span className="text-sm font-bold text-slate-800">{writingExams.length} exams</span>
+                      <span className="text-sm font-bold text-slate-800 dark:text-white">{writingExams.length} exams</span>
                     </div>
-                    <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full transition-all duration-500"
                         style={{ width: `${writingAvg ? (writingAvg / 9) * 100 : 0}%` }}
                       />
                     </div>
-                    <p className="text-xs text-slate-500 mt-1.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
                       {writingAvg ? `Avg: ${writingAvg.toFixed(1)}` : "No data"}
                     </p>
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Mic className="w-4 h-4 text-slate-500" />
-                        <span className="text-sm font-medium text-slate-600">Speaking</span>
+                        <Mic className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Speaking</span>
                       </div>
-                      <span className="text-sm font-bold text-slate-800">{speakingExams.length} exams</span>
+                      <span className="text-sm font-bold text-slate-800 dark:text-white">{speakingExams.length} exams</span>
                     </div>
-                    <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-violet-500 to-violet-600 rounded-full transition-all duration-500"
                         style={{ width: `${speakingAvg ? (speakingAvg / 9) * 100 : 0}%` }}
                       />
                     </div>
-                    <p className="text-xs text-slate-500 mt-1.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5">
                       {speakingAvg ? `Avg: ${speakingAvg.toFixed(1)}` : "No data"}
                     </p>
                   </div>
@@ -337,21 +337,21 @@ export default function ReportsPage() {
             </div>
 
             {/* Exam History */}
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-              <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+              <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                  <h3 className="text-base font-bold text-slate-800">Exam History</h3>
-                  <p className="text-xs text-slate-500">{filtered.length} exams found</p>
+                  <h3 className="text-base font-bold text-slate-800 dark:text-white">Exam History</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{filtered.length} exams found</p>
                 </div>
-                <div className="bg-slate-100 rounded-xl p-1 inline-flex">
+                <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-1 inline-flex">
                   {filterTabs.map((tab) => (
                     <button
                       key={tab.key}
                       onClick={() => { setFilter(tab.key); setListPage(1); }}
                       className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                         filter === tab.key
-                          ? "bg-white text-slate-800 shadow-sm"
-                          : "text-slate-500 hover:text-slate-700"
+                          ? "bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm"
+                          : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                       }`}
                     >
                       {tab.label}
@@ -362,33 +362,33 @@ export default function ReportsPage() {
 
               {filtered.length === 0 ? (
                 <div className="p-12 text-center">
-                  <Activity className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-                  <p className="text-slate-500">No exams yet. Start practicing to see your reports.</p>
+                  <Activity className="w-12 h-12 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+                  <p className="text-slate-500 dark:text-slate-400">No exams yet. Start practicing to see your reports.</p>
                 </div>
               ) : (
                 <>
-                  <div className="divide-y divide-slate-100">
+                  <div className="divide-y divide-slate-100 dark:divide-slate-800">
                     {paginated.map((exam) => (
                       <ExamRow key={exam.id} exam={exam} />
                     ))}
                   </div>
                   {totalPages > 1 && (
-                    <div className="p-4 border-t border-slate-100 flex items-center justify-between">
-                      <span className="text-sm text-slate-500">
+                    <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                      <span className="text-sm text-slate-500 dark:text-slate-400">
                         Page {listPage} of {totalPages}
                       </span>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setListPage((p) => Math.max(1, p - 1))}
                           disabled={listPage === 1}
-                          className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           <ArrowRight className="w-4 h-4 rotate-180" />
                         </button>
                         <button
                           onClick={() => setListPage((p) => Math.min(totalPages, p + 1))}
                           disabled={listPage >= totalPages}
-                          className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                          className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         >
                           <ArrowRight className="w-4 h-4" />
                         </button>

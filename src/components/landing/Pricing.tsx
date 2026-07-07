@@ -1,9 +1,12 @@
 import { CheckoutButton } from "@/components/ui/CheckoutButton";
+import { CheckCircle, XCircle } from "lucide-react";
 
 const plans = [
   {
-    slug: "free", name: "Free",
-    featured: false, badge: null,
+    slug: "free",
+    name: "Free",
+    featured: false,
+    badge: null,
     features: [
       { text: "Writing (all tasks)", included: true },
       { text: "Speaking Part 1", included: true },
@@ -12,11 +15,14 @@ const plans = [
       { text: "Full criteria breakdown", included: false },
       { text: "Grammar corrections", included: false },
     ],
-    cta: "Get Started Free", href: "/register",
+    cta: "Get Started Free",
+    href: "/register",
   },
   {
-    slug: "premium", name: "Pro",
-    featured: true, badge: "MOST POPULAR",
+    slug: "premium",
+    name: "Pro",
+    featured: true,
+    badge: "MOST POPULAR",
     features: [
       { text: "Unlimited practice", included: true },
       { text: "Detailed IELTS analysis", included: true },
@@ -27,43 +33,45 @@ const plans = [
       { text: "All Speaking Parts (1, 2 & 3)", included: true },
       { text: "Personalized recommendations", included: true },
     ],
-    cta: "Start your free trial", href: "/register?plan=premium",
+    cta: "Start your free trial",
+    href: "/register?plan=premium",
   },
 ];
 
 export function Pricing() {
   return (
-    <section className="py-section-gap px-margin-mobile md:px-gutter bg-surface-container-low" id="pricing">
-      <div className="section-container">
-        <div className="text-center mb-section-gap">
-          <h2 className="font-headline-lg text-headline-lg text-on-surface mb-4">Start your 3-day free trial</h2>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+    <section className="py-20 md:py-28 px-4 md:px-8 bg-slate-100 dark:bg-slate-900/50" id="pricing">
+      <div className="max-w-5xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-4">Start your 3-day free trial</h2>
+          <p className="text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
             No charge today. Then $14.99/month + tax. Cancel anytime.
           </p>
         </div>
 
         <div className="flex flex-col md:flex-row gap-6 max-w-3xl mx-auto items-stretch justify-center">
           {plans.map((plan, idx) => (
-            <div key={plan.slug}
-              className={`animate-fade-in-up flex flex-col relative ${
-                plan.featured ? "flex-[3]" : "flex-[2]"
-              }`}
-              style={{ animationDelay: `${0.4 + idx * 0.12}s` }}>
-
+            <div
+              key={plan.slug}
+              className={`animate-fade-in-up flex flex-col relative ${plan.featured ? "flex-[3]" : "flex-[2]"}`}
+              style={{ animationDelay: `${0.4 + idx * 0.12}s` }}
+            >
               {plan.slug === "free" && (
-                <div className="h-full bg-surface-container-lowest ghost-shadow border border-outline-variant/30 rounded-2xl p-6 flex flex-col">
-                  <h3 className="font-headline-md text-headline-md text-on-surface mb-1">{plan.name}</h3>
+                <div className="h-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex flex-col shadow-sm">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="font-display-md text-display-md text-on-surface font-bold">$0</span>
+                    <span className="text-3xl font-bold text-slate-900 dark:text-white">$0</span>
                   </div>
 
                   <ul className="space-y-3 mb-8 flex-1">
                     {plan.features.map((f) => (
                       <li key={f.text} className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-[20px] shrink-0" style={f.included ? { color: "#2563eb" } : { color: "#c3c6d7" }}>
-                          {f.included ? "check_circle" : "cancel"}
-                        </span>
-                        <span className={`font-body-md text-body-md ${f.included ? "text-on-surface" : "text-on-surface-variant"}`}>{f.text}</span>
+                        {f.included ? (
+                          <CheckCircle className="w-5 h-5 shrink-0 text-blue-600 dark:text-blue-400" />
+                        ) : (
+                          <XCircle className="w-5 h-5 shrink-0 text-slate-300 dark:text-slate-600" />
+                        )}
+                        <span className={`text-sm ${f.included ? "text-slate-700 dark:text-slate-300" : "text-slate-400 dark:text-slate-500"}`}>{f.text}</span>
                       </li>
                     ))}
                   </ul>
@@ -73,39 +81,35 @@ export function Pricing() {
               )}
 
               {plan.slug === "premium" && (
-                <div className="h-full bg-gradient-to-b from-primary/5 to-surface-container-lowest border-2 border-primary rounded-2xl p-7 shadow-xl flex flex-col relative">
-                  {/* Decorative accent */}
-                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-primary" />
+                <div className="h-full bg-gradient-to-b from-blue-50 dark:from-indigo-500/10 to-white dark:to-slate-900 border-2 border-blue-500 dark:border-indigo-500 rounded-2xl p-7 shadow-xl flex flex-col relative">
+                  <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-t-2xl" />
 
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-on-primary font-label-md text-label-md px-5 py-1 rounded-full font-bold uppercase tracking-wider shadow-md z-10">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 dark:bg-indigo-600 text-white text-xs font-bold px-5 py-1 rounded-full uppercase tracking-wider shadow-md z-10">
                     {plan.badge}
                   </div>
 
-                  <h3 className="font-headline-md text-headline-md text-on-surface mb-1 mt-2">{plan.name}</h3>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 mt-2">{plan.name}</h3>
 
-                  {/* Price: Free for 3 days → $14.99/month */}
                   <div className="mb-2">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-display-lg text-display-lg text-primary font-extrabold">Free</span>
-                      <span className="font-body-md text-body-md text-on-surface font-semibold">for 3 days</span>
+                      <span className="text-3xl font-extrabold text-blue-600 dark:text-blue-400">Free</span>
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">for 3 days</span>
                     </div>
                     <div className="flex items-baseline gap-1.5 mt-0.5">
-                      <span className="font-display-sm text-display-sm text-on-surface font-bold">$14.99</span>
-                      <span className="font-body-md text-body-md text-on-surface-variant">/month + tax after</span>
+                      <span className="text-lg font-bold text-slate-900 dark:text-white">$14.99</span>
+                      <span className="text-sm text-slate-500 dark:text-slate-400">/month + tax after</span>
                     </div>
                   </div>
 
-                  <p className="font-body-md text-body-md text-on-surface-variant mb-6 pb-6 border-b border-outline-variant/20">
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 pb-6 border-b border-slate-200 dark:border-slate-700">
                     No charge during trial. Cancel anytime.
                   </p>
 
                   <ul className="space-y-3.5 mb-8 flex-1">
                     {plan.features.map((f) => (
                       <li key={f.text} className="flex items-center gap-3">
-                        <span className="material-symbols-outlined text-[20px] shrink-0 text-primary">
-                          check_circle
-                        </span>
-                        <span className="font-body-md text-body-md text-on-surface font-medium">{f.text}</span>
+                        <CheckCircle className="w-5 h-5 shrink-0 text-blue-600 dark:text-indigo-400" />
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{f.text}</span>
                       </li>
                     ))}
                   </ul>

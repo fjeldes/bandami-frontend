@@ -104,7 +104,7 @@ function SpeakingCard({ question, isTaken, bestScore, index }: { question: Quest
 
   return (
     <div
-      className="group relative flex flex-col bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden animate-fade-in-up"
+      className="group relative flex flex-col dark:bg-slate-900 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden animate-fade-in-up"
       style={{ animationDelay: `${Math.min(index * 0.05, 0.5)}s` }}
     >
       {/* Color accent bar */}
@@ -118,15 +118,15 @@ function SpeakingCard({ question, isTaken, bestScore, index }: { question: Quest
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-semibold text-slate-800 mb-3 group-hover:text-slate-900 transition-colors flex-grow line-clamp-2">
+        <h3 className="text-base font-semibold dark:text-white mb-3 group-hover:dark:text-white transition-colors flex-grow line-clamp-2">
           {question.title || "Speaking Practice Topic"}
         </h3>
 
         {/* Footer */}
-        <div className="pt-4 border-t border-slate-100 mt-auto">
+        <div className="pt-4 border-t border-slate-100 dark:border-slate-800 mt-auto">
           {isTaken ? (
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-medium">Previous best</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Previous best</span>
               <Link
                 href={`/speaking/test?id=${question.id}`}
                 className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${config.bgLight} ${config.textDark} hover:shadow-md active:scale-95 hover:-translate-y-0.5`}
@@ -138,7 +138,7 @@ function SpeakingCard({ question, isTaken, bestScore, index }: { question: Quest
           ) : (
             <Link
               href={`/speaking/test?id=${question.id}`}
-              className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md transition-all duration-200 bg-slate-800 hover:bg-slate-900 hover:shadow-lg active:scale-[0.98] hover:-translate-y-0.5 group`}
+              className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white shadow-md transition-all duration-200 bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 hover:shadow-lg active:scale-[0.98] hover:-translate-y-0.5 group`}
             >
               <Mic className="w-4 h-4 group-hover:animate-pulse transition-transform" />
               Start Test
@@ -194,7 +194,7 @@ export default function SpeakingListPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950">
       <div className="max-w-6xl mx-auto px-4 py-10">
         {/* Header */}
         <div className="mb-10">
@@ -205,7 +205,7 @@ export default function SpeakingListPage() {
         </div>
 
         {/* Filter Tabs */}
-        <div className="bg-white rounded-2xl shadow-sm p-1.5 mb-6 inline-flex">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm p-1.5 mb-6 inline-flex">
           {filterTabs
             .filter((tab) => !(isFree && tab.key !== "part1"))
             .map((tab) => {
@@ -216,8 +216,8 @@ export default function SpeakingListPage() {
                   onClick={() => setFilter(tab.key)}
                   className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     isActive
-                      ? "bg-slate-900 text-white shadow-md"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                      ? "bg-slate-900 dark:bg-slate-800 text-white shadow-md"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
                   <tab.icon className="w-4 h-4" />
@@ -229,15 +229,15 @@ export default function SpeakingListPage() {
 
         {/* Premium lock banner */}
         {isFree && (
-          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 flex items-center gap-3 shadow-sm">
-            <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
-              <Lock className="w-5 h-5 text-indigo-600" />
+          <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/50 dark:to-purple-950/50 border border-indigo-100 dark:border-indigo-900 flex items-center gap-3 shadow-sm">
+            <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center">
+              <Lock className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-800">Unlock Speaking Part 2 & 3</p>
-              <p className="text-xs text-slate-500">
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Unlock Speaking Part 2 & 3</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Get unlimited access with{" "}
-                <a href="/pricing" className="text-indigo-600 font-semibold hover:underline">Pro (3-day free trial — then $14.99/month + tax)</a>
+                <a href="/pricing" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Pro (3-day free trial — then $14.99/month + tax)</a>
               </p>
             </div>
           </div>
@@ -245,7 +245,7 @@ export default function SpeakingListPage() {
 
         {/* Legend */}
         {!loading && !error && (
-          <div className="flex items-center gap-4 mb-6 text-sm text-slate-500">
+          <div className="flex items-center gap-4 mb-6 text-sm text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-blue-500" />
               Part 1
@@ -265,25 +265,25 @@ export default function SpeakingListPage() {
         {/* Content */}
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="w-10 h-10 border-3 border-slate-200 border-t-slate-800 rounded-full animate-spin" />
+            <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-slate-800 rounded-full animate-spin" />
           </div>
         ) : error ? (
-          <div className="text-center py-16 bg-white rounded-2xl shadow-sm">
-            <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+          <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
+            <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl font-bold text-red-500">!</span>
             </div>
             <p className="text-body-md text-red-600 mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-slate-900 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 transition-colors"
+              className="bg-slate-900 dark:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-slate-800 dark:hover:bg-slate-700 transition-colors"
             >
               Retry
             </button>
           </div>
         ) : filtered.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-2xl shadow-sm">
-            <Mic className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <p className="text-body-md text-slate-500">No topics found for this filter.</p>
+          <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
+            <Mic className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+            <p className="text-body-md text-slate-500 dark:text-slate-400">No topics found for this filter.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

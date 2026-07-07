@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { API_ORIGIN as API_BASE } from "@/lib/config";
+import { Mail, AlertCircle } from "lucide-react";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -12,7 +13,6 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    
     setError("");
     setLoading(true);
 
@@ -35,14 +35,16 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="bg-surface text-on-surface antialiased min-h-screen flex items-center justify-center p-margin-mobile md:p-gutter">
-        <main className="w-full max-w-md ds-card-interactive p-gutter md:p-[32px] text-center">
-          <span className="material-symbols-outlined text-[64px] text-primary mb-4">mark_email_read</span>
-          <h1 className="font-heading text-headline-md text-on-surface mb-2">Check your inbox</h1>
-          <p className="text-body-md text-on-surface-variant mb-6">
-            If an account exists for <span className="font-semibold">{email}</span>, we sent a password reset link.
+      <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased min-h-screen flex items-center justify-center p-4 md:p-8">
+        <main className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl p-6 md:p-8 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center mx-auto mb-4">
+            <Mail className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+          </div>
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Check your inbox</h1>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+            If an account exists for <span className="font-semibold text-slate-900 dark:text-white">{email}</span>, we sent a password reset link.
           </p>
-          <Link href="/login" className="text-primary font-semibold hover:underline">
+          <Link href="/login" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">
             Back to Sign In
           </Link>
         </main>
@@ -51,28 +53,31 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="bg-surface text-on-surface antialiased min-h-screen flex items-center justify-center p-margin-mobile md:p-gutter relative overflow-hidden">
-      <div className="absolute inset-0 z-0 opacity-40 pointer-events-none"
-        style={{ backgroundImage: "radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.05), transparent 25%), radial-gradient(circle at 85% 30%, rgba(254, 166, 25, 0.05), transparent 25%)" }}
+    <div className="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased min-h-screen flex items-center justify-center p-4 md:p-8 relative overflow-hidden">
+      <div className="absolute inset-0 z-0 opacity-30 dark:opacity-20 pointer-events-none"
+        style={{ backgroundImage: "radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.1), transparent 25%), radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.1), transparent 25%)" }}
       />
 
-      <main className="w-full max-w-md ds-card-interactive p-gutter md:p-[32px] z-10 relative">
+      <main className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl p-6 md:p-8 z-10 relative">
         <header className="text-center mb-8">
           <Image src="/bandami.png" alt="Bandami" width={160} height={160} className="h-14 sm:h-20 w-auto mx-auto" priority />
-          <p className="text-body-md text-on-surface-variant mt-2">Reset your password</p>
+          <p className="text-base text-slate-600 dark:text-slate-400 mt-2">Reset your password</p>
         </header>
 
         {error && (
-          <p className="text-body-md text-error bg-error-container/30 rounded-lg px-4 py-3 mb-4 text-center">{error}</p>
+          <div className="flex items-center gap-2 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 rounded-lg px-4 py-3 mb-4 text-sm">
+            <AlertCircle className="w-4 h-4 shrink-0" />
+            {error}
+          </div>
         )}
 
-        <div className="space-y-5" onSubmit={handleSubmit}>
+        <div className="space-y-5">
           <div className="flex flex-col gap-1.5">
-            <label className="text-label-sm text-on-surface" htmlFor="email">Email Address</label>
+            <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="email">Email Address</label>
             <div className="relative">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/70 text-[20px]">mail</span>
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
               <input
-                className="w-full bg-surface-container text-on-surface text-body-md rounded-lg py-3 pl-10 pr-4 border-2 border-transparent focus:bg-surface-container-lowest focus:border-primary-container focus:ring-0 outline-none transition-all placeholder:text-on-surface-variant/50"
+                className="w-full bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm rounded-lg py-3 pl-10 pr-4 border-2 border-transparent focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
                 id="email" type="email" placeholder="john@example.com" required
                 value={email} onChange={(e) => setEmail(e.target.value)}
               />
@@ -80,13 +85,14 @@ export default function ForgotPasswordPage() {
           </div>
 
           <button type="button" disabled={loading}
-            className="w-full bg-primary-container text-on-primary font-mono text-data-md py-3.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all mt-2 shadow-sm disabled:opacity-60">
+            onClick={handleSubmit}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm py-3.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all mt-2 shadow-sm disabled:opacity-60">
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
         </div>
 
-        <p className="text-center mt-8 text-body-md text-on-surface-variant">
-          <Link href="/login" className="text-primary font-semibold hover:underline decoration-2 underline-offset-4">Back to Sign In</Link>
+        <p className="text-center mt-8 text-sm text-slate-600 dark:text-slate-400">
+          <Link href="/login" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline decoration-2 underline-offset-4">Back to Sign In</Link>
         </p>
       </main>
     </div>

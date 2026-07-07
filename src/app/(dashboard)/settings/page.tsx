@@ -40,12 +40,12 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 
 function ProfileSection({ user, editName, setEditName, nameValue, setNameValue, saveName, savingName }: any) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
       <div className="flex items-start gap-5 mb-6">
         <Avatar name={user?.full_name} />
         <div className="flex-1">
-          <h2 className="text-lg font-bold text-slate-800 mb-1">{user?.full_name || "Your Profile"}</h2>
-          <p className="text-sm text-slate-500">{user?.email}</p>
+          <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-1">{user?.full_name || "Your Profile"}</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{user?.email}</p>
           <div className="flex items-center gap-2 mt-2">
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
               <ShieldCheck className="w-3.5 h-3.5" />
@@ -63,7 +63,7 @@ function ProfileSection({ user, editName, setEditName, nameValue, setNameValue, 
               <input
                 value={nameValue}
                 onChange={(e) => setNameValue(e.target.value)}
-                className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
+                className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all"
               />
               <button
                 onClick={saveName}
@@ -80,11 +80,11 @@ function ProfileSection({ user, editName, setEditName, nameValue, setNameValue, 
               </button>
             </div>
           ) : (
-            <div className="flex items-center justify-between mt-1">
-              <p className="text-sm font-medium text-slate-800">{user?.full_name || "—"}</p>
+              <div className="flex items-center justify-between mt-1">
+              <p className="text-sm font-medium text-slate-800 dark:text-white">{user?.full_name || "—"}</p>
               <button
                 onClick={() => { setNameValue(user?.full_name || ""); setEditName(true); }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-100 transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
                 <Pencil className="w-3.5 h-3.5" />
                 Edit
@@ -96,8 +96,8 @@ function ProfileSection({ user, editName, setEditName, nameValue, setNameValue, 
         <div>
           <FieldLabel>Email Address</FieldLabel>
           <div className="flex items-center gap-2 mt-1">
-            <Mail className="w-4 h-4 text-slate-400" />
-            <p className="text-sm font-medium text-slate-800">{user?.email || "—"}</p>
+            <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+            <p className="text-sm font-medium text-slate-800 dark:text-white">{user?.email || "—"}</p>
           </div>
         </div>
       </div>
@@ -176,17 +176,17 @@ function InvoiceRow({ invoice }: { invoice: any }) {
   const label = invoice.payment_type === "first_charge" ? "First charge" : "Monthly";
 
   return (
-    <div className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors group">
+    <div className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-          <Receipt className="w-5 h-5 text-slate-500" />
+        <div className="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+          <Receipt className="w-5 h-5 text-slate-500 dark:text-slate-400" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-800">${invoice.amount_paid.toFixed(2)}</p>
-          <div className="flex items-center gap-2 text-xs text-slate-500">
+          <p className="text-sm font-semibold text-slate-800 dark:text-white">${invoice.amount_paid.toFixed(2)}</p>
+          <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
             <Calendar className="w-3 h-3" />
             {new Date(invoice.created).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-            <span className="text-slate-300">·</span>
+            <span className="text-slate-300 dark:text-slate-600">·</span>
             {label}
           </div>
         </div>
@@ -196,7 +196,7 @@ function InvoiceRow({ invoice }: { invoice: any }) {
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
         >
           View
           <ExternalLink className="w-3 h-3" />
@@ -243,14 +243,14 @@ function SubscriptionSection({ user }: { user: any }) {
   };
 
   if (loading) {
-    return (
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-24 bg-slate-100 rounded-xl" />
-          <div className="h-32 bg-slate-100 rounded-xl" />
-        </div>
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
+      <div className="animate-pulse space-y-4">
+        <div className="h-24 bg-slate-100 dark:bg-slate-800 rounded-xl" />
+        <div className="h-32 bg-slate-100 dark:bg-slate-800 rounded-xl" />
       </div>
-    );
+    </div>
+  );
   }
 
   if (!subData?.has_subscription) {
@@ -266,28 +266,28 @@ function SubscriptionSection({ user }: { user: any }) {
       <SubscriptionCard isPremium={true} />
 
       {/* Plan Details */}
-      <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-        <h3 className="text-sm font-bold text-slate-800 mb-4">Plan Details</h3>
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-5">
+        <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-4">Plan Details</h3>
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 rounded-xl bg-slate-50">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
             <FieldLabel>Status</FieldLabel>
             <div className="flex items-center gap-2 mt-1">
               <span className={`w-2 h-2 rounded-full ${willCancel ? "bg-amber-500" : "bg-emerald-500"}`} />
-              <span className="text-sm font-semibold text-slate-800">
+              <span className="text-sm font-semibold text-slate-800 dark:text-white">
                 {willCancel ? "Cancels soon" : "Active"}
               </span>
             </div>
           </div>
-          <div className="p-3 rounded-xl bg-slate-50">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
             <FieldLabel>{isOneTime ? "Expires" : "Next billing"}</FieldLabel>
-            <p className="text-sm font-semibold text-slate-800 mt-1">{periodEnd}</p>
+            <p className="text-sm font-semibold text-slate-800 dark:text-white mt-1">{periodEnd}</p>
           </div>
           {!isOneTime && subData.card_brand && (
-            <div className="p-3 rounded-xl bg-slate-50 col-span-2">
+            <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800 col-span-2">
               <FieldLabel>Payment Method</FieldLabel>
               <div className="flex items-center gap-2 mt-1">
-                <CreditCard className="w-4 h-4 text-slate-400" />
-                <span className="text-sm font-semibold text-slate-800 capitalize">
+                <CreditCard className="w-4 h-4 text-slate-400 dark:text-slate-500" />
+                <span className="text-sm font-semibold text-slate-800 dark:text-white capitalize">
                   {subData.card_brand} ····{subData.card_last4}
                 </span>
               </div>
@@ -298,9 +298,9 @@ function SubscriptionSection({ user }: { user: any }) {
 
       {/* Invoice History */}
       {invoices.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-          <h3 className="text-sm font-bold text-slate-800 mb-3">Invoice History</h3>
-          <div className="divide-y divide-slate-100">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-5">
+          <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-3">Invoice History</h3>
+          <div className="divide-y divide-slate-100 dark:divide-slate-800">
             {invoices.slice(0, 5).map((inv: any) => (
               <InvoiceRow key={inv.id} invoice={inv} />
             ))}
@@ -311,15 +311,15 @@ function SubscriptionSection({ user }: { user: any }) {
       {/* Switch Plan Modal */}
       {switchModal && typeof document !== "undefined" && createPortal(
         <div className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setSwitchModal(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
-            <h4 className="text-lg font-bold text-slate-800 mb-2">Switch to Monthly</h4>
-            <p className="text-sm text-slate-500 mb-6">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+            <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-2">Switch to Monthly</h4>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
               Convert to Pro Monthly at $14.99/month. Your billing period will be adjusted automatically.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setSwitchModal(null)}
-                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold hover:bg-slate-200 transition-colors"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
               >
                 Cancel
               </button>
@@ -343,15 +343,15 @@ function PasswordSection({ user, changePw, setChangePw, currentPw, setCurrentPw,
   if (user?.google_id) return null;
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">
-            <Lock className="w-5 h-5 text-slate-500" />
+          <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+            <Lock className="w-5 h-5 text-slate-500 dark:text-slate-400" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-slate-800">Password</h3>
-            <p className="text-xs text-slate-500">Update your password</p>
+            <h3 className="text-sm font-bold text-slate-800 dark:text-white">Password</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Update your password</p>
           </div>
         </div>
       </div>
@@ -364,7 +364,7 @@ function PasswordSection({ user, changePw, setChangePw, currentPw, setCurrentPw,
               type="password"
               value={currentPw}
               onChange={(e) => setCurrentPw(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all mt-1"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all mt-1"
             />
           </div>
           <div>
@@ -373,7 +373,7 @@ function PasswordSection({ user, changePw, setChangePw, currentPw, setCurrentPw,
               type="password"
               value={newPw}
               onChange={(e) => setNewPw(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all mt-1"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all mt-1"
             />
           </div>
           <div>
@@ -382,7 +382,7 @@ function PasswordSection({ user, changePw, setChangePw, currentPw, setCurrentPw,
               type="password"
               value={confirmPw}
               onChange={(e) => setConfirmPw(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all mt-1"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-white outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all mt-1"
             />
           </div>
           <div className="flex gap-2 pt-2">
@@ -395,7 +395,7 @@ function PasswordSection({ user, changePw, setChangePw, currentPw, setCurrentPw,
             </button>
             <button
               onClick={() => setChangePw(false)}
-              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-600 text-sm font-semibold hover:bg-slate-200 transition-colors"
+              className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-sm font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             >
               Cancel
             </button>
@@ -519,28 +519,28 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="w-10 h-10 border-3 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-blue-600 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950">
       <div className="max-w-5xl mx-auto px-4 py-10">
         <div className="mb-8">
-          <h1 className="text-headline-lg font-bold text-slate-800 mb-1">Settings</h1>
-          <p className="text-slate-500">Manage your account and subscription</p>
+          <h1 className="text-headline-lg font-bold text-slate-800 dark:text-white mb-1">Settings</h1>
+          <p className="text-slate-500 dark:text-slate-400">Manage your account and subscription</p>
         </div>
 
         {searchParams.get("checkout") === "success" && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-              <Check className="w-5 h-5 text-emerald-600" />
+          <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center shrink-0">
+              <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <p className="text-sm font-bold text-emerald-800">Your 3-day free trial has started!</p>
-              <p className="text-xs text-emerald-600 mt-0.5">
+              <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">Your 3-day free trial has started!</p>
+              <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">
                 No charge today. You'll be charged <strong>$14.99/month + tax</strong> after the trial. Cancel anytime.
               </p>
             </div>
@@ -574,7 +574,7 @@ export default function SettingsPage() {
             />
             <button
               onClick={handleSignOut}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-50 text-red-600 font-semibold text-sm hover:bg-red-100 transition-colors"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-semibold text-sm hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
             >
               <LogOut className="w-4 h-4" />
               Sign Out
