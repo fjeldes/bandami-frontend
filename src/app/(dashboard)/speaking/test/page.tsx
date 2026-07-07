@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { createPortal } from "react-dom";
 import { getQuestions, createSpeakingExam, submitSpeakingEvaluation } from "@/lib/api";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import type { Question, Exam } from "@/lib/types";
@@ -87,6 +88,7 @@ export default function SpeakingTestPage() {
   const [exam, setExam] = useState<Exam | null>(null);
   const [phase, setPhase] = useState<Phase>("load");
   const [error, setError] = useState("");
+  const [show503Modal, setShow503Modal] = useState(false);
   const [showInterruptedBanner, setShowInterruptedBanner] = useState(false);
 
   const [micOk, setMicOk] = useState(false);
@@ -101,12 +103,17 @@ export default function SpeakingTestPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [recordingActive, setRecordingActive] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const animRef = useRef<number>(0);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioRefFull = useRef<HTMLAudioElement | null>(null);
   const currentTipRef = useRef(SPEAKING_TIPS[Math.floor(Math.random() * SPEAKING_TIPS.length)]);
 
   const isSingleMode = !!questionId;
@@ -247,6 +254,19 @@ export default function SpeakingTestPage() {
     setRecordingActive(false);
   };
 
+  // ---- Audio playback controls ----
+  const togglePlayback = (el: HTMLAudioElement | null) => {
+    if (!el) return;
+    if (el.paused) { el.play(); } else { el.pause(); }
+  };
+
+  const handleProgressClick = (el: HTMLAudioElement | null) => (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!el || !duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    el.currentTime = ratio * duration;
+  };
+
   // ---- Single-mode handlers ----
   const beginSingleRecordingAfterPrep = () => {
     timerRef.current && clearInterval(timerRef.current);
@@ -291,7 +311,7 @@ export default function SpeakingTestPage() {
       if (msg === "auth_required") {
         router.push("/");
       } else if (msg.includes("503") || msg.includes("UNAVAILABLE")) {
-        router.push("/history");
+        setShow503Modal(true);
       } else {
         setError(msg);
         setPhase("preview");
@@ -396,7 +416,7 @@ export default function SpeakingTestPage() {
       if (msg === "auth_required") {
         router.push("/");
       } else if (msg.includes("503") || msg.includes("UNAVAILABLE")) {
-        router.push("/history");
+        setShow503Modal(true);
       } else {
         setError(msg);
         setPhase("preview");
@@ -729,55 +749,82 @@ export default function SpeakingTestPage() {
         {phase === "preview" && previewUrl && (
           <div className="max-w-2xl mx-auto space-y-6">
             <div className="text-center">
-              <h1 className="text-headline-md font-bold text-on-surface">Great effort!</h1>
-              <p className="text-body-md text-on-surface-variant mt-1">Listen to your recording before submitting.</p>
+              <span className="material-symbols-outlined text-[48px] text-emerald-500 mb-3" style={{ fontVariationSettings: "'FILL' 1" }}>check_circle</span>
+              <h2 className="text-[28px] font-bold text-slate-900 dark:text-white mb-1" style={{ fontFamily: "Inter, system-ui, sans-serif" }}>Test Complete</h2>
+              <p className="text-[15px] text-slate-500 dark:text-slate-400">Listen to your recording before submitting.</p>
             </div>
 
-            <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/20 shadow-sm p-8">
-              <div className="mb-6 p-4 rounded-lg bg-surface-container-low border-l-4 border-primary">
-                <p className="text-label-sm text-primary mb-1 uppercase tracking-widest">Topic</p>
-                <RichTextRenderer content={targetQuestion?.prompt_text || ""} className="text-headline-md italic text-on-surface line-clamp-2" />
-              </div>
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-700/50 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.12)] p-8">
+              {/* Topic Header */}
+              {targetQuestion && (
+                <div className="mb-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/30">
+                  <p className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 mb-1.5 uppercase tracking-[0.12em]">Topic</p>
+                  <RichTextRenderer content={targetQuestion.prompt_text || ""} className="text-[17px] font-medium text-slate-700 dark:text-slate-200 leading-relaxed line-clamp-2" />
+                </div>
+              )}
 
+              {/* Waveform */}
               <div className="h-16 flex items-end justify-center gap-1 px-2 mb-6 overflow-hidden">
                 {Array.from({ length: 48 }, (_, i) => (
-                  <div key={i} className="w-1.5 rounded-full transition-all" style={{
+                  <div key={i} className="w-1.5 transition-all duration-300" style={{
                     height: `${Math.max(6, Math.abs(Math.sin(i * 0.5) * 50 + Math.random() * 30))}px`,
-                    backgroundColor: i < 24 ? "var(--c-primary)" : "var(--c-outline-variant)",
-                    opacity: i < 24 ? 1 : 0.4,
+                    borderRadius: "9999px",
+                    backgroundColor: i < (currentTime / (duration || 1)) * 48 ? "#3b82f6" : "#e2e8f0",
+                    opacity: i < (currentTime / (duration || 1)) * 48 ? (isPlaying ? 1 : 0.85) : 0.4,
+                    boxShadow: isPlaying && i < (currentTime / (duration || 1)) * 48 ? "0 0 6px rgba(59,130,246,0.4)" : "none",
                   }} />
                 ))}
               </div>
 
+              {/* Playback Controls */}
               <div className="flex items-center justify-center gap-6 mb-6">
-                <button className="p-2 text-on-surface-variant hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-[28px]">replay_10</span>
+                <button className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  onClick={() => { const a = audioRef.current; if (a) a.currentTime = Math.max(0, a.currentTime - 10); }}>
+                  <span className="material-symbols-outlined text-[24px]">replay_10</span>
                 </button>
-                <button className="w-16 h-16 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all"
-                  onClick={() => { const a = document.getElementById("previewAudio") as HTMLAudioElement; if (a) a.paused ? a.play() : a.pause(); }}>
-                  <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
+                <button
+                  className="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 shadow-[4px_4px_10px_rgba(0,0,0,0.06),-4px_-4px_10px_rgba(255,255,255,0.8)] dark:shadow-[4px_4px_10px_rgba(0,0,0,0.3),-4px_-4px_10px_rgba(255,255,255,0.05)] hover:-translate-y-0.5 hover:brightness-110 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400"
+                  onClick={() => togglePlayback(audioRef.current)}>
+                  <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {isPlaying ? "pause" : "play_arrow"}
+                  </span>
                 </button>
-                <button className="p-2 text-on-surface-variant hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-[28px]">forward_10</span>
+                <button className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  onClick={() => { const a = audioRef.current; if (a) a.currentTime = Math.min(duration, a.currentTime + 10); }}>
+                  <span className="material-symbols-outlined text-[24px]">forward_10</span>
                 </button>
               </div>
 
-              <audio id="previewAudio" controls src={previewUrl} className="w-full mb-4" />
+              {/* Custom Progress Bar */}
+              <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full cursor-pointer group mb-2"
+                onClick={handleProgressClick(audioRef.current)}>
+                <div className="h-full bg-blue-500 rounded-full relative transition-all duration-100" style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}>
+                  <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)] scale-0 group-hover:scale-100 transition-transform duration-200" />
+                </div>
+              </div>
+
+              {/* Hidden native audio */}
+              <audio ref={audioRef} src={previewUrl} className="hidden"
+                onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+                onLoadedMetadata={(e) => { setDuration(e.currentTarget.duration); setCurrentTime(0); setIsPlaying(false); }}
+                onPlay={() => setIsPlaying(true)}
+                onPause={() => setIsPlaying(false)}
+                onEnded={() => setIsPlaying(false)} />
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <button onClick={() => { setAudioBlob(null); setPreviewUrl(null); setRecordingActive(false); setPhase("ready"); }}
-                className="flex-1 py-3 rounded-xl border-2 border-outline-variant text-on-surface text-label-sm font-semibold hover:bg-surface-variant/20 transition-all flex items-center justify-center gap-2">
+              <button onClick={() => { setAudioBlob(null); setPreviewUrl(null); setRecordingActive(false); setPhase("ready"); setIsPlaying(false); setCurrentTime(0); setDuration(0); }}
+                className="flex-1 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-label-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300 flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined text-[18px]">refresh</span> Re-record
               </button>
               <button onClick={handleSingleSubmit}
-                className="flex-[1.5] py-3 rounded-xl bg-primary text-on-primary text-label-sm font-semibold hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
+                className="flex-[1.5] py-3 rounded-xl bg-gradient-to-r from-slate-800 to-slate-700 dark:from-slate-700 dark:to-slate-600 text-white text-label-sm font-bold hover:from-slate-700 hover:to-slate-600 dark:hover:from-slate-600 dark:hover:to-slate-500 hover:-translate-y-0.5 active:scale-[0.97] transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-slate-900/20 flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span>
                 Submit for AI Analysis
                 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
               </button>
             </div>
-            <p className="text-center text-label-sm text-on-surface-variant/60 flex items-center justify-center gap-1">
+            <p className="text-center text-label-sm text-slate-400 dark:text-slate-500 flex items-center justify-center gap-1">
               <span className="material-symbols-outlined text-[14px]">info</span>
               Analysis takes ~30 seconds after submission.
             </p>
@@ -1098,30 +1145,61 @@ export default function SpeakingTestPage() {
             <p className="text-[15px] text-slate-500 dark:text-slate-400">Listen to your recording before submitting.</p>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-[0_4px_12px_rgba(0,0,0,0.03)] dark:shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-8">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-700/50 shadow-[0_10px_40px_rgba(0,0,0,0.05)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.12)] p-8">
+            {/* Waveform */}
             <div className="h-16 flex items-end justify-center gap-1 px-2 mb-6 overflow-hidden">
               {Array.from({ length: 48 }, (_, i) => (
-                <div key={i} className="w-1.5 rounded-full" style={{
+                <div key={i} className="w-1.5 transition-all duration-300" style={{
                   height: `${Math.max(6, Math.abs(Math.sin(i * 0.5) * 50 + Math.random() * 30))}px`,
-                  backgroundColor: i < 24 ? "#3b82f6" : "#e2e8f0",
-                  opacity: i < 24 ? 1 : 0.4,
+                  borderRadius: "9999px",
+                  backgroundColor: i < (currentTime / (duration || 1)) * 48 ? "#3b82f6" : "#e2e8f0",
+                  opacity: i < (currentTime / (duration || 1)) * 48 ? (isPlaying ? 1 : 0.85) : 0.4,
+                  boxShadow: isPlaying && i < (currentTime / (duration || 1)) * 48 ? "0 0 6px rgba(59,130,246,0.4)" : "none",
                 }} />
               ))}
             </div>
-            <div className="flex items-center justify-center gap-6 mb-4">
-              <button className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-600 to-blue-500 text-white flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-all"
-                onClick={() => { const a = document.getElementById("previewAudioFull") as HTMLAudioElement; if (a) a.paused ? a.play() : a.pause(); }}>
-                <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
+
+            {/* Playback Controls */}
+            <div className="flex items-center justify-center gap-6 mb-6">
+              <button className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                onClick={() => { const a = audioRefFull.current; if (a) a.currentTime = Math.max(0, a.currentTime - 10); }}>
+                <span className="material-symbols-outlined text-[24px]">replay_10</span>
+              </button>
+              <button
+                className="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 shadow-[4px_4px_10px_rgba(0,0,0,0.06),-4px_-4px_10px_rgba(255,255,255,0.8)] dark:shadow-[4px_4px_10px_rgba(0,0,0,0.3),-4px_-4px_10px_rgba(255,255,255,0.05)] hover:-translate-y-0.5 hover:brightness-110 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400"
+                onClick={() => togglePlayback(audioRefFull.current)}>
+                <span className="material-symbols-outlined text-[32px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  {isPlaying ? "pause" : "play_arrow"}
+                </span>
+              </button>
+              <button className="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                onClick={() => { const a = audioRefFull.current; if (a) a.currentTime = Math.min(duration, a.currentTime + 10); }}>
+                <span className="material-symbols-outlined text-[24px]">forward_10</span>
               </button>
             </div>
-            {previewUrl && <audio id="previewAudioFull" controls src={previewUrl} className="w-full" />}
+
+            {/* Custom Progress Bar */}
+            <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full cursor-pointer group mb-2"
+              onClick={handleProgressClick(audioRefFull.current)}>
+              <div className="h-full bg-blue-500 rounded-full relative transition-all duration-100" style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}>
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.5)] scale-0 group-hover:scale-100 transition-transform duration-200" />
+              </div>
+            </div>
+
+            {/* Hidden native audio */}
+            {previewUrl && <audio ref={audioRefFull} src={previewUrl} className="hidden"
+              onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
+              onLoadedMetadata={(e) => { setDuration(e.currentTarget.duration); setCurrentTime(0); setIsPlaying(false); }}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onEnded={() => setIsPlaying(false)} />}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <button onClick={() => router.push("/speaking")} className="flex-1 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-label-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+            <button onClick={() => router.push("/speaking")} className="flex-1 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 text-label-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-300 flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-[18px]">delete</span> Discard
             </button>
-            <button onClick={handleSubmit} className="flex-[1.5] py-3 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-sm font-bold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 hover:-translate-y-0.5 active:scale-[0.97] transition-all shadow-md hover:shadow-lg hover:shadow-blue-500/25 flex items-center justify-center gap-2">
+            <button onClick={handleSubmit} className="flex-[1.5] py-3 rounded-xl bg-gradient-to-r from-slate-800 to-slate-700 dark:from-slate-700 dark:to-slate-600 text-white text-label-sm font-bold hover:from-slate-700 hover:to-slate-600 dark:hover:from-slate-600 dark:hover:to-slate-500 hover:-translate-y-0.5 active:scale-[0.97] transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-slate-900/20 flex items-center justify-center gap-2">
               <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>analytics</span>
               Submit for AI Analysis
               <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
@@ -1140,6 +1218,25 @@ export default function SpeakingTestPage() {
             <span className="material-symbols-outlined text-[20px]">mic</span> Start Speaking Test
           </button>
         </div>
+      )}
+
+      {show503Modal && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
+            <span className="material-symbols-outlined text-[48px] text-amber-500 mb-3" style={{ fontVariationSettings: "'FILL' 1" }}>error_outline</span>
+            <h2 className="text-headline-sm font-bold text-slate-900 dark:text-white mb-2">Service Unavailable</h2>
+            <p className="text-body-md text-slate-500 dark:text-slate-400 mb-6">
+              We couldn't process your speaking evaluation right now. Please try again later from the reports page.
+            </p>
+            <button
+              onClick={() => router.push("/history")}
+              className="px-6 py-2.5 rounded-xl bg-primary text-on-primary text-label-sm font-bold hover:opacity-90 transition-all"
+            >
+              Go to Reports
+            </button>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
