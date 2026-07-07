@@ -213,7 +213,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
         </div>
       </nav>
-      <main className="flex-1 p-6 ml-64 overflow-y-auto bg-slate-50 dark:bg-slate-950">{children}</main>
+      <main className="flex-1 p-4 md:p-6 md:ml-64 overflow-y-auto bg-slate-50 dark:bg-slate-950">{children}</main>
     </div>
   );
 }
