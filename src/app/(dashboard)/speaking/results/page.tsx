@@ -438,23 +438,7 @@ export default function SpeakingResultsPage() {
                   <p className="text-body-md text-on-surface-variant leading-relaxed whitespace-pre-wrap">{detailedFeedback}</p>
                 </div>
               )}
-              {examId && isPremium && (
-                <div className="mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="bg-surface-variant p-1.5 rounded-lg text-on-surface-variant">
-                      <span className="material-symbols-outlined text-[18px]">headphones</span>
-                    </div>
-                    <span className="text-label-sm font-semibold text-on-surface">Your Recording</span>
-                  </div>
-                  {audioUrl ? (
-                    <audio controls className="w-full h-8" src={audioUrl}>
-                      Your browser does not support audio playback.
-                    </audio>
-                  ) : (
-                    <p className="text-label-sm text-on-surface-variant/60">Loading audio...</p>
-                  )}
-                </div>
-              )}
+              {/* Recording section hidden — audio playback issues */}
             </div>
           )}
         </div>
