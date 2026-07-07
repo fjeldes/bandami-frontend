@@ -320,14 +320,8 @@ export default function SpeakingTestPage() {
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg === "auth_required") {
         router.push("/");
-      } else if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("try again")) {
-        setShow503Modal(true);
-      } else if (err instanceof DOMException && err.name === "AbortError") {
-        setError("The request timed out. Please try again.");
-        setPhase("preview");
       } else {
-        setError(msg);
-        setPhase("preview");
+        setShow503Modal(true);
       }
     }
   }, [exam, audioBlob, router]);
@@ -428,14 +422,8 @@ export default function SpeakingTestPage() {
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg === "auth_required") {
         router.push("/");
-      } else if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("try again")) {
-        setShow503Modal(true);
-      } else if (err instanceof DOMException && err.name === "AbortError") {
-        setError("The request timed out. Please try again.");
-        setPhase("preview");
       } else {
-        setError(msg);
-        setPhase("preview");
+        setShow503Modal(true);
       }
     }
   }, [exam, audioBlob, router]);
@@ -1248,9 +1236,9 @@ export default function SpeakingTestPage() {
         <div className="fixed inset-0 z-[9999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 text-center">
             <span className="material-symbols-outlined text-[48px] text-amber-500 mb-3" style={{ fontVariationSettings: "'FILL' 1" }}>error_outline</span>
-            <h2 className="text-headline-sm font-bold text-slate-900 dark:text-white mb-2">Service Unavailable</h2>
+            <h2 className="text-headline-sm font-bold text-slate-900 dark:text-white mb-2">Something went wrong</h2>
             <p className="text-body-md text-slate-500 dark:text-slate-400 mb-6">
-              We couldn't process your speaking evaluation right now. Please try again later from the reports page.
+              We couldn't process your speaking evaluation right now. Your work is safe — please try again later from the reports page.
             </p>
             <button
               onClick={() => router.push("/history")}
