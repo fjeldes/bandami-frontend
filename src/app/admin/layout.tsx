@@ -54,12 +54,13 @@ function AdminBadge() {
   );
 }
 
-function NavItem({ href, label, icon, isActive }: { href: string; label: string; icon: string; isActive: boolean }) {
+function NavItem({ href, label, icon, isActive, onNav }: { href: string; label: string; icon: string; isActive: boolean; onNav?: () => void }) {
   const Icon = ICON_MAP[icon] || LayoutDashboard;
 
   return (
     <Link
       href={href}
+      onClick={onNav}
       className={`
         group flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
         ${isActive
@@ -140,6 +141,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     label={item.label}
                     icon={item.icon}
                     isActive={pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href))}
+                    onNav={() => setMobileNav(false)}
                   />
                 ))}
               </div>
