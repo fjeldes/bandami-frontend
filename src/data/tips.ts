@@ -18,10 +18,22 @@ export const tipsData: TipCategory[] = [
     slug: "writing",
     name: "Writing",
     overview: `
-      <p>The IELTS Writing test assesses your ability to produce two pieces of writing: Task 1 and Task 2.</p>
-      <p><strong>Task 1</strong> requires you to describe visual information (graphs, charts, tables, diagrams) in at least 150 words.</p>
-      <p><strong>Task 2</strong> is an essay response to a topic, requiring at least 250 words where you present an argument, discuss a problem, or propose a solution.</p>
-      <p>You have 60 minutes to complete both tasks, with Task 2 worth twice as much as Task 1.</p>
+      <p>The IELTS Writing test assesses your ability to produce two pieces of writing in 60 minutes: Task 1 and Task 2. Task 2 is worth twice as much as Task 1, so time management is crucial.</p>
+
+      <h3 class="text-lg font-semibold mt-4 mb-2">IELTS Academic Writing</h3>
+      <p><strong>Task 1:</strong> Describe visual information such as graphs, charts, tables, or diagrams in at least 150 words. You must identify key trends, compare data, and summarize the information objectively.</p>
+      <p><strong>Task 2:</strong> Write an essay responding to an argument, problem, or perspective in at least 250 words. You must present a clear position and support it with examples and reasoning.</p>
+
+      <h3 class="text-lg font-semibold mt-4 mb-2">IELTS General Training Writing</h3>
+      <p><strong>Task 1:</strong> Write a letter in at least 150 words — formal (job application, complaint), semi-formal (to a neighbor or colleague), or informal (to a friend). You must include all bullet points from the prompt.</p>
+      <p><strong>Task 2:</strong> Write an essay identical to Academic Task 2 — at least 250 words presenting an argument, discussing a problem, or proposing a solution.</p>
+
+      <h3 class="text-lg font-semibold mt-4 mb-2">Key Differences</h3>
+      <ul>
+        <li><strong>Academic Task 1</strong> focuses on data interpretation; <strong>GT Task 1</strong> focuses on real-life letter writing</li>
+        <li><strong>Task 2</strong> is identical in both versions — same criteria, same approach</li>
+        <li>Both modules have the same timing (60 minutes) and word requirements (150 + 250)</li>
+      </ul>
     `,
     tips: [
       {

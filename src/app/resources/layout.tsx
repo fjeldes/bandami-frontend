@@ -2,39 +2,78 @@
 
 import { Suspense } from "react";
 import Link from "next/link";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Sidebar } from "@/components/ui/Sidebar";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { useAuthStore } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
+import { ArrowLeft, Sun, Moon, Menu } from "lucide-react";
+import Image from "next/image";
+
+function PublicHeader() {
+  const { dark, toggle } = useTheme();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <header className="sticky top-0 z-40 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+      <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-sm font-medium">Back to Home</span>
+        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center shrink-0">
+            <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-8 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
+          </Link>
+        </div>
+        <button
+          onClick={toggle}
+          className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400"
+          aria-label="Toggle dark mode"
+        >
+          {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+      </div>
+    </header>
+  );
+}
 
 export default function ResourcesLayout({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user);
   const isLoading = useAuthStore((s) => s.isLoading);
-  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !user) {
-      router.push("/login");
-    }
-  }, [isLoading, user, router]);
+    setMounted(true);
+  }, []);
 
-  if (isLoading || !user) {
+  if (!mounted || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="w-10 h-10 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+        <div className="w-10 h-10 border-4 border-slate-200 dark:border-slate-700 border-t-blue-600 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (user) {
+    return (
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <div className="flex-1 flex flex-col min-h-screen md:ml-64">
+          <main className="flex-1 p-4 md:px-8 md:py-6 lg:px-12 lg:py-8 max-w-5xl mx-auto w-full">
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </main>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <div className="flex-1 flex flex-col min-h-screen md:ml-64">
-        <main className="flex-1 p-4 md:px-8 md:py-6 lg:px-12 lg:py-8 max-w-5xl mx-auto w-full">
-          <ErrorBoundary>{children}</ErrorBoundary>
-        </main>
-      </div>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <PublicHeader />
+      <main className="max-w-5xl mx-auto px-4 py-8">
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </main>
     </div>
   );
 }
