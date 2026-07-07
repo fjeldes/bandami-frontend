@@ -614,6 +614,55 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {showGoalModal && (
+        <div className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 p-6 max-w-sm w-full">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-500/10 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Set Your Target</h3>
+              </div>
+              <button onClick={() => setShowGoalModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">Enter your target IELTS band score (0.0 - 9.0)</p>
+            <input
+              type="number"
+              min="0"
+              max="9"
+              step="0.5"
+              value={goalInput}
+              onChange={(e) => setGoalInput(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-lg font-mono font-bold text-center focus:outline-none focus:border-blue-500 dark:focus:border-blue-400 transition-colors mb-4"
+            />
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowGoalModal(false)}
+                className="flex-1 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  const val = parseFloat(goalInput);
+                  if (!isNaN(val) && val >= 0 && val <= 9) {
+                    setTarget(val);
+                    localStorage.setItem("ielts_target", String(val));
+                    setShowGoalModal(false);
+                  }
+                }}
+                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-all"
+              >
+                Save Goal
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center">
           <h3 className="text-base font-semibold text-slate-900 dark:text-white">Recent Activity</h3>
