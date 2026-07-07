@@ -173,7 +173,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </div>
 
-        <div className="flex-1 px-3 space-y-0.5">
+        <div className="flex-1 px-3 space-y-0.5 overflow-y-auto overscroll-contain">
           {adminNav.map((item) => (
             <NavItem
               key={item.href}

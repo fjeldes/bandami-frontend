@@ -215,7 +215,7 @@ export function Sidebar() {
           <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-16 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
         </div>
 
-        <div className="flex-1 px-3 space-y-0.5">
+        <div className="flex-1 px-3 space-y-0.5 overflow-y-auto overscroll-contain">
           {navItems.map((item) => (
             <NavItem
               key={item.href}
