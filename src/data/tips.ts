@@ -43,7 +43,11 @@ export const tipsData: TipCategory[] = [
         icon: "link",
         content: `
           <h2>Connectors & Linking Words</h2>
-          <p>Using a variety of connectors is essential for achieving a high band score in Coherence and Cohesion. Here are the main categories:</p>
+          <p>Using a variety of connectors is essential for achieving a high band score in Coherence and Cohesion. Here are the main categories with Before/After examples:</p>
+
+          <h3>Before vs After: Using Connectors</h3>
+          <p><strong>Incorrect (Weak):</strong> "The population increased. The resources remained limited."</p>
+          <p><strong>Correct (Optimized):</strong> "The population increased significantly; however, the available resources remained limited."</p>
 
           <h3>Addition</h3>
           <ul>
@@ -53,6 +57,10 @@ export const tipsData: TipCategory[] = [
             <li><strong>Besides</strong> - Besides the economic benefits, there are...</li>
             <li><strong>Not only... but also</strong> - Not only does it save time, but also reduces costs.</li>
           </ul>
+
+          <h3>Before vs After: Addition Connector</h3>
+          <p><strong>Incorrect (Weak):</strong> "Technology has improved productivity. It has also created new jobs."</p>
+          <p><strong>Correct (Optimized):</strong> "Technology has significantly improved productivity. Furthermore, it has created numerous new employment opportunities."</p>
 
           <h3>Contrast</h3>
           <ul>
@@ -98,7 +106,7 @@ export const tipsData: TipCategory[] = [
             <li><strong>In summary</strong> - In summary, the findings support the hypothesis.</li>
           </ul>
 
-          <h3>Tips for Using Connectors</h3>
+          <h3>Key Principles for High Impact</h3>
           <ul>
             <li>Don't overuse the same connectors. Use a variety to show range.</li>
             <li>Place connectors at the beginning of sentences or clauses for clarity.</li>
@@ -124,7 +132,10 @@ export const tipsData: TipCategory[] = [
             <li><strong>Thesis statement</strong> - Give a clear, concise answer to the question</li>
             <li><strong>Outline</strong> - Briefly mention the main points you will discuss</li>
           </ul>
-          <p><em>Example:</em> "While some people believe that [viewpoint A], others argue that [viewpoint B]. In my opinion, [your view]. This essay will discuss [main points to be covered]."</p>
+
+          <h3>Before vs After: Introduction</h3>
+          <p><strong>Incorrect (Weak):</strong> "This essay will talk about the advantages and disadvantages of technology. Many people think technology is good."</p>
+          <p><strong>Correct (Optimized):</strong> "While technology has undoubtedly revolutionized modern life, it presents both significant benefits and notable challenges. This essay will argue that the advantages outweigh the disadvantages, examining first economic impacts, then social implications."</p>
 
           <h3>Paragraph 2: Body Paragraph 1</h3>
           <p>Each body paragraph should:</p>
@@ -135,6 +146,10 @@ export const tipsData: TipCategory[] = [
             <li><strong>Conclude the paragraph</strong> - Link back to the main argument</li>
           </ul>
           <p>Use: "First/Firstly... Furthermore... For example..."</p>
+
+          <h3>Before vs After: Body Paragraph</h3>
+          <p><strong>Incorrect (Weak):</strong> "Technology creates jobs. Many people work in tech. It helps the economy."</p>
+          <p><strong>Correct (Optimized):</strong> "First, technology has substantially boosted economic growth. For instance, the digital economy now accounts for approximately 15% of global GDP. Furthermore, it has created millions of employment opportunities across various sectors, from software development to digital marketing."</p>
 
           <h3>Paragraph 3: Body Paragraph 2</h3>
           <p>Similar structure to paragraph 2, but discuss your second main point:</p>
@@ -155,7 +170,7 @@ export const tipsData: TipCategory[] = [
           <p><em>Important:</em> Do not introduce new ideas in the conclusion.</p>
           <p>Use: "In conclusion... To sum up... Overall..."</p>
 
-          <h3>Key Principles</h3>
+          <h3>Key Principles for High Impact</h3>
           <ul>
             <li>Keep your introduction and conclusion brief (3-4 sentences each)</li>
             <li>Make your body paragraphs substantial (4-6 sentences each)</li>
