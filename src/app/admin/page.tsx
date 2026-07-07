@@ -15,6 +15,9 @@ import {
   GraduationCap,
   BarChart3,
   ChevronRight,
+  Zap,
+  Target,
+  Eye,
 } from "lucide-react";
 
 interface AdminStats {
@@ -45,59 +48,140 @@ interface RecentExam {
   created_at: string;
 }
 
-function KPICard({ label, value, sub, icon: Icon, color, bgColor }: { label: string; value: string | number; sub: string; icon: any; color: string; bgColor: string }) {
+interface DailyRow {
+  day: string;
+  free: number;
+  premium: number;
+}
+
+interface AnalyticsData {
+  summary: {
+    total_users: number;
+    free_users: number;
+    premium_users: number;
+    active_this_month: number;
+    active_free: number;
+    active_premium: number;
+    conversions_total: number;
+    conversions_this_month: number;
+    monthly_evals_free: number;
+    monthly_evals_premium: number;
+  };
+  dau: DailyRow[];
+  evaluations_per_day: DailyRow[];
+}
+
+function AnimatedBarChart({ data, colorFree, colorPremium, maxVal }: { data: DailyRow[]; colorFree: string; colorPremium: string; maxVal: number }) {
   return (
-    <div className="dark:bg-slate-900 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-6 border dark:border-slate-800 border-slate-100 group">
-      <div className="flex items-start justify-between mb-4">
-        <div className={`w-12 h-12 rounded-xl ${bgColor} flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform duration-300`}>
-          <Icon className={`w-6 h-6 ${color}`} />
+    <div className="flex items-end gap-[3px] h-28">
+      {data.map((d, i) => {
+        const total = d.free + d.premium;
+        const heightPct = maxVal > 0 ? (total / maxVal) * 100 : 0;
+        const premiumPct = total > 0 ? (d.premium / total) * 100 : 0;
+
+        return (
+          <div key={i} className="flex-1 flex flex-col items-center justify-end h-full group relative">
+            <div
+              className="w-full rounded-t-md overflow-hidden flex flex-col justify-end"
+              style={{ height: `${Math.max(heightPct, 2)}%` }}
+            >
+              {d.premium > 0 && (
+                <div
+                  className={`w-full rounded-t-md ${colorPremium}`}
+                  style={{ height: `${premiumPct}%`, minHeight: 2 }}
+                />
+              )}
+              {d.free > 0 && (
+                <div
+                  className={`w-full ${colorFree}`}
+                  style={{ height: `${100 - premiumPct}%`, minHeight: 2 }}
+                />
+              )}
+            </div>
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-950 border border-slate-800 text-slate-200 text-[10px] font-semibold px-2 py-1 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none whitespace-nowrap z-20 shadow-xl">
+              {total} · {new Date(d.day + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function KPICard({ label, value, sub, icon: Icon, accentColor, trend }: { label: string; value: string | number; sub: string; icon: any; accentColor: string; trend?: string }) {
+  return (
+    <div className="relative bg-slate-900 rounded-2xl border border-slate-800/50 p-6 hover:border-slate-700/60 transition-all duration-300 group hover:shadow-xl hover:shadow-black/20">
+      <div className="flex items-start justify-between mb-5">
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${accentColor}`}>
+          <Icon className="w-5 h-5" />
         </div>
+        {trend && (
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/30">
+            <Zap className="w-3 h-3" />
+            {trend}
+          </span>
+        )}
       </div>
-      <p className="text-3xl font-extrabold dark:text-white text-slate-900 tracking-tight mb-1">{value}</p>
-      <p className="text-sm font-semibold dark:text-slate-300 text-slate-700 mb-2">{label}</p>
-      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full dark:bg-slate-800 bg-slate-100 text-xs font-medium dark:text-slate-400 text-slate-600">
-        <Clock className="w-3 h-3" />
-        {sub}
-      </span>
+      <p className="text-3xl font-extrabold text-white tracking-tight mb-1">{value}</p>
+      <p className="text-sm font-semibold text-slate-400 mb-3">{label}</p>
+      <div className="flex items-center gap-1.5 text-slate-500">
+        <Clock className="w-3.5 h-3.5" />
+        <span className="text-xs font-medium">{sub}</span>
+      </div>
+    </div>
+  );
+}
+
+function MetricCard({ label, value, sub, icon: Icon, accentColor }: { label: string; value: string | number; sub: string; icon: any; accentColor: string }) {
+  return (
+    <div className="bg-slate-900/50 rounded-xl border border-slate-800/50 p-4 hover:bg-slate-800/40 transition-colors">
+      <div className="flex items-center gap-2 mb-2">
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${accentColor}`}>
+          <Icon className="w-4 h-4" />
+        </div>
+        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</span>
+      </div>
+      <p className="text-2xl font-extrabold text-white tracking-tight mb-0.5">{value}</p>
+      <p className="text-xs text-slate-500">{sub}</p>
     </div>
   );
 }
 
 function RecentUsersTable({ users }: { users: RecentUser[] }) {
   return (
-    <div className="dark:bg-slate-900 bg-white rounded-2xl shadow-sm border dark:border-slate-800 border-slate-100 overflow-hidden">
-      <div className="p-5 border-b dark:border-slate-800 border-slate-100 flex items-center justify-between">
+    <div className="bg-slate-900 rounded-2xl border border-slate-800/50 overflow-hidden">
+      <div className="p-5 border-b border-slate-800/50 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl dark:bg-blue-900/30 bg-blue-50 flex items-center justify-center">
-            <UserPlus className="w-5 h-5 dark:text-blue-400 text-blue-600" />
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+            <UserPlus className="w-5 h-5 text-blue-400" />
           </div>
           <div>
-            <h3 className="text-sm font-bold dark:text-slate-200 text-slate-800">Recent Users</h3>
-            <p className="text-xs dark:text-slate-400 text-slate-500">Latest registrations</p>
+            <h3 className="text-sm font-bold text-white">Recent Users</h3>
+            <p className="text-xs text-slate-500">Latest registrations</p>
           </div>
         </div>
-        <Link href="/admin/users" className="flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+        <Link href="/admin/users" className="flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors">
           View All
           <ChevronRight className="w-4 h-4" />
         </Link>
       </div>
-      <div className="divide-y dark:divide-slate-800 divide-slate-100">
+      <div className="divide-y divide-slate-800/50">
         {users.slice(0, 5).map((user) => (
-          <div key={user.id} className="flex items-center justify-between p-4 hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+          <div key={user.id} className="flex items-center justify-between p-4 hover:bg-slate-800/40 transition-colors">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-blue-500/20">
                 {user.full_name?.charAt(0)?.toUpperCase() || user.email.charAt(0).toUpperCase()}
               </div>
               <div>
-                <p className="text-sm font-semibold dark:text-slate-200 text-slate-800">{user.full_name || "Anonymous"}</p>
-                <p className="text-xs dark:text-slate-400 text-slate-500">{user.email}</p>
+                <p className="text-sm font-semibold text-white">{user.full_name || "Anonymous"}</p>
+                <p className="text-xs text-slate-500">{user.email}</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
                 user.subscription_tier === "premium"
-                  ? "dark:bg-amber-900/30 bg-amber-50 dark:text-amber-400 text-amber-700"
-                  : "dark:bg-slate-800 bg-slate-100 dark:text-slate-400 text-slate-600"
+                  ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                  : "bg-slate-800 text-slate-400 border border-slate-700"
               }`}>
                 {user.subscription_tier === "premium" ? (
                   <span className="flex items-center gap-1">
@@ -106,7 +190,7 @@ function RecentUsersTable({ users }: { users: RecentUser[] }) {
                   </span>
                 ) : "Free"}
               </span>
-              <span className="text-xs dark:text-slate-500 text-slate-400">
+              <span className="text-xs text-slate-500">
                 {new Date(user.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
               </span>
             </div>
@@ -120,50 +204,50 @@ function RecentUsersTable({ users }: { users: RecentUser[] }) {
 function LiveActivityFeed({ exams }: { exams: RecentExam[] }) {
   const getExamIcon = (type: string) => {
     return type === "writing" ? (
-      <div className="w-8 h-8 rounded-lg dark:bg-emerald-900/30 bg-emerald-50 flex items-center justify-center">
-        <ClipboardList className="w-4 h-4 dark:text-emerald-400 text-emerald-600" />
+      <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center">
+        <ClipboardList className="w-4 h-4 text-emerald-400" />
       </div>
     ) : (
-      <div className="w-8 h-8 rounded-lg dark:bg-violet-900/30 bg-violet-50 flex items-center justify-center">
-        <GraduationCap className="w-4 h-4 dark:text-violet-400 text-violet-600" />
+      <div className="w-8 h-8 rounded-lg bg-violet-500/10 flex items-center justify-center">
+        <GraduationCap className="w-4 h-4 text-violet-400" />
       </div>
     );
   };
 
   const getStatusBadge = (status: string) => {
     if (status === "completed") {
-      return <span className="px-2 py-0.5 rounded-full dark:bg-emerald-900/30 bg-emerald-50 dark:text-emerald-400 text-emerald-700 text-[10px] font-bold uppercase">Done</span>;
+      return <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase border border-emerald-500/30">Done</span>;
     }
     if (status === "in_progress") {
-      return <span className="px-2 py-0.5 rounded-full dark:bg-amber-900/30 bg-amber-50 dark:text-amber-400 text-amber-700 text-[10px] font-bold uppercase animate-pulse">Active</span>;
+      return <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold uppercase border border-amber-500/30 animate-pulse">Active</span>;
     }
-    return <span className="px-2 py-0.5 rounded-full dark:bg-slate-800 bg-slate-100 dark:text-slate-400 text-slate-500 text-[10px] font-bold uppercase">Pending</span>;
+    return <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-500 text-[10px] font-bold uppercase border border-slate-700">Pending</span>;
   };
 
   return (
-    <div className="dark:bg-slate-900 bg-white rounded-2xl shadow-sm border dark:border-slate-800 border-slate-100 overflow-hidden">
-      <div className="p-5 border-b dark:border-slate-800 border-slate-100">
+    <div className="bg-slate-900 rounded-2xl border border-slate-800/50 overflow-hidden">
+      <div className="p-5 border-b border-slate-800/50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl dark:bg-violet-900/30 bg-violet-50 flex items-center justify-center">
-            <Activity className="w-5 h-5 dark:text-violet-400 text-violet-600" />
+          <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
+            <Activity className="w-5 h-5 text-violet-400" />
           </div>
           <div>
-            <h3 className="text-sm font-bold dark:text-slate-200 text-slate-800">Live Activity</h3>
-            <p className="text-xs dark:text-slate-400 text-slate-500">Recent exam submissions</p>
+            <h3 className="text-sm font-bold text-white">Live Activity</h3>
+            <p className="text-xs text-slate-500">Recent exam submissions</p>
           </div>
         </div>
       </div>
       <div className="p-4 space-y-3 max-h-[400px] overflow-y-auto">
         {exams.slice(0, 8).map((exam) => (
-          <div key={exam.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+          <div key={exam.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-800/40 transition-colors">
             {getExamIcon(exam.exam_type)}
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-sm font-medium dark:text-slate-200 text-slate-800 capitalize">{exam.exam_type}</p>
+                <p className="text-sm font-medium text-white capitalize">{exam.exam_type}</p>
                 {getStatusBadge(exam.status)}
               </div>
-              <p className="text-xs dark:text-slate-400 text-slate-500 truncate mt-0.5">{exam.user_email}</p>
-              <p className="text-xs dark:text-slate-500 text-slate-400 mt-1">
+              <p className="text-xs text-slate-500 truncate mt-0.5">{exam.user_email}</p>
+              <p className="text-xs text-slate-600 mt-1">
                 {new Date(exam.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
               </p>
             </div>
@@ -171,8 +255,8 @@ function LiveActivityFeed({ exams }: { exams: RecentExam[] }) {
         ))}
         {exams.length === 0 && (
           <div className="text-center py-8">
-            <Activity className="w-8 h-8 dark:text-slate-600 text-slate-300 mx-auto mb-2" />
-            <p className="text-sm dark:text-slate-400 text-slate-500">No recent activity</p>
+            <Activity className="w-8 h-8 text-slate-700 mx-auto mb-2" />
+            <p className="text-sm text-slate-500">No recent activity</p>
           </div>
         )}
       </div>
@@ -180,40 +264,82 @@ function LiveActivityFeed({ exams }: { exams: RecentExam[] }) {
   );
 }
 
-function QuickStatsRow({ stats }: { stats: AdminStats }) {
+function ChartCard({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <div className="dark:bg-gradient-to-br dark:from-blue-900/20 dark:to-indigo-900/20 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 border dark:border-blue-900/30 border-blue-100">
-        <div className="flex items-center gap-2 mb-2">
-          <BarChart3 className="w-4 h-4 dark:text-blue-400 text-blue-600" />
-          <span className="text-xs font-semibold dark:text-blue-400 text-blue-700 uppercase tracking-wider">Completion Rate</span>
-        </div>
-        <p className="text-2xl font-extrabold dark:text-blue-300 text-blue-900">
-          {stats.total_exams > 0 ? Math.round((stats.completed_exams / stats.total_exams) * 100) : 0}%
-        </p>
+    <div className="bg-slate-900 rounded-2xl border border-slate-800/50 p-6 hover:border-slate-700/60 transition-colors">
+      <div className="flex items-center justify-between mb-1">
+        <h3 className="text-base font-bold text-white tracking-tight">{title}</h3>
+        <span className="text-xs text-slate-500 font-medium">{subtitle}</span>
       </div>
-      <div className="dark:bg-gradient-to-br dark:from-emerald-900/20 dark:to-teal-900/20 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-4 border dark:border-emerald-900/30 border-emerald-100">
-        <div className="flex items-center gap-2 mb-2">
-          <TrendingUp className="w-4 h-4 dark:text-emerald-400 text-emerald-600" />
-          <span className="text-xs font-semibold dark:text-emerald-400 text-emerald-700 uppercase tracking-wider">Avg Band</span>
-        </div>
-        <p className="text-2xl font-extrabold dark:text-emerald-300 text-emerald-900">{stats.average_band.toFixed(1)}</p>
+      {children}
+    </div>
+  );
+}
+
+function TierBreakdownTable({ summary }: { summary: AnalyticsData["summary"] }) {
+  const tiers = [
+    {
+      name: "Free",
+      color: "text-blue-400",
+      bgDot: "bg-blue-500",
+      total: summary.free_users,
+      active: summary.active_free,
+      evals: summary.monthly_evals_free,
+    },
+    {
+      name: "Pro",
+      color: "text-amber-400",
+      bgDot: "bg-amber-500",
+      total: summary.premium_users,
+      active: summary.active_premium,
+      evals: summary.monthly_evals_premium,
+    },
+  ];
+
+  return (
+    <div className="bg-slate-900 rounded-2xl border border-slate-800/50 overflow-hidden">
+      <div className="p-6 pb-4">
+        <h3 className="text-base font-bold text-white tracking-tight">Tier Breakdown</h3>
       </div>
-      <div className="dark:bg-gradient-to-br dark:from-amber-900/20 dark:to-orange-900/20 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-4 border dark:border-amber-900/30 border-amber-100">
-        <div className="flex items-center gap-2 mb-2">
-          <Crown className="w-4 h-4 dark:text-amber-400 text-amber-600" />
-          <span className="text-xs font-semibold dark:text-amber-400 text-amber-700 uppercase tracking-wider">Conversion</span>
-        </div>
-        <p className="text-2xl font-extrabold dark:text-amber-300 text-amber-900">
-          {stats.total_users > 0 ? Math.round((stats.premium_count / stats.total_users) * 100) : 0}%
-        </p>
-      </div>
-      <div className="dark:bg-gradient-to-br dark:from-violet-900/20 dark:to-purple-900/20 bg-gradient-to-br from-violet-50 to-purple-50 rounded-2xl p-4 border dark:border-violet-900/30 border-violet-100">
-        <div className="flex items-center gap-2 mb-2">
-          <ClipboardList className="w-4 h-4 dark:text-violet-400 text-violet-600" />
-          <span className="text-xs font-semibold dark:text-violet-400 text-violet-700 uppercase tracking-wider">Questions</span>
-        </div>
-        <p className="text-2xl font-extrabold dark:text-violet-300 text-violet-900">{stats.active_questions}</p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-slate-900/50 text-left">
+              <th className="px-6 py-3 text-xs font-semibold text-slate-400 tracking-wider uppercase">Tier</th>
+              <th className="px-6 py-3 text-xs font-semibold text-slate-400 tracking-wider uppercase">Total</th>
+              <th className="px-6 py-3 text-xs font-semibold text-slate-400 tracking-wider uppercase">Active (30d)</th>
+              <th className="px-6 py-3 text-xs font-semibold text-slate-400 tracking-wider uppercase">% Active</th>
+              <th className="px-6 py-3 text-xs font-semibold text-slate-400 tracking-wider uppercase">Evals / Month</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-800/50">
+            {tiers.map((tier) => {
+              const pctActive = tier.total > 0 ? ((tier.active / tier.total) * 100).toFixed(0) : "0";
+              return (
+                <tr key={tier.name} className="hover:bg-slate-800/40 transition-colors">
+                  <td className="px-6 py-3.5">
+                    <span className={`flex items-center gap-2 font-semibold ${tier.color}`}>
+                      <span className={`w-2 h-2 rounded-full ${tier.bgDot}`} />
+                      {tier.name}
+                    </span>
+                  </td>
+                  <td className="px-6 py-3.5">
+                    <span className={`font-mono ${tier.total > 0 ? "text-white" : "text-slate-600"}`}>{tier.total}</span>
+                  </td>
+                  <td className="px-6 py-3.5">
+                    <span className={`font-mono ${tier.active > 0 ? "text-white" : "text-slate-600"}`}>{tier.active}</span>
+                  </td>
+                  <td className="px-6 py-3.5">
+                    <span className={`font-mono ${parseInt(pctActive) > 0 ? "text-white" : "text-slate-600"}`}>{pctActive}%</span>
+                  </td>
+                  <td className="px-6 py-3.5">
+                    <span className={`font-mono ${tier.evals > 0 ? "text-white" : "text-slate-600"}`}>{tier.evals}</span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   );
@@ -221,18 +347,21 @@ function QuickStatsRow({ stats }: { stats: AdminStats }) {
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AdminStats | null>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [users, setUsers] = useState<RecentUser[]>([]);
   const [exams, setExams] = useState<RecentExam[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
-      apiFetch<AdminStats>("/admin/stats"),
+      apiFetch<AdminStats>("/admin/stats").catch(() => null),
+      apiFetch<AnalyticsData>("/admin/analytics").catch(() => null),
       apiFetch<{ users: RecentUser[] }>("/admin/users?limit=5").catch(() => ({ users: [] })),
       apiFetch<{ exams: RecentExam[] }>("/admin/exams?limit=10").catch(() => ({ exams: [] })),
     ])
-      .then(([statsData, usersData, examsData]) => {
+      .then(([statsData, analyticsData, usersData, examsData]) => {
         setStats(statsData);
+        setAnalytics(analyticsData);
         setUsers(usersData.users || []);
         setExams(examsData.exams || []);
       })
@@ -242,69 +371,143 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen dark:bg-slate-950 bg-slate-50 flex items-center justify-center">
-        <div className="w-10 h-10 border-4 dark:border-slate-700 border-slate-200 border-t-blue-600 rounded-full animate-spin" />
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-slate-800 border-t-blue-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!stats) {
     return (
-      <div className="min-h-screen dark:bg-slate-950 bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-lg font-semibold dark:text-white text-slate-800 mb-2">Failed to load dashboard</p>
-          <p className="text-sm dark:text-slate-400 text-slate-500">You may not have admin access.</p>
+          <p className="text-lg font-semibold text-white mb-2">Failed to load dashboard</p>
+          <p className="text-sm text-slate-500">You may not have admin access.</p>
         </div>
       </div>
     );
   }
 
+  const conversionRate = stats.total_users > 0 ? ((stats.premium_count / stats.total_users) * 100).toFixed(1) : "0";
+  const completionRate = stats.total_exams > 0 ? Math.round((stats.completed_exams / stats.total_exams) * 100) : 0;
+
+  const maxDAU = analytics?.dau?.length ? Math.max(1, ...analytics.dau.map((d) => d.free + d.premium)) : 1;
+  const maxEvals = analytics?.evaluations_per_day?.length ? Math.max(1, ...analytics.evaluations_per_day.map((d) => d.free + d.premium)) : 1;
+
   return (
-    <div className="min-h-screen dark:bg-slate-950 bg-slate-50/50">
+    <div className="min-h-screen bg-slate-950">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-extrabold dark:text-white text-slate-900 tracking-tight mb-1">Admin Dashboard</h1>
-          <p className="dark:text-slate-400 text-slate-500">Overview of your Bandami platform</p>
+          <h1 className="text-2xl font-extrabold text-white tracking-tight mb-1">Admin Dashboard</h1>
+          <p className="text-slate-500">Overview of your Bandami platform</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           <KPICard
             label="Total Users"
-            value={stats.total_users}
+            value={stats.total_users.toLocaleString()}
             sub={`${stats.new_users_this_month} this month`}
             icon={Users}
-            color="text-blue-600"
-            bgColor="bg-blue-100"
+            accentColor="bg-blue-500/10 text-blue-400"
+            trend={`+${stats.new_users_this_month}`}
           />
           <KPICard
             label="Premium Users"
-            value={stats.premium_count}
-            sub={`${stats.active_subscriptions} active`}
+            value={stats.premium_count.toLocaleString()}
+            sub={`${stats.active_subscriptions} active subs`}
             icon={Crown}
-            color="text-amber-600"
-            bgColor="bg-amber-100"
+            accentColor="bg-amber-500/10 text-amber-400"
           />
           <KPICard
             label="Total Exams"
-            value={stats.total_exams}
+            value={stats.total_exams.toLocaleString()}
             sub={`${stats.completed_exams} completed`}
             icon={ClipboardList}
-            color="text-emerald-600"
-            bgColor="bg-emerald-100"
+            accentColor="bg-emerald-500/10 text-emerald-400"
           />
           <KPICard
             label="Avg Band Score"
-            value={stats.average_band.toFixed(1)}
+            value={stats.average_band > 0 ? stats.average_band.toFixed(1) : "—"}
             sub={`${stats.active_questions} questions`}
             icon={TrendingUp}
-            color="text-violet-600"
-            bgColor="bg-violet-100"
+            accentColor="bg-violet-500/10 text-violet-400"
           />
         </div>
 
-        <div className="mb-8">
-          <QuickStatsRow stats={stats} />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <MetricCard
+            label="Completion Rate"
+            value={`${completionRate}%`}
+            sub={`${stats.completed_exams}/${stats.total_exams} exams`}
+            icon={Target}
+            accentColor="bg-blue-500/10 text-blue-400"
+          />
+          <MetricCard
+            label="Conversion"
+            value={`${conversionRate}%`}
+            sub={`${stats.premium_count} pro / ${stats.total_users} total`}
+            icon={Zap}
+            accentColor="bg-amber-500/10 text-amber-400"
+          />
+          <MetricCard
+            label="Active Questions"
+            value={stats.active_questions}
+            sub="Available in pool"
+            icon={BarChart3}
+            accentColor="bg-emerald-500/10 text-emerald-400"
+          />
+          <MetricCard
+            label="New Users"
+            value={`+${stats.new_users_this_month}`}
+            sub="Registered this month"
+            icon={UserPlus}
+            accentColor="bg-violet-500/10 text-violet-400"
+          />
         </div>
+
+        {analytics && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <ChartCard title="Daily Active Users" subtitle="Last 30 days">
+              <AnimatedBarChart
+                data={analytics.dau}
+                colorFree="bg-slate-700"
+                colorPremium="bg-gradient-to-t from-blue-600 to-indigo-400 rounded-t-md"
+                maxVal={maxDAU}
+              />
+              <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-t from-blue-600 to-indigo-400" />
+                  Pro
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-700" />
+                  Free
+                </span>
+              </div>
+            </ChartCard>
+
+            <ChartCard title="Daily Evaluations" subtitle="Last 30 days">
+              <AnimatedBarChart
+                data={analytics.evaluations_per_day}
+                colorFree="bg-slate-700"
+                colorPremium="bg-gradient-to-t from-emerald-600 to-teal-400 rounded-t-md"
+                maxVal={maxEvals}
+              />
+              <div className="flex items-center gap-4 mt-3 text-xs text-slate-500">
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-t from-emerald-600 to-teal-400" />
+                  Pro
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-slate-700" />
+                  Free
+                </span>
+              </div>
+            </ChartCard>
+          </div>
+        )}
+
+        {analytics && <div className="mb-8"><TierBreakdownTable summary={analytics.summary} /></div>}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
