@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/", "/auth/callback", "/pricing", "/privacy", "/terms", "/refund", "/resources", "/resources/writing", "/resources/speaking", "/resources/band-scores"];
+const PUBLIC_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password", "/", "/auth/callback", "/pricing", "/privacy", "/terms", "/refund", "/resources", "/resources/writing", "/resources/writing/connectors", "/resources/writing/essay-structure", "/resources/writing/task-1-tips", "/resources/writing/band-7-strategies", "/resources/writing/general-training-task-1", "/resources/writing/vocabulary-for-writing", "/resources/writing/grammar-for-ielts", "/resources/writing/time-management", "/resources/speaking", "/resources/band-scores"];
 
 function isPublic(pathname: string) {
   return PUBLIC_ROUTES.some((r) => pathname === r || pathname.startsWith(r + "/")) || pathname.startsWith("/register/");
