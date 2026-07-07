@@ -9,9 +9,23 @@ const categoryIcons: Record<string, any> = {
   speaking: Mic,
 };
 
-const categoryColors: Record<string, { bg: string; text: string }> = {
-  writing: { bg: "bg-blue-50 dark:bg-blue-900/30", text: "text-blue-600 dark:text-blue-400" },
-  speaking: { bg: "bg-purple-50 dark:bg-purple-900/30", text: "text-purple-600 dark:text-purple-400" },
+const categoryColors: Record<string, { lightBg: string; lightText: string; darkBg: string; darkText: string; lightBorder: string; darkBorder: string }> = {
+  writing: {
+    lightBg: "bg-blue-50",
+    darkBg: "dark:bg-blue-500/10",
+    lightText: "text-blue-600",
+    darkText: "dark:text-blue-400",
+    lightBorder: "border-blue-200",
+    darkBorder: "dark:border-blue-500/20",
+  },
+  speaking: {
+    lightBg: "bg-purple-50",
+    darkBg: "dark:bg-purple-500/10",
+    lightText: "text-purple-600",
+    darkText: "dark:text-purple-400",
+    lightBorder: "border-purple-200",
+    darkBorder: "dark:border-purple-500/20",
+  },
 };
 
 export default function AdminResourcesPage() {
@@ -21,7 +35,7 @@ export default function AdminResourcesPage() {
     <div>
       <div className="mb-10">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 flex items-center justify-center">
             <Library className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           </div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Resources</h1>
@@ -34,16 +48,23 @@ export default function AdminResourcesPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {activeCategories.map((category) => {
           const Icon = categoryIcons[category.slug] || BookOpen;
-          const colors = categoryColors[category.slug] || { bg: "bg-slate-100 dark:bg-slate-800", text: "text-slate-600 dark:text-slate-300" };
+          const colors = categoryColors[category.slug] || {
+            lightBg: "bg-slate-100",
+            darkBg: "dark:bg-slate-800",
+            lightText: "text-slate-600",
+            darkText: "dark:text-slate-300",
+            lightBorder: "border-slate-200",
+            darkBorder: "dark:border-slate-700",
+          };
 
           return (
             <div
               key={category.slug}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-6"
+              className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800/60 p-6 shadow-sm"
             >
               <div className="flex items-start gap-4 mb-4">
-                <div className={`w-14 h-14 rounded-xl ${colors.bg} flex items-center justify-center shrink-0`}>
-                  <Icon className={`w-6 h-6 ${colors.text}`} />
+                <div className={`w-14 h-14 rounded-xl ${colors.lightBg} ${colors.darkBg} border ${colors.lightBorder} ${colors.darkBorder} flex items-center justify-center shrink-0`}>
+                  <Icon className={`w-6 h-6 ${colors.lightText} ${colors.darkText}`} />
                 </div>
                 <div className="flex-1">
                   <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
@@ -63,15 +84,15 @@ export default function AdminResourcesPage() {
                     className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-lg ${colors.bg} flex items-center justify-center`}>
-                        <Icon className={`w-4 h-4 ${colors.text}`} />
+                      <div className={`w-8 h-8 rounded-lg ${colors.lightBg} ${colors.darkBg} flex items-center justify-center`}>
+                        <Icon className={`w-4 h-4 ${colors.lightText} ${colors.darkText}`} />
                       </div>
                       <div>
                         <p className="text-sm font-medium text-slate-900 dark:text-white">{tip.title}</p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{tip.summary}</p>
                       </div>
                     </div>
-                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 group-hover:translate-x-0.5 transition-all" />
                   </Link>
                 ))}
               </div>
@@ -89,7 +110,7 @@ export default function AdminResourcesPage() {
       </div>
 
       {activeCategories.length === 0 && (
-        <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700">
+        <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800/60">
           <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
           <p className="text-slate-500 dark:text-slate-400">No resources available</p>
         </div>
