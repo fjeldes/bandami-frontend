@@ -690,3 +690,11 @@
   h1 { font-size: 18pt !important; }
   h3 { font-size: 13pt !important; }
 }
+
+@keyframes wavePulse {
+  0%, 100% { transform: scaleY(0.6); opacity: 0.4; }
+  50% { transform: scaleY(1); opacity: 0.9; }
+}
+.animate-wave-pulse {
+  animation: wavePulse 1.2s ease-in-out infinite;
+}
