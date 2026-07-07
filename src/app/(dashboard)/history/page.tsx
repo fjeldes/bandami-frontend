@@ -67,6 +67,51 @@ function KPICard({ label, value, sub, icon: Icon, color }: { label: string; valu
   );
 }
 
+function KPICardSkeleton() {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm p-5 border border-slate-100 dark:border-slate-800 animate-pulse">
+      <div className="flex items-start justify-between mb-3">
+        <div className="w-11 h-11 rounded-xl bg-slate-200 dark:bg-slate-800" />
+      </div>
+      <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800 rounded-lg mb-2" />
+      <div className="h-4 w-24 bg-slate-200 dark:bg-slate-800 rounded mb-1" />
+      <div className="h-3 w-32 bg-slate-200 dark:bg-slate-800 rounded" />
+    </div>
+  );
+}
+
+function ChartSkeleton() {
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-6 animate-pulse">
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <div className="h-5 w-32 bg-slate-200 dark:bg-slate-800 rounded mb-2" />
+          <div className="h-3 w-24 bg-slate-200 dark:bg-slate-800 rounded" />
+        </div>
+      </div>
+      <div className="h-24 bg-slate-100 dark:bg-slate-800 rounded-xl" />
+    </div>
+  );
+}
+
+function TableRowSkeleton() {
+  return (
+    <div className="flex items-center justify-between p-4">
+      <div className="flex items-center gap-4">
+        <div className="w-11 h-11 rounded-xl bg-slate-200 dark:bg-slate-800" />
+        <div>
+          <div className="h-4 w-32 bg-slate-200 dark:bg-slate-800 rounded mb-2" />
+          <div className="h-3 w-24 bg-slate-200 dark:bg-slate-800 rounded" />
+        </div>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="h-6 w-14 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+        <div className="h-6 w-8 bg-slate-200 dark:bg-slate-800 rounded" />
+      </div>
+    </div>
+  );
+}
+
 function ErrorPatternCard({ pattern }: { pattern: any }) {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800 p-4 hover:shadow-md transition-all duration-200">
@@ -199,9 +244,28 @@ export default function ReportsPage() {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <div className="w-10 h-10 border-3 border-slate-200 dark:border-slate-700 border-t-slate-800 rounded-full animate-spin" />
-          </div>
+          <>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <KPICardSkeleton />
+              <KPICardSkeleton />
+              <KPICardSkeleton />
+              <KPICardSkeleton />
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              <div className="lg:col-span-2">
+                <ChartSkeleton />
+              </div>
+              <ChartSkeleton />
+            </div>
+            <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+              <div className="p-5 border-b border-slate-100 dark:border-slate-800">
+                <div className="h-5 w-32 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+              </div>
+              <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                {[1, 2, 3, 4, 5].map((i) => <TableRowSkeleton key={i} />)}
+              </div>
+            </div>
+          </>
         ) : error ? (
           <div className="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl shadow-sm">
             <div className="w-16 h-16 rounded-2xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
