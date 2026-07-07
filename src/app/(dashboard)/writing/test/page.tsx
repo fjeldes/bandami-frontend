@@ -145,97 +145,101 @@ export default function WritingTestPage() {
 
   // === WRITING SCREEN ===
   return (
-    <div className="pt-4 md:pt-6">
+    <div className="pt-4 md:pt-6 max-w-[1400px] mx-auto px-4">
       {showInterruptedBanner && (
-        <div className="mb-4 bg-warning-container/30 border border-warning/30 rounded-xl p-4 flex items-start gap-3 animate-fade-in-up">
-          <span className="material-symbols-outlined text-warning shrink-0 mt-0.5">warning</span>
+        <div className="mb-5 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-2xl p-4 flex items-start gap-3 animate-fade-in-up shadow-sm">
+          <span className="material-symbols-outlined text-amber-500 shrink-0 mt-0.5">info</span>
           <div className="flex-1">
-            <p className="text-body-md text-on-surface font-semibold">Previous session interrupted</p>
-            <p className="text-label-sm text-on-surface-variant">Your last writing test didn&apos;t finish. A new session has been created.</p>
+            <p className="text-body-md text-amber-800 dark:text-amber-300 font-semibold">Session interrupted</p>
+            <p className="text-label-sm text-amber-600 dark:text-amber-400">Your last writing test didn&apos;t finish. A new session has been created.</p>
           </div>
           <button
             onClick={() => { setShowInterruptedBanner(false); if (typeof window !== "undefined") localStorage.removeItem("writing_test_in_progress"); }}
-            className="p-1 hover:bg-surface-container rounded-lg transition-colors shrink-0"
+            className="p-1 hover:bg-amber-100 dark:hover:bg-amber-500/20 rounded-lg transition-colors shrink-0"
           >
-            <span className="material-symbols-outlined text-on-surface-variant">close</span>
+            <span className="material-symbols-outlined text-amber-500">close</span>
           </button>
         </div>
       )}
       <div className="flex flex-col lg:flex-row gap-6 min-h-[60vh] md:h-[calc(100dvh-9rem)]">
 
         {/* LEFT PANEL — Prompt & Instructions */}
-        <div className="lg:w-1/2 bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 md:p-8 overflow-y-auto ghost-shadow">
+        <div className="lg:w-1/2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700/50 p-6 md:p-8 overflow-y-auto shadow-sm">
           <div className="flex items-center flex-wrap gap-2 mb-5">
-            <span className="px-3 py-1 rounded-full bg-surface-container-low text-on-surface-variant text-label-sm tracking-wide uppercase">
+            <span className="px-3 py-1 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-label-sm tracking-wide uppercase">
               {question.task_type?.replace("task", "Task ")}
             </span>
-            <span className="px-3 py-1 rounded-full bg-primary-container/10 text-primary text-label-sm tracking-wide uppercase">
+            <span className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 text-label-sm tracking-wide uppercase">
               {question.module || "general"}
             </span>
           </div>
 
-          <h1 className="text-headline-lg font-bold text-on-surface mb-5 leading-tight">
+          <h1 className="text-headline-lg font-extrabold text-slate-800 dark:text-white mb-5 leading-tight">
             {question.title || "Writing Prompt"}
           </h1>
 
           {question.img_url && (
-            <img src={question.img_url} alt="Question visual" className="w-full max-h-96 object-contain rounded-xl border border-outline-variant/50 mb-5" />
+            <img src={question.img_url} alt="Question visual" className="w-full max-h-96 object-contain rounded-xl border border-gray-200 dark:border-slate-700 mb-5" />
           )}
 
-          <RichTextRenderer content={question.prompt_text} className="text-body-lg text-on-surface-variant leading-relaxed mb-6" />
+          <RichTextRenderer content={question.prompt_text} className="text-body-lg text-gray-600 dark:text-slate-400 leading-relaxed mb-6" />
 
-          {/* Tips Card — redesigned */}
-          <div className="rounded-xl bg-blue-50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/20 p-5 space-y-3">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="material-symbols-outlined text-blue-500 text-[20px]">lightbulb</span>
-              <span className="text-label-sm font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider">Quick Tips</span>
-            </div>
-            {[
-              { icon: "word_add", text: `Write at least ${question.task_type === "task1" ? "150" : "250"} words` },
-              { icon: "edit_note", text: "Plan your response before writing" },
-              { icon: "timer", text: "Leave time to review your answer" },
-            ].map((tip, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <span className="material-symbols-outlined text-blue-400 text-[18px] mt-0.5 shrink-0">{tip.icon}</span>
-                <span className="text-body-md text-blue-800 dark:text-blue-300">{tip.text}</span>
+          {/* Tips Card — gradient sidebar card */}
+          <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/30 dark:to-slate-900 border border-blue-100 dark:border-blue-500/20 p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
+                <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 text-[20px]">lightbulb</span>
               </div>
-            ))}
+              <span className="text-label-sm font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wider">Quick Tips</span>
+            </div>
+            <div className="space-y-3.5">
+              {[
+                { icon: "word_add", text: `Write at least ${question.task_type === "task1" ? "150" : "250"} words` },
+                { icon: "edit_note", text: "Plan your response before writing" },
+                { icon: "timer", text: "Leave time to review your answer" },
+              ].map((tip, i) => (
+                <div key={i} className="flex items-start gap-3.5">
+                  <span className="material-symbols-outlined text-blue-500 text-[20px] mt-0.5 shrink-0">{tip.icon}</span>
+                  <span className="text-body-md text-gray-700 dark:text-slate-300">{tip.text}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* RIGHT PANEL — Writing area */}
         <div className="lg:w-1/2 flex flex-col gap-4">
 
-          {/* Status bar — unified timer + word count */}
-          <div className="flex items-center justify-between bg-surface-container-lowest rounded-xl border border-outline-variant/30 px-5 py-3 ghost-shadow">
-            <div className="flex items-center gap-2.5">
-              <span className={`material-symbols-outlined text-[22px] ${timeLeft < 300 ? "text-amber-500" : "text-outline"}`}>
+          {/* Status bar — floating dashboard header */}
+          <div className="flex items-center justify-between bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700/50 px-5 py-3.5 shadow-sm">
+            <div className="flex items-center gap-3">
+              <span className={`material-symbols-outlined text-[24px] ${timeLeft < 60 ? "text-red-500" : timeLeft < 300 ? "text-amber-500" : "text-gray-400 dark:text-slate-500"}`}>
                 {timeLeft < 60 ? "timer_off" : timeLeft < 300 ? "timer_alert" : "timer"}
               </span>
-              <span className={`font-mono text-data-lg font-bold tracking-tight ${
-                timeLeft < 60 ? "text-error" : timeLeft < 300 ? "text-amber-600 dark:text-amber-400" : "text-on-surface"
+              <span className={`font-mono text-2xl font-bold tracking-tight ${
+                timeLeft < 60 ? "text-red-500" : timeLeft < 300 ? "text-amber-600 dark:text-amber-400" : "text-slate-800 dark:text-white"
               }`}>
                 {formatTime(timeLeft)}
               </span>
             </div>
 
-            <div className="flex items-center gap-3">
-              <span className="px-3 py-1 rounded-full bg-primary-container/10 text-primary text-label-sm font-semibold">
+            <div className="flex items-center gap-2">
+              <span className="px-3.5 py-1.5 rounded-full bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 text-label-sm font-semibold">
                 {wordCount} {wordCount === 1 ? "word" : "words"}
               </span>
-              <span className="text-label-sm text-on-surface-variant/50">
+              <span className="text-label-sm text-gray-400 dark:text-slate-500">
                 / {question.task_type === "task1" ? "150+" : "250+"}
               </span>
             </div>
           </div>
 
           {/* Textarea — modern editor */}
-          <div className="flex-1 relative group">
+          <div className="flex-1 relative group mt-1">
             <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-b from-primary/20 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 pointer-events-none" />
             <textarea
               aria-label="Writing response"
-              className="relative w-full h-full min-h-[300px] bg-surface-container-lowest rounded-2xl border border-outline-variant/30 p-6 text-body-lg text-on-surface resize-none focus:border-primary/30 focus:outline-none ghost-shadow transition-all duration-200 placeholder:text-on-surface-variant/50"
-              style={{ lineHeight: "1.6" }}
+              className="relative w-full h-full min-h-[300px] bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-700/50 p-6 text-base text-slate-800 dark:text-slate-200 resize-none focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-blue-400/20 focus:outline-none shadow-sm transition-all duration-300 placeholder:text-gray-400 dark:placeholder:text-slate-500"
+              style={{ lineHeight: "1.7", fontFamily: "Inter, Segoe UI, system-ui, sans-serif" }}
               placeholder="Start writing your response here..."
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -243,15 +247,15 @@ export default function WritingTestPage() {
           </div>
 
           {error && (
-            <div className="bg-error-container/30 border border-error/20 rounded-xl p-4">
-              <p className="text-label-md text-error">{error}</p>
+            <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl p-4">
+              <p className="text-label-md text-red-700 dark:text-red-400">{error}</p>
             </div>
           )}
 
-          {/* Submit button — right-aligned */}
+          {/* Submit button — gradient, right-aligned */}
           <div className="flex justify-end">
             <button onClick={handleSubmit} disabled={!text.trim()}
-              className="px-8 py-3.5 rounded-xl bg-primary text-on-primary text-label-md font-semibold hover:bg-primary/90 active:scale-[0.97] transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-primary/20">
+              className="px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-600 dark:to-blue-500 text-white text-label-md font-semibold hover:from-blue-800 hover:to-blue-700 dark:hover:from-blue-500 dark:hover:to-blue-400 active:scale-[0.97] transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2.5 shadow-md hover:shadow-lg hover:shadow-blue-500/25 dark:hover:shadow-blue-500/20">
               <span className="material-symbols-outlined text-[20px]">how_to_reg</span>
               Submit for Evaluation
               <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
