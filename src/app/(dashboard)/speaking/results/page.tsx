@@ -79,7 +79,6 @@ export default function SpeakingResultsPage() {
   const [examFailed, setExamFailed] = useState(false);
   const [showTranscription, setShowTranscription] = useState(false);
   const [expandedCriterion, setExpandedCriterion] = useState<string | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
 
   useEffect(() => {
@@ -122,21 +121,6 @@ export default function SpeakingResultsPage() {
     poll();
     return () => { cancelled = true; };
   }, [examId]);
-
-  useEffect(() => {
-    if (!examId || !isPremium) return;
-    const token = sessionStorage.getItem("access_token");
-    if (!token) return;
-    fetch(`${API_BASE}/evaluate/speaking/${examId}/audio`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.blob())
-      .then((blob) => setAudioUrl(URL.createObjectURL(blob)))
-      .catch(() => {});
-    return () => {
-      if (audioUrl) URL.revokeObjectURL(audioUrl);
-    };
-  }, [examId, isPremium]);
 
   if (loading) return (
     <div className="flex flex-col items-center justify-center py-16 gap-3">
@@ -469,19 +453,6 @@ export default function SpeakingResultsPage() {
                       <h3 className="text-[15px] font-semibold text-emerald-800">Detailed Feedback</h3>
                     </div>
                     <p className="text-[14px] text-emerald-700 leading-relaxed whitespace-pre-wrap">{detailedFeedback}</p>
-                  </div>
-                )}
-                {audioUrl && (
-                  <div className="rounded-2xl bg-white/60 border border-slate-100/60 p-5 shadow-[0_2px_8px_rgba(0,0,0,0.02)]">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                        <span className="material-symbols-outlined text-[18px] text-blue-600">mic</span>
-                      </div>
-                      <h3 className="text-[15px] font-semibold text-slate-800">Your Recording</h3>
-                    </div>
-                    <audio controls className="w-full h-10" src={audioUrl}>
-                      Your browser does not support the audio element.
-                    </audio>
                   </div>
                 )}
               </div>
