@@ -60,6 +60,7 @@ export async function apiFetch<T>(endpoint: string, options: RequestInit = {}): 
       if (res.ok) return res.json();
     }
 
+    useAuthStore.getState().clearAuth();
     throw new Error("auth_required");
   }
 
