@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { getTipBySlug } from "@/data/tips";
 import { ChevronRight } from "lucide-react";
 import WritingTipDetail from "@/components/resources/WritingTipDetail";
-import { DashboardBackLink } from "@/components/ui/DashboardBackLink";
 
 export default async function TipPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -15,7 +14,6 @@ export default async function TipPage({ params }: { params: Promise<{ slug: stri
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <DashboardBackLink />
       <nav className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
         <Link href="/resources" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
           Resources
