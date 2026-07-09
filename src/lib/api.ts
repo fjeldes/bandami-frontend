@@ -139,6 +139,10 @@ export async function getSpeakingEvaluation(examId: string): Promise<Evaluation>
   return apiFetch<Evaluation>(`/evaluate/speaking/${examId}/evaluation`);
 }
 
+export async function retrySpeakingEvaluation(examId: string): Promise<Evaluation> {
+  return apiFetch<Evaluation>(`/evaluate/speaking/${examId}/retry`, { method: "POST" });
+}
+
 export async function createExam(payload: { exam_type: string; question_id?: string; task_type?: string }): Promise<Exam> {
   const type = payload.exam_type;
   return apiFetch<Exam>(`/evaluate/${type}/exam`, { method: "POST", body: JSON.stringify(payload) });

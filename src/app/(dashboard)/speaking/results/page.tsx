@@ -8,6 +8,7 @@ import { getSpeakingEvaluation } from "@/lib/api";
 import type { Evaluation, CriterionScore } from "@/lib/types";
 import { useAuthStore } from "@/hooks/useAuth";
 import { redirectToCheckout } from "@/lib/payments";
+import { retrySpeakingEvaluation } from "@/lib/api";
 
 const SPEAKING_CRITERIA = [
   { key: "fluency_and_coherence", label: "Fluency & Coherence", icon: "chat", description: "How smoothly and coherently you speak" },
@@ -77,6 +78,8 @@ export default function SpeakingResultsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [examFailed, setExamFailed] = useState(false);
+  const [retrying, setRetrying] = useState(false);
+  const [retryError, setRetryError] = useState("");
   const [showTranscription, setShowTranscription] = useState(false);
   const [expandedCriterion, setExpandedCriterion] = useState<string | null>(null);
   const isPremium = user?.subscription_tier === "premium" || user?.role === "admin";
@@ -129,6 +132,22 @@ export default function SpeakingResultsPage() {
     </div>
   );
 
+  const handleRetry = async () => {
+    if (!examId) return;
+    setRetrying(true);
+    setRetryError("");
+    try {
+      const result = await retrySpeakingEvaluation(examId);
+      setEvaluation(result);
+      setExamFailed(false);
+      setLoading(false);
+    } catch (err) {
+      setRetryError(err instanceof Error ? err.message : "Retry failed");
+    } finally {
+      setRetrying(false);
+    }
+  };
+
   if (examFailed) return (
     <div className="flex flex-col items-center justify-center py-16 gap-4">
       <span className="material-symbols-outlined text-[48px] text-error">error_outline</span>
@@ -136,9 +155,20 @@ export default function SpeakingResultsPage() {
       <p className="text-body-md text-on-surface-variant text-center max-w-md">
         Our AI agent encountered an error while evaluating your speaking. This may be due to audio quality or high demand. Please try again.
       </p>
+      {retryError && (
+        <p className="text-label-sm text-error text-center">{retryError}</p>
+      )}
       <div className="flex gap-3 mt-2">
-        <button onClick={() => router.push("/speaking")} className="bg-primary text-on-primary font-semibold px-6 py-2.5 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all">
-          Try Again
+        <button onClick={handleRetry} disabled={retrying}
+          className="bg-primary text-on-primary font-semibold px-6 py-2.5 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+          {retrying ? (
+            <><span className="material-symbols-outlined text-[18px] animate-spin">progress_activity</span> Retrying...</>
+          ) : (
+            "Retry Analysis"
+          )}
+        </button>
+        <button onClick={() => router.push("/speaking")} className="bg-surface-variant text-on-surface-variant font-semibold px-6 py-2.5 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all">
+          New Recording
         </button>
         <button onClick={() => router.push("/dashboard")} className="bg-surface-variant text-on-surface-variant font-semibold px-6 py-2.5 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all">
           Dashboard
