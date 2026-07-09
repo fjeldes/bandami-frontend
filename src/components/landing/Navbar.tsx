@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useTheme } from "@/hooks/useTheme";
 import {
@@ -16,13 +15,11 @@ import {
   Mic,
   Star,
   BookOpen,
-  ArrowLeft,
 } from "lucide-react";
 
 export function Navbar() {
   const user = useAuthStore((s) => s.user);
   const { dark, toggle } = useTheme();
-  const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
   const resourcesRef = useRef<HTMLDivElement>(null);
@@ -43,16 +40,6 @@ export function Navbar() {
       <Link href="/" className="flex items-center shrink-0">
         <Image src="/bandami.png" alt="Bandami" width={192} height={192} className="h-12 sm:h-16 w-auto" priority style={dark ? { filter: "brightness(0) invert(1)" } : undefined} />
       </Link>
-
-      {pathname.startsWith("/resources") && (
-        <Link
-          href={user ? "/dashboard" : "/"}
-          className="flex items-center gap-1 text-sm text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors ml-4 shrink-0"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back
-        </Link>
-      )}
 
       {/* Desktop nav links */}
       <div className="hidden md:flex items-center gap-8">
