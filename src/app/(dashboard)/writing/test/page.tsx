@@ -214,7 +214,7 @@ export default function WritingTestPage() {
           <div className="flex items-center justify-between bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-700/50 px-5 py-3.5 shadow-sm">
             <div className="flex items-center gap-3">
               <span className={`material-symbols-outlined text-[24px] ${timeLeft < 60 ? "text-red-500" : timeLeft < 300 ? "text-amber-500" : "text-gray-400 dark:text-slate-500"}`}>
-                {timeLeft < 60 ? "timer_off" : timeLeft < 300 ? "timer_alert" : "timer"}
+                {timeLeft < 60 ? "timer_off" : timeLeft < 300 ? "warning_amber" : "timer"}
               </span>
               <span className={`font-mono text-2xl font-bold tracking-tight ${
                 timeLeft < 60 ? "text-red-500" : timeLeft < 300 ? "text-amber-600 dark:text-amber-400" : "text-slate-800 dark:text-white"
