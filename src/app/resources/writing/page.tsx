@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getCategoryBySlug } from "@/data/tips";
 import { ChevronRight } from "lucide-react";
 import WritingResources from "@/components/resources/WritingResources";
+import { DashboardBackLink } from "@/components/ui/DashboardBackLink";
 
 export default function WritingResourcesPage() {
   const category = getCategoryBySlug("writing");
@@ -18,6 +19,7 @@ export default function WritingResourcesPage() {
 
   return (
     <div>
+      <DashboardBackLink />
       <nav className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
         <Link href="/resources" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
           Resources
