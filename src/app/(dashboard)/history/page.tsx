@@ -177,7 +177,7 @@ function ExamRow({ exam }: { exam: ExamWithEvaluation }) {
           </>
         ) : null}
         <Link
-          href={isPending && exam.exam_type === "speaking" ? `/${exam.exam_type}/results?examId=${exam.id}` : isPending ? `/${exam.exam_type}/test?examId=${exam.id}` : `/${exam.exam_type}/results?examId=${exam.id}`}
+          href={isPending ? `/${exam.exam_type}` : `/${exam.exam_type}/results?examId=${exam.id}`}
           className={`w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-105 ${
             isPending
               ? "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-900/50"

@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 import { getQuestions, createSpeakingExam, submitSpeakingEvaluation } from "@/lib/api";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import type { Question, Exam } from "@/lib/types";
+import type { Question } from "@/lib/types";
 
 type Phase = "load" | "mic-test" | "ready" | "single-prep" | "intro" | "part1-speak" | "part2-prep" | "part2-speak" | "part3-speak" | "preview" | "submitting";
 
@@ -81,15 +81,12 @@ export default function SpeakingTestPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const questionId = searchParams.get("id");
-  const retryExamId = searchParams.get("examId");
 
   const [allQuestions, setAllQuestions] = useState<Question[]>([]);
   const [targetQuestion, setTargetQuestion] = useState<Question | null>(null);
-  const [exam, setExam] = useState<Exam | null>(null);
   const [phase, setPhase] = useState<Phase>("load");
   const [error, setError] = useState("");
   const [show503Modal, setShow503Modal] = useState(false);
-  const [showInterruptedBanner, setShowInterruptedBanner] = useState(false);
 
   const [micOk, setMicOk] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
@@ -124,27 +121,7 @@ export default function SpeakingTestPage() {
   const currentQuestion = isSingleMode ? targetQuestion : currentQuestions[questionIdx];
 
   useEffect(() => {
-    if (exam) return;
-    if (typeof window !== "undefined" && localStorage.getItem("speaking_test_in_progress")) {
-      setShowInterruptedBanner(true);
-    }
-
-    if (retryExamId) {
-      setExam({ id: retryExamId } as Exam);
-      getQuestions({ exam_type: "speaking" })
-        .then((qs) => {
-          if (!qs.length) throw new Error("No speaking questions available");
-          setAllQuestions(qs);
-          if (questionId) {
-            const found = qs.find((q) => q.id === questionId);
-            if (!found) throw new Error("Question not found");
-            setTargetQuestion(found);
-          }
-        })
-        .then(() => setPhase("mic-test"))
-        .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
-      return;
-    }
+    if (allQuestions.length > 0) return;
 
     getQuestions({ exam_type: "speaking" })
       .then((qs) => {
@@ -155,17 +132,10 @@ export default function SpeakingTestPage() {
           if (!found) throw new Error("Question not found");
           setTargetQuestion(found);
         }
-        return createSpeakingExam({ exam_type: "speaking", question_id: questionId || undefined });
-      })
-      .then((newExam) => {
-        setExam(newExam);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("speaking_test_in_progress", JSON.stringify({ examId: newExam.id, startedAt: Date.now() }));
-        }
       })
       .then(() => setPhase("mic-test"))
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
-  }, [questionId, retryExamId]);
+  }, [questionId, allQuestions.length]);
 
   useEffect(() => {
     return () => {
@@ -309,13 +279,13 @@ export default function SpeakingTestPage() {
   };
 
   const handleSingleSubmit = useCallback(async () => {
-    if (!exam || !audioBlob) return;
+    if (!audioBlob) return;
     setPhase("submitting");
     setError("");
     try {
-      await submitSpeakingEvaluation(exam.id, audioBlob);
-      if (typeof window !== "undefined") localStorage.removeItem("speaking_test_in_progress");
-      router.push(`/speaking/results?examId=${exam.id}`);
+      const newExam = await createSpeakingExam({ exam_type: "speaking", question_id: questionId || undefined });
+      await submitSpeakingEvaluation(newExam.id, audioBlob);
+      router.push(`/speaking/results?examId=${newExam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg === "auth_required") {
@@ -324,7 +294,7 @@ export default function SpeakingTestPage() {
         setShow503Modal(true);
       }
     }
-  }, [exam, audioBlob, router]);
+  }, [audioBlob, router, questionId]);
 
   // ---- Multi-part handlers ----
   const nextQuestion = () => {
@@ -411,13 +381,13 @@ export default function SpeakingTestPage() {
   };
 
   const handleSubmit = useCallback(async () => {
-    if (!exam || !audioBlob) return;
+    if (!audioBlob) return;
     setPhase("submitting");
     setError("");
     try {
-      await submitSpeakingEvaluation(exam.id, audioBlob);
-      if (typeof window !== "undefined") localStorage.removeItem("speaking_test_in_progress");
-      router.push(`/speaking/results?examId=${exam.id}`);
+      const newExam = await createSpeakingExam({ exam_type: "speaking" });
+      await submitSpeakingEvaluation(newExam.id, audioBlob);
+      router.push(`/speaking/results?examId=${newExam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg === "auth_required") {
@@ -426,7 +396,7 @@ export default function SpeakingTestPage() {
         setShow503Modal(true);
       }
     }
-  }, [exam, audioBlob, router]);
+  }, [audioBlob, router]);
 
   const fmt = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
@@ -514,19 +484,6 @@ export default function SpeakingTestPage() {
   if (isSingleMode && targetQuestion) {
     return (
       <div className="max-w-3xl mx-auto">
-        {showInterruptedBanner && (
-          <div className="mb-4 bg-warning-container/30 border border-warning/30 rounded-xl p-4 flex items-start gap-3 animate-fade-in-up">
-            <span className="material-symbols-outlined text-warning shrink-0 mt-0.5">warning</span>
-            <div className="flex-1">
-              <p className="text-body-md text-on-surface font-semibold">Previous session interrupted</p>
-              <p className="text-label-sm text-on-surface-variant">Your last speaking test didn&apos;t finish. A new session has been created.</p>
-            </div>
-            <button onClick={() => { setShowInterruptedBanner(false); if (typeof window !== "undefined") localStorage.removeItem("speaking_test_in_progress"); }}
-              className="p-1 hover:bg-surface-container rounded-lg transition-colors shrink-0">
-              <span className="material-symbols-outlined text-on-surface-variant">close</span>
-            </button>
-          </div>
-        )}
         {phase === "mic-test" && (
         <div className="max-w-2xl mx-auto mt-8 md:mt-12">
             <div className="bg-white dark:bg-slate-900 rounded-3xl border border-gray-200 dark:border-slate-700/50 shadow-[0_10px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.2)] p-8 md:p-10 relative overflow-hidden">
@@ -865,19 +822,6 @@ export default function SpeakingTestPage() {
   /* eslint-disable no-unreachable */
   return (
     <div className="max-w-3xl mx-auto">
-      {showInterruptedBanner && (
-        <div className="mb-4 bg-warning-container/30 border border-warning/30 rounded-xl p-4 flex items-start gap-3 animate-fade-in-up">
-          <span className="material-symbols-outlined text-warning shrink-0 mt-0.5">warning</span>
-          <div className="flex-1">
-            <p className="text-body-md text-on-surface font-semibold">Previous session interrupted</p>
-            <p className="text-label-sm text-on-surface-variant">Your last speaking test didn&apos;t finish. A new session has been created.</p>
-          </div>
-          <button onClick={() => { setShowInterruptedBanner(false); if (typeof window !== "undefined") localStorage.removeItem("speaking_test_in_progress"); }}
-            className="p-1 hover:bg-surface-container rounded-lg transition-colors shrink-0">
-            <span className="material-symbols-outlined text-on-surface-variant">close</span>
-          </button>
-        </div>
-      )}
       {/* Mic Test */}
       {phase === "mic-test" && (
         <div className="max-w-2xl mx-auto mt-8 md:mt-12">

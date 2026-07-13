@@ -6,7 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { getQuestions, createWritingExam, submitWritingEvaluation } from "@/lib/api";
 import { showError } from "@/components/ui/Toast";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
-import type { Question, Exam } from "@/lib/types";
+import type { Question } from "@/lib/types";
 
 const TASK_TIMES: Record<string, number> = { task1: 20 * 60, task2: 40 * 60 };
 const TIMER_DEFAULT = 40 * 60;
@@ -19,20 +19,11 @@ export default function WritingTestPage() {
   const questionId = searchParams.get("id");
 
   const [question, setQuestion] = useState<Question | null>(null);
-  const [exam, setExam] = useState<Exam | null>(null);
   const [text, setText] = useState("");
   const [timeLeft, setTimeLeft] = useState(TIMER_DEFAULT);
   const [phase, setPhase] = useState<Phase>("writing");
   const [error, setError] = useState("");
-  const [showInterruptedBanner, setShowInterruptedBanner] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    // Check for interrupted previous session
-    if (typeof window !== "undefined" && localStorage.getItem("writing_test_in_progress")) {
-      setShowInterruptedBanner(true);
-    }
-  }, []);
 
   useEffect(() => {
     if (!questionId) return;
@@ -42,19 +33,12 @@ export default function WritingTestPage() {
         if (!found) throw new Error("Question not found");
         setQuestion(found);
         setTimeLeft(TASK_TIMES[found.task_type || ""] || TIMER_DEFAULT);
-        return createWritingExam({ exam_type: "writing", task_type: found.task_type, question_id: found.id });
-      })
-      .then((newExam) => {
-        setExam(newExam);
-        if (typeof window !== "undefined") {
-          localStorage.setItem("writing_test_in_progress", JSON.stringify({ examId: newExam.id, startedAt: Date.now() }));
-        }
       })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load"));
   }, [questionId]);
 
   useEffect(() => {
-    if (!exam) return;
+    if (!question) return;
     timerRef.current = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) { if (timerRef.current) clearInterval(timerRef.current); return 0; }
@@ -62,17 +46,17 @@ export default function WritingTestPage() {
       });
     }, 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [exam]);
+  }, [question]);
 
   const handleSubmit = useCallback(async () => {
-    if (!exam || !text.trim()) return;
+    if (!text.trim() || !question) return;
     setPhase("submitting");
     setError("");
 
     try {
-      await submitWritingEvaluation({ exam_id: exam.id, text: text.trim() });
-      if (typeof window !== "undefined") localStorage.removeItem("writing_test_in_progress");
-      router.push(`/writing/results?examId=${exam.id}`);
+      const newExam = await createWritingExam({ exam_type: "writing", task_type: question.task_type, question_id: question.id });
+      await submitWritingEvaluation({ exam_id: newExam.id, text: text.trim() });
+      router.push(`/writing/results?examId=${newExam.id}`);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("high demand")) {
@@ -82,7 +66,7 @@ export default function WritingTestPage() {
       }
       setPhase("writing");
     }
-  }, [exam, text, router]);
+  }, [text, router, question]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
@@ -146,21 +130,6 @@ export default function WritingTestPage() {
   // === WRITING SCREEN ===
   return (
     <div className="pt-4 md:pt-6 max-w-[1400px] mx-auto px-4">
-      {showInterruptedBanner && (
-        <div className="mb-5 bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 rounded-2xl p-4 flex items-start gap-3 animate-fade-in-up shadow-sm">
-          <span className="material-symbols-outlined text-amber-500 shrink-0 mt-0.5">info</span>
-          <div className="flex-1">
-            <p className="text-body-md text-amber-800 dark:text-amber-300 font-semibold">Session interrupted</p>
-            <p className="text-label-sm text-amber-600 dark:text-amber-400">Your last writing test didn&apos;t finish. A new session has been created.</p>
-          </div>
-          <button
-            onClick={() => { setShowInterruptedBanner(false); if (typeof window !== "undefined") localStorage.removeItem("writing_test_in_progress"); }}
-            className="p-1 hover:bg-amber-100 dark:hover:bg-amber-500/20 rounded-lg transition-colors shrink-0"
-          >
-            <span className="material-symbols-outlined text-amber-500">close</span>
-          </button>
-        </div>
-      )}
       <div className="flex flex-col lg:flex-row gap-6 min-h-[60vh] md:h-[calc(100dvh-9rem)]">
 
         {/* LEFT PANEL — Prompt & Instructions */}
