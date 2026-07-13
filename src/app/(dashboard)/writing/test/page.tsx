@@ -24,6 +24,7 @@ export default function WritingTestPage() {
   const [phase, setPhase] = useState<Phase>("writing");
   const [error, setError] = useState("");
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     if (!questionId) return;
@@ -49,7 +50,8 @@ export default function WritingTestPage() {
   }, [question]);
 
   const handleSubmit = useCallback(async () => {
-    if (!text.trim() || !question) return;
+    if (submittingRef.current || !text.trim() || !question) return;
+    submittingRef.current = true;
     setPhase("submitting");
     setError("");
 
@@ -58,6 +60,7 @@ export default function WritingTestPage() {
       await submitWritingEvaluation({ exam_id: newExam.id, text: text.trim() });
       router.push(`/writing/results?examId=${newExam.id}`);
     } catch (err) {
+      submittingRef.current = false;
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg.includes("503") || msg.includes("UNAVAILABLE") || msg.includes("high demand")) {
         setError("provider_overloaded");

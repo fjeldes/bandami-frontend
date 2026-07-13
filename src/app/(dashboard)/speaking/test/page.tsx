@@ -112,6 +112,7 @@ export default function SpeakingTestPage() {
   const animRef = useRef<number>(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioRefFull = useRef<HTMLAudioElement | null>(null);
+  const submittingRef = useRef(false);
   const currentTipRef = useRef(SPEAKING_TIPS[Math.floor(Math.random() * SPEAKING_TIPS.length)]);
 
   const isSingleMode = !!questionId;
@@ -279,7 +280,8 @@ export default function SpeakingTestPage() {
   };
 
   const handleSingleSubmit = useCallback(async () => {
-    if (!audioBlob) return;
+    if (submittingRef.current || !audioBlob) return;
+    submittingRef.current = true;
     setPhase("submitting");
     setError("");
     try {
@@ -287,6 +289,7 @@ export default function SpeakingTestPage() {
       await submitSpeakingEvaluation(newExam.id, audioBlob);
       router.push(`/speaking/results?examId=${newExam.id}`);
     } catch (err) {
+      submittingRef.current = false;
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg === "auth_required") {
         router.push("/");
@@ -381,7 +384,8 @@ export default function SpeakingTestPage() {
   };
 
   const handleSubmit = useCallback(async () => {
-    if (!audioBlob) return;
+    if (submittingRef.current || !audioBlob) return;
+    submittingRef.current = true;
     setPhase("submitting");
     setError("");
     try {
@@ -389,6 +393,7 @@ export default function SpeakingTestPage() {
       await submitSpeakingEvaluation(newExam.id, audioBlob);
       router.push(`/speaking/results?examId=${newExam.id}`);
     } catch (err) {
+      submittingRef.current = false;
       const msg = err instanceof Error ? err.message : "Failed to submit";
       if (msg === "auth_required") {
         router.push("/");
