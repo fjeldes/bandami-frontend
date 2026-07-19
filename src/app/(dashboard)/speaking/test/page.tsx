@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { getQuestions, createSpeakingExam, submitSpeakingEvaluation } from "@/lib/api";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import type { Question } from "@/lib/types";
@@ -80,6 +81,7 @@ if (typeof window !== "undefined") {
 export default function SpeakingTestPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const questionId = searchParams.get("id");
 
   const [allQuestions, setAllQuestions] = useState<Question[]>([]);
@@ -287,6 +289,8 @@ export default function SpeakingTestPage() {
     try {
       const newExam = await createSpeakingExam({ exam_type: "speaking", question_id: questionId || undefined });
       await submitSpeakingEvaluation(newExam.id, audioBlob);
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
+      queryClient.invalidateQueries({ queryKey: ["exams"] });
       router.push(`/speaking/results?examId=${newExam.id}`);
     } catch (err) {
       submittingRef.current = false;
@@ -297,7 +301,7 @@ export default function SpeakingTestPage() {
         setShow503Modal(true);
       }
     }
-  }, [audioBlob, router, questionId]);
+  }, [audioBlob, router, questionId, queryClient]);
 
   // ---- Multi-part handlers ----
   const nextQuestion = () => {
@@ -391,6 +395,8 @@ export default function SpeakingTestPage() {
     try {
       const newExam = await createSpeakingExam({ exam_type: "speaking" });
       await submitSpeakingEvaluation(newExam.id, audioBlob);
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
+      queryClient.invalidateQueries({ queryKey: ["exams"] });
       router.push(`/speaking/results?examId=${newExam.id}`);
     } catch (err) {
       submittingRef.current = false;
@@ -401,7 +407,7 @@ export default function SpeakingTestPage() {
         setShow503Modal(true);
       }
     }
-  }, [audioBlob, router]);
+  }, [audioBlob, router, queryClient]);
 
   const fmt = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 

@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { getQuestions, createWritingExam, submitWritingEvaluation } from "@/lib/api";
 import { showError } from "@/components/ui/Toast";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
@@ -16,6 +17,7 @@ type Phase = "writing" | "submitting" | "done";
 export default function WritingTestPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const questionId = searchParams.get("id");
 
   const [question, setQuestion] = useState<Question | null>(null);
@@ -58,6 +60,8 @@ export default function WritingTestPage() {
     try {
       const newExam = await createWritingExam({ exam_type: "writing", task_type: question.task_type, question_id: question.id });
       await submitWritingEvaluation({ exam_id: newExam.id, text: text.trim() });
+      queryClient.invalidateQueries({ queryKey: ["dashboardStats"] });
+      queryClient.invalidateQueries({ queryKey: ["exams"] });
       router.push(`/writing/results?examId=${newExam.id}`);
     } catch (err) {
       submittingRef.current = false;
@@ -69,7 +73,7 @@ export default function WritingTestPage() {
       }
       setPhase("writing");
     }
-  }, [text, router, question]);
+  }, [text, router, question, queryClient]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 

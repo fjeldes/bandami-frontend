@@ -13,12 +13,13 @@ import {
 import type { DashboardStats, ExamWithEvaluation, SubscriptionPlan, UserSubscription, UserCreditPack, Evaluation } from "@/lib/types";
 
 const STALE = 5 * 60 * 1000;
+const DASHBOARD_STALE = 30 * 1000;
 
 export function useDashboardStats() {
   return useQuery<DashboardStats>({
     queryKey: ["dashboardStats"],
     queryFn: getDashboardStats,
-    staleTime: STALE,
+    staleTime: DASHBOARD_STALE,
   });
 }
 
@@ -26,7 +27,7 @@ export function useExams(limit = 30) {
   return useQuery<{ exams: ExamWithEvaluation[]; total: number; limit: number; offset: number }>({
     queryKey: ["exams", limit],
     queryFn: () => getUserExams({ limit }),
-    staleTime: STALE,
+    staleTime: DASHBOARD_STALE,
   });
 }
 
