@@ -329,6 +329,31 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {!stats?.total_exams && (
+        <div className="mb-6 bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-700 dark:to-cyan-700 rounded-2xl p-6 md:p-8 text-white shadow-lg animate-fade-in-up">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+            <div className="flex-1">
+              <h2 className="text-xl md:text-2xl font-bold mb-2">Start your first practice test</h2>
+              <p className="text-blue-100 dark:text-blue-200 text-sm md:text-base max-w-lg">
+                Get your IELTS band score in seconds. Our AI evaluates your writing and speaking just like a real examiner.
+              </p>
+            </div>
+            <div className="flex gap-3 shrink-0">
+              <Link href="/writing"
+                className="inline-flex items-center gap-2 bg-white text-blue-700 hover:bg-blue-50 px-5 py-3 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]">
+                <PenTool className="w-5 h-5" />
+                Practice Writing
+              </Link>
+              <Link href="/speaking"
+                className="inline-flex items-center gap-2 bg-cyan-200 dark:bg-cyan-500 text-cyan-900 dark:text-cyan-950 hover:bg-cyan-100 dark:hover:bg-cyan-400 px-5 py-3 rounded-xl text-sm font-bold shadow-md hover:shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98]">
+                <Mic className="w-5 h-5" />
+                Practice Speaking
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
           { icon: Award, label: "Average Band", value: stats?.average_band ? stats.average_band.toFixed(1) : "--", sub: stats?.average_band ? `CEFR ${cefrLevel(stats.average_band)}` : "--", color: "blue" },
@@ -370,7 +395,11 @@ export default function DashboardPage() {
           {writingBands.length < 2 && speakingBands.length < 2 ? (
             <div className="text-center py-8">
               <BarChart3 className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
-              <p className="text-sm text-slate-500 dark:text-slate-400">Complete a few exams to see your trend.</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">Complete a few exams to see your trend.</p>
+              <div className="flex gap-2 justify-center">
+                <Link href="/writing" className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all">Writing</Link>
+                <Link href="/speaking" className="text-xs bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1.5 rounded-lg font-medium transition-all">Speaking</Link>
+              </div>
             </div>
           ) : (
             <div className="space-y-5">
@@ -406,7 +435,8 @@ export default function DashboardPage() {
             {daysThisWeek.every((d) => d.count === 0) ? (
               <div className="text-center py-4">
                 <CalendarDays className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-                <p className="text-xs text-slate-500 dark:text-slate-400">No activity yet this week. Start practicing!</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">No activity yet this week. Start practicing!</p>
+                <Link href="/writing" className="inline-block text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold transition-colors">Take your first exam →</Link>
               </div>
             ) : (
               <div className="flex items-end gap-2 h-24 px-2">
@@ -459,8 +489,8 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
-          { href: "/writing", icon: PenTool, label: "Writing", sub: `${stats?.writing_exams ?? 0} completed`, accent: "blue" },
-          { href: "/speaking", icon: Mic, label: "Speaking", sub: `${stats?.speaking_exams ?? 0} completed`, accent: "purple" },
+          { href: "/writing", icon: PenTool, label: "Writing", sub: stats?.writing_exams ? `${stats.writing_exams} completed` : "Start now", accent: "blue" },
+          { href: "/speaking", icon: Mic, label: "Speaking", sub: stats?.speaking_exams ? `${stats.speaking_exams} completed` : "Start now", accent: "purple" },
           { href: "/reading", icon: BookOpen, label: "Reading", sub: "Coming soon", comingSoon: true },
           { href: "/history", icon: BarChart3, label: "Reports", sub: "Review past exams", accent: "blue" },
         ].map((a) => (
