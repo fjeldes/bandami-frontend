@@ -67,7 +67,7 @@ export function Pricing() {
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-6 max-w-3xl mx-auto items-stretch justify-center">
+        <div className="flex flex-col md:flex-row gap-6 max-w-5xl mx-auto items-stretch justify-center">
           {plans.map((plan, idx) => (
             <div
               key={plan.slug}
