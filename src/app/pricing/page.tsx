@@ -19,6 +19,7 @@ const featureMeta: Record<string, { icon: string; color: string }> = {
   "Personalized recommendations": { icon: "book", color: "text-rose-500" },
   "Progress tracking & history": { icon: "trending_up", color: "text-cyan-500" },
   "Grammar corrections with explanations": { icon: "spellcheck", color: "text-orange-500" },
+  "7-day full premium access": { icon: "calendar_today", color: "text-green-500" },
 };
 
 const plans = [
@@ -30,6 +31,16 @@ const plans = [
     badge: "",
     tagline: "Get started with essential practice tools",
     features: ["Writing (all tasks)", "Speaking Part 1", "Instant band score", "Basic feedback & strengths"],
+    featured: false,
+  },
+  {
+    slug: "weekly_pro_pass",
+    name: "Weekly Pro",
+    price: "$4.99",
+    period: "one-time",
+    badge: "Most Flexible",
+    tagline: "Try everything Pro offers for 7 days — no subscription",
+    features: ["Unlimited practice", "Detailed IELTS analysis", "Personalized study plans", "Progress tracking & history", "Full criteria breakdown", "Grammar corrections with explanations", "All Speaking Parts (1, 2 & 3)", "7-day full premium access"],
     featured: false,
   },
   {
@@ -53,8 +64,8 @@ function PricingContent() {
   let visiblePlans = plans;
   if (user) {
     visiblePlans = plans.map((p) => {
-      if (isPremium && p.slug === "premium") {
-        return { ...p, price: "Active", period: "", badge: "Your Plan ✓", featured: true };
+      if (isPremium && (p.slug === "premium" || p.slug === "weekly_pro_pass")) {
+        return { ...p, price: "Active", period: "", badge: "Your Plan ✓", featured: p.slug === "premium" };
       }
       if (p.slug === "free") {
         return { ...p, badge: "Current Plan" };
@@ -114,7 +125,7 @@ function PricingContent() {
               <div
                 key={plan.slug}
                 className={`animate-fade-in-up flex flex-col ${
-                  plan.slug === "premium" ? "flex-[4]" : "flex-[3]"
+                  plan.slug === "premium" ? "flex-[5]" : plan.slug === "weekly_pro_pass" ? "flex-[4]" : "flex-[3]"
                 }`}
                 style={{ animationDelay: `${idx * 0.1}s` }}
               >
@@ -156,6 +167,65 @@ function PricingContent() {
                       href="/register"
                     />
                   </div>
+                )}
+
+                {plan.slug === "weekly_pro_pass" && (
+                  <>
+                    {isPremium ? (
+                      <div className="h-full bg-gradient-to-b from-white to-green-50 dark:from-slate-800/80 dark:to-slate-900/80 backdrop-blur-md border border-green-200 dark:border-green-500/30 rounded-3xl p-7 flex flex-col shadow-[0_8px_30px_rgba(34,197,94,0.08)] dark:shadow-[0_8px_30px_rgba(34,197,94,0.1)] relative overflow-hidden hover:-translate-y-1 transition-all duration-300">
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-400" />
+                        <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400 text-[11px] font-bold uppercase tracking-wider mb-4 w-fit">
+                          <span className="material-symbols-outlined text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                          Active
+                        </div>
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{plan.name}</h3>
+                        <p className="text-[13px] text-gray-500 dark:text-slate-400 mb-6 leading-relaxed">Your weekly pass is active. Full premium access.</p>
+                        <div className="font-mono text-4xl font-extrabold text-green-600 dark:text-green-400 mb-2 tracking-tight">Active</div>
+                        <ul className="space-y-3 mb-8 flex-1">
+                          {plan.features.map((f, i) => {
+                            const meta = featureMeta[f] || { icon: "check", color: "text-gray-400 dark:text-slate-400" };
+                            return (
+                              <li key={i} className="flex items-start gap-2.5 text-[14px] text-gray-600 dark:text-slate-300">
+                                <span className={`material-symbols-outlined text-[18px] ${meta.color} mt-0.5 shrink-0`} style={{ fontVariationSettings: "'FILL' 1" }}>{meta.icon}</span>
+                                {f}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                        <div className="w-full text-center py-3 rounded-xl bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/20 text-green-700 dark:text-green-400 text-[13px] font-semibold">
+                          Your current plan
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="h-full bg-gradient-to-b from-white to-green-50 dark:from-slate-800/90 dark:to-slate-900/90 backdrop-blur-md border border-green-200 dark:border-green-500/30 rounded-3xl p-7 flex flex-col shadow-[0_8px_30px_rgba(34,197,94,0.06)] dark:shadow-[0_8px_30px_rgba(34,197,94,0.1)] hover:border-green-300 dark:hover:border-green-400/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-400" />
+                        {plan.badge && (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 text-[11px] font-bold uppercase tracking-wider mb-4 w-fit border border-green-200 dark:border-green-500/20">
+                            {plan.badge}
+                          </div>
+                        )}
+                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{plan.name}</h3>
+                        <p className="text-[13px] text-gray-500 dark:text-slate-500 mb-6 leading-relaxed">{plan.tagline}</p>
+                        <div className="flex items-baseline gap-1 mb-2">
+                          <span className="font-mono text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">{plan.price}</span>
+                          <span className="text-[13px] text-gray-500 dark:text-slate-500">{plan.period}</span>
+                        </div>
+                        <p className="text-[11px] text-gray-400 dark:text-slate-500 mb-6">Full premium features for 7 days</p>
+                        <ul className="space-y-3 mb-8 flex-1">
+                          {plan.features.map((f, i) => {
+                            const meta = featureMeta[f] || { icon: "check", color: "text-gray-400 dark:text-slate-400" };
+                            return (
+                              <li key={i} className="flex items-start gap-2.5 text-[14px] text-gray-500 dark:text-slate-400">
+                                <span className={`material-symbols-outlined text-[18px] ${meta.color} mt-0.5 shrink-0`} style={{ fontVariationSettings: "'FILL' 1" }}>{meta.icon}</span>
+                                {f}
+                              </li>
+                            );
+                          })}
+                        </ul>
+                        <CheckoutButton planSlug={plan.slug} label="Get Weekly Pass" featured={false} href="/register" />
+                      </div>
+                    )}
+                  </>
                 )}
 
                 {plan.slug === "premium" && (
