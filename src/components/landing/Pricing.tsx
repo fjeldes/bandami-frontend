@@ -33,7 +33,7 @@ const plans = [
       { text: "All Speaking Parts (1, 2 & 3)", included: true },
       { text: "7-day full premium access", included: true },
     ],
-    cta: "Get Weekly Pass — $4.99",
+    cta: "Get Weekly Pass",
     href: "/register?plan=weekly_pro_pass",
   },
   {
