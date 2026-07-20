@@ -19,6 +19,24 @@ const plans = [
     href: "/register",
   },
   {
+    slug: "weekly_pro_pass",
+    name: "Weekly Pro",
+    featured: false,
+    badge: null,
+    features: [
+      { text: "Unlimited practice", included: true },
+      { text: "Detailed IELTS analysis", included: true },
+      { text: "Personalized study plans", included: true },
+      { text: "Progress tracking & history", included: true },
+      { text: "Full criteria breakdown", included: true },
+      { text: "Grammar corrections with explanations", included: true },
+      { text: "All Speaking Parts (1, 2 & 3)", included: true },
+      { text: "7-day full premium access", included: true },
+    ],
+    cta: "Get Weekly Pass — $4.99",
+    href: "/register?plan=weekly_pro_pass",
+  },
+  {
     slug: "premium",
     name: "Pro",
     featured: true,
@@ -72,6 +90,28 @@ export function Pricing() {
                           <XCircle className="w-5 h-5 shrink-0 text-slate-300 dark:text-slate-600" />
                         )}
                         <span className={`text-sm ${f.included ? "text-slate-700 dark:text-slate-300" : "text-slate-400 dark:text-slate-500"}`}>{f.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <CheckoutButton planSlug={plan.slug} label={plan.cta} featured={false} href={plan.href} />
+                </div>
+              )}
+
+              {plan.slug === "weekly_pro_pass" && (
+                <div className="h-full bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-6 flex flex-col shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-green-400 rounded-t-2xl" />
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 mt-1">{plan.name}</h3>
+                  <div className="flex items-baseline gap-1 mb-6">
+                    <span className="text-3xl font-bold text-slate-900 dark:text-white">$4.99</span>
+                    <span className="text-sm text-slate-500 dark:text-slate-400">one-time</span>
+                  </div>
+
+                  <ul className="space-y-3 mb-8 flex-1">
+                    {plan.features.map((f) => (
+                      <li key={f.text} className="flex items-center gap-3">
+                        <CheckCircle className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <span className="text-sm text-slate-700 dark:text-slate-300">{f.text}</span>
                       </li>
                     ))}
                   </ul>
