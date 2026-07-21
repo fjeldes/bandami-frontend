@@ -264,7 +264,7 @@ function PricingContent() {
                         </div>
                       </div>
                     ) : (
-                      <div className="h-full bg-gradient-to-b from-white to-gray-50 dark:from-slate-800/90 dark:to-slate-900/90 backdrop-blur-md border border-blue-200 dark:border-blue-500/30 rounded-3xl p-7 flex flex-col shadow-[0_8px_40px_rgba(59,130,246,0.08)] dark:shadow-[0_8px_40px_rgba(59,130,246,0.15)] relative overflow-hidden group hover:shadow-[0_8px_50px_rgba(59,130,246,0.12)] dark:hover:shadow-[0_8px_50px_rgba(59,130,246,0.25)] hover:-translate-y-1 transition-all duration-300">
+                      <div className="h-full bg-gradient-to-b from-white to-gray-50 dark:from-slate-800/90 dark:to-slate-900/90 backdrop-blur-md border border-blue-200 dark:border-blue-500/30 rounded-3xl p-7 flex flex-col shadow-[0_8px_40px_rgba(59,130,246,0.08)] dark:shadow-[0_8px_40px_rgba(59,130,246,0.15)] relative group hover:shadow-[0_8px_50px_rgba(59,130,246,0.12)] dark:hover:shadow-[0_8px_50px_rgba(59,130,246,0.25)] hover:-translate-y-1 transition-all duration-300">
                         {/* Glow accents — dark only */}
                         <div className="hidden dark:block absolute top-0 right-0 w-48 h-48 bg-blue-500/15 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-blue-500/20 transition-all duration-500" />
                         <div className="hidden dark:block absolute bottom-0 left-0 w-32 h-32 bg-violet-500/10 rounded-full blur-3xl -ml-12 -mb-12" />

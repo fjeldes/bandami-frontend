@@ -93,7 +93,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [isLoading, user, router]);
 
-  const handleSignOut = () => { logout(); router.push("/"); };
+  const handleSignOut = async () => { await logout(); router.push("/"); };
 
   if (isLoading || !user || user.role !== "admin") {
     return (

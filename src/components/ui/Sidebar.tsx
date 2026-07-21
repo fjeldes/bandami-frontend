@@ -147,7 +147,7 @@ export function Sidebar() {
     { href: "/admin/plans", label: "Plans", icon: "sell" },
   ];
 
-  const handleSignOut = () => { logout(); router.push("/"); };
+  const handleSignOut = async () => { await logout(); router.push("/"); };
 
   return (
     <>

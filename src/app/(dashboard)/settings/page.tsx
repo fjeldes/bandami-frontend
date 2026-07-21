@@ -515,7 +515,7 @@ export default function SettingsPage() {
     setSavingPw(false);
   };
 
-  const handleSignOut = () => { logout(); router.push("/"); };
+                        const handleSignOut = async () => { await logout(); router.push("/"); };
 
   if (loading) {
     return (
