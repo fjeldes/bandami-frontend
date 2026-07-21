@@ -105,7 +105,7 @@ function ProfileSection({ user, editName, setEditName, nameValue, setNameValue, 
   );
 }
 
-function SubscriptionCard({ isPremium }: { isPremium: boolean }) {
+function SubscriptionCard({ isPremium, subData }: { isPremium: boolean; subData?: any }) {
   if (!isPremium) {
     return (
       <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-6 text-white shadow-lg">
@@ -149,7 +149,7 @@ function SubscriptionCard({ isPremium }: { isPremium: boolean }) {
 
       <div className="bg-white/10 rounded-xl p-4 mb-4">
         <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Current Plan</p>
-        <p className="text-sm font-medium">Pro Monthly · $14.99/month</p>
+        <p className="text-sm font-medium">{subData?.plan_name || "Pro Member"} {subData?.plan_amount ? `· $${subData.plan_amount}/month` : ""}</p>
       </div>
 
       <a
@@ -234,7 +234,7 @@ function SubscriptionSection({ user }: { user: any }) {
         window.location.href = result.url;
         return;
       }
-      showSuccess("Switched to Pro Monthly!");
+      showSuccess("Plan switched successfully!");
       load();
     } catch (err) {
       showError(err instanceof Error ? err.message : "Failed to switch plan");
@@ -263,7 +263,7 @@ function SubscriptionSection({ user }: { user: any }) {
 
   return (
     <div className="space-y-4">
-      <SubscriptionCard isPremium={true} />
+      <SubscriptionCard isPremium={true} subData={subData} />
 
       {/* Plan Details */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-5">
@@ -539,9 +539,9 @@ export default function SettingsPage() {
               <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
-              <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">Your 3-day free trial has started!</p>
+              <p className="text-sm font-bold text-emerald-800 dark:text-emerald-300">Your purchase was successful!</p>
               <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-0.5">
-                No charge today. You'll be charged <strong>$14.99/month + tax</strong> after the trial. Cancel anytime.
+                Your premium plan is now active. Enjoy all features!
               </p>
             </div>
           </div>
