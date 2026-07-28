@@ -51,6 +51,10 @@ export const metadata = {
   },
 };
 
+const isProd = process.env.VERCEL_ENV === "production";
+
+const googleAdsId = "AW-18354386302";
+
 export default function RootLayout({
   children,
 }: {
@@ -63,6 +67,16 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
           rel="stylesheet"
         />
+        {isProd && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${googleAdsId}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${googleAdsId}');`,
+              }}
+            />
+          </>
+        )}
       </head>
       <body className="bg-surface text-on-surface font-body text-body-md antialiased min-h-screen">
         <Analytics />
