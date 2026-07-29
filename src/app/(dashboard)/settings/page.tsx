@@ -455,6 +455,29 @@ export default function SettingsPage() {
             useAuthStore.getState().refreshSession().then(() => {
               if (!mounted.current) return;
               showSuccess("Payment confirmed! Your plan is now active.");
+              const planSlug = sessionStorage.getItem("pending_plan_slug");
+              sessionStorage.removeItem("pending_plan_slug");
+              if (
+                process.env.NEXT_PUBLIC_VERCEL_ENV === "production" &&
+                typeof window !== "undefined"
+              ) {
+                const gtag = (window as any).gtag;
+                if (gtag && planSlug === "premium") {
+                  gtag("event", "conversion", {
+                    send_to: "AW-18354386302/wFxFCM2-kdgcEP7qhrBE",
+                    transaction_id: checkoutId,
+                    value: 14.99,
+                    currency: "USD",
+                  });
+                } else if (gtag && planSlug === "weekly_pro_pass") {
+                  gtag("event", "conversion", {
+                    send_to: "AW-18354386302/YUbPCNC-kdgcEP7qhrBE",
+                    transaction_id: checkoutId,
+                    value: 4.99,
+                    currency: "USD",
+                  });
+                }
+              }
               router.replace("/settings");
             });
           } else if (r.status === "pending") {

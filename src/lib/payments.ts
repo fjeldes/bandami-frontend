@@ -7,6 +7,8 @@ export async function redirectToCheckout(planSlug: string) {
     return;
   }
 
+  sessionStorage.setItem("pending_plan_slug", planSlug);
+
   const body: Record<string, any> = {
     plan_slug: planSlug,
     success_url: `${window.location.origin}/settings?checkout=success`,

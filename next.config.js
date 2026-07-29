@@ -21,6 +21,9 @@ const nextConfig = {
   output: "standalone",
   compress: true,
   poweredByHeader: false,
+  env: {
+    NEXT_PUBLIC_VERCEL_ENV: vercelEnv,
+  },
 
   async rewrites() {
     return [
