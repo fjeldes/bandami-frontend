@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useDashboardStats, useExams, useStudyPlan, useGenerateStudyPlan, useToggleStudyPlanDay } from "@/hooks/useApi";
 import { showError } from "@/components/ui/Toast";
@@ -107,12 +108,14 @@ function cefrLevel(band: number) {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const user = useAuthStore((s) => s.user);
+  const authLoading = useAuthStore((s) => s.isLoading);
   const { data: stats, isLoading: statsLoading, error: statsError } = useDashboardStats();
   const { data: examsData, isLoading: examsLoading } = useExams(30);
   const { data: studyPlanData } = useStudyPlan();
   const exams = examsData?.exams ? [...examsData.exams].reverse() : [];
-  const loading = statsLoading || examsLoading;
+  const loading = authLoading || statsLoading || examsLoading;
   const error = statsError ? (statsError instanceof Error ? statsError.message : "Failed to load") : "";
 
   const studyPlan = studyPlanData?.plan || null;

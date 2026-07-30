@@ -90,6 +90,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return;
     }
 
+    const safetyTimer = setTimeout(() => {
+      if (get().isLoading) {
+        clearTokens();
+        set({ isLoading: false, user: null });
+      }
+    }, 10000);
+
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 5000);
@@ -100,6 +107,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         signal: controller.signal,
       });
       clearTimeout(timeout);
+      clearTimeout(safetyTimer);
 
       if (!res.ok) {
         if (!get().user) clearTokens();
@@ -115,6 +123,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ isLoading: false });
       }
     } catch {
+      clearTimeout(safetyTimer);
       if (!get().user) clearTokens();
       set({ isLoading: false, user: get().user || null });
     }

@@ -20,6 +20,7 @@ export function useDashboardStats() {
     queryKey: ["dashboardStats"],
     queryFn: getDashboardStats,
     staleTime: DASHBOARD_STALE,
+    retry: false,
   });
 }
 
@@ -28,6 +29,7 @@ export function useExams(limit = 30) {
     queryKey: ["exams", limit],
     queryFn: () => getUserExams({ limit }),
     staleTime: DASHBOARD_STALE,
+    retry: false,
   });
 }
 
@@ -44,6 +46,7 @@ export function useUserSubscription() {
     queryKey: ["userSubscription"],
     queryFn: getUserSubscription,
     staleTime: STALE,
+    retry: false,
   });
 }
 
@@ -52,6 +55,7 @@ export function useCreditPacks() {
     queryKey: ["creditPacks"],
     queryFn: getUserCreditPacks,
     staleTime: STALE,
+    retry: false,
   });
 }
 
@@ -66,6 +70,7 @@ export function useEvaluation(type: string, examId: string | null) {
     queryFn: () => fetcher(examId!),
     enabled: !!examId,
     staleTime: 30 * 60 * 1000,
+    retry: false,
   });
 }
 
@@ -74,6 +79,7 @@ export function useStudyPlan() {
     queryKey: ["studyPlan"],
     queryFn: () => apiFetch("/users/me/study-plan"),
     staleTime: STALE,
+    retry: false,
   });
 }
 
