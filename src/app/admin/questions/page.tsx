@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api";
+import { showSuccess, showError } from "@/components/ui/Toast";
 import RichTextEditor from "@/components/ui/RichTextEditor";
 import RichTextRenderer from "@/components/ui/RichTextRenderer";
 import {
@@ -156,7 +157,6 @@ export default function AdminQuestionsPage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
   const [isCreating, setIsCreating] = useState(false);
-  const [createSuccess, setCreateSuccess] = useState(false);
 
   const fetchQuestions = (pageNum: number = 1) => {
     setLoading(true);
@@ -185,8 +185,8 @@ export default function AdminQuestionsPage() {
   };
 
   const handleImageUpload = async (file: File) => {
-    if (!file.type.startsWith("image/")) { alert("Please select an image file"); return; }
-    if (file.size > 5 * 1024 * 1024) { alert("Image must be smaller than 5MB"); return; }
+    if (!file.type.startsWith("image/")) { showError("Please select an image file"); return; }
+    if (file.size > 5 * 1024 * 1024) { showError("Image must be smaller than 5MB"); return; }
     setPendingImageFile(file);
     const reader = new FileReader();
     reader.onload = (e) => { setForm((prev) => ({ ...prev, img_url: e.target?.result as string })); };
@@ -194,8 +194,8 @@ export default function AdminQuestionsPage() {
   };
 
   const handleImageUploadForQuestion = async (file: File, questionId: string) => {
-    if (!file.type.startsWith("image/")) { alert("Please select an image file"); return; }
-    if (file.size > 5 * 1024 * 1024) { alert("Image must be smaller than 5MB"); return; }
+    if (!file.type.startsWith("image/")) { showError("Please select an image file"); return; }
+    if (file.size > 5 * 1024 * 1024) { showError("Image must be smaller than 5MB"); return; }
     setUploadingImage(true);
     try {
       const formData = new FormData();
@@ -210,14 +210,13 @@ export default function AdminQuestionsPage() {
       setQuestions((prev) => prev.map((q) => (q.id === questionId ? { ...q, img_url: data.img_url } : q)));
     } catch (err) {
       console.error("Image upload failed:", err);
-      alert("Failed to upload image. Please try again.");
+      showError("Failed to upload image. Please try again.");
     } finally { setUploadingImage(false); }
   };
 
   const handleCreate = async () => {
     if (isCreating) return;
     setIsCreating(true);
-    setCreateSuccess(false);
     try {
       const payload = { ...form, task_type: form.exam_type === "writing" ? form.task_type : undefined };
       const created = await apiFetch<Question>("/admin/questions", { method: "POST", body: JSON.stringify(payload) });
@@ -239,16 +238,14 @@ export default function AdminQuestionsPage() {
         finally { setUploadingImage(false); }
       }
       setPendingImageFile(null);
-      setCreateSuccess(true);
-      setTimeout(() => {
-        setShowNew(false);
-        setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null, img_info: null });
-        setCreateSuccess(false);
-        fetchQuestions(1);
-      }, 1500);
+      showSuccess("Question created");
+      setShowNew(false);
+      setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null, img_info: null });
+      fetchQuestions(1);
     } catch (err) {
       console.error("Failed to create question:", err);
-      alert("Failed to create question. Please try again.");
+      showError("Failed to create question. Please try again.");
+    } finally {
       setIsCreating(false);
     }
   };
@@ -256,18 +253,30 @@ export default function AdminQuestionsPage() {
   const handleUpdate = async (id: string) => {
     const q = questions.find((q) => q.id === id);
     if (!q) return;
-    await apiFetch(`/admin/questions/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ prompt_text: q.prompt_text, title: q.title, module: q.module, difficulty: q.difficulty, task_type: q.task_type, is_active: q.is_active, img_info: q.img_info }),
-    });
-    setEditing(null);
-    fetchQuestions(page);
+    try {
+      await apiFetch(`/admin/questions/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ prompt_text: q.prompt_text, title: q.title, module: q.module, difficulty: q.difficulty, task_type: q.task_type, is_active: q.is_active, img_info: q.img_info }),
+      });
+      showSuccess("Question updated");
+      setEditing(null);
+      fetchQuestions(page);
+    } catch (err) {
+      console.error("Failed to update question:", err);
+      showError("Failed to update question. Please try again.");
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this question?")) return;
-    await apiFetch(`/admin/questions/${id}`, { method: "DELETE" });
-    fetchQuestions(page);
+    try {
+      await apiFetch(`/admin/questions/${id}`, { method: "DELETE" });
+      showSuccess("Question deleted");
+      fetchQuestions(page);
+    } catch (err) {
+      console.error("Failed to delete question:", err);
+      showError("Failed to delete question. Please try again.");
+    }
   };
 
   const toggleActive = async (q: Question) => {
@@ -363,8 +372,7 @@ export default function AdminQuestionsPage() {
               <button onClick={handleCreate} disabled={isCreating || uploadingImage || !form.prompt_text.trim()} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl disabled:opacity-50 flex items-center gap-2 transition-colors">
                 {isCreating ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating...</> : "Create Question"}
               </button>
-              <button onClick={() => { if (!isCreating) setShowNew(false); }} disabled={isCreating} className="dark:bg-slate-800 dark:text-slate-400 px-4 py-2.5 rounded-xl text-slate-600 hover:dark:bg-slate-700 hover:bg-slate-100 disabled:opacity-50 transition-colors">Cancel</button>
-              {createSuccess && <span className="flex items-center gap-1 dark:text-emerald-400 text-emerald-600 text-sm font-medium"><CheckCircle className="w-4 h-4" /> Created!</span>}
+              <button onClick={() => { if (!isCreating) { setShowNew(false); setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null, img_info: null }); } }} disabled={isCreating} className="dark:bg-slate-800 dark:text-slate-400 px-4 py-2.5 rounded-xl text-slate-600 hover:dark:bg-slate-700 hover:bg-slate-100 disabled:opacity-50 transition-colors">Cancel</button>
             </div>
           </div>
         )}
