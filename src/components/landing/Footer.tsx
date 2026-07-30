@@ -9,7 +9,7 @@ export function Footer() {
       <div className="flex gap-6">
         <Link href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</Link>
         <Link href="/terms" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</Link>
-        <a className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="mailto:hello@bandami.com">Support</a>
+        <a className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors" href="mailto:contacto@bandami.com">Support</a>
       </div>
       <div>&copy; 2026 Bandami. All rights reserved.</div>
     </footer>
