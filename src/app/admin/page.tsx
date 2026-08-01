@@ -24,6 +24,8 @@ interface AdminStats {
   total_users: number;
   admin_count: number;
   premium_count: number;
+  premium_monthly_count: number;
+  premium_weekly_count: number;
   active_subscriptions: number;
   total_exams: number;
   completed_exams: number;
@@ -414,7 +416,7 @@ export default function AdminDashboard() {
           <KPICard
             label="Premium Users"
             value={stats.premium_count.toLocaleString()}
-            sub={`${stats.active_subscriptions} active subs`}
+            sub={`${stats.premium_monthly_count ?? 0} monthly · ${stats.premium_weekly_count ?? 0} weekly · ${stats.active_subscriptions} active`}
             icon={Crown}
             accentColor="bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400"
           />

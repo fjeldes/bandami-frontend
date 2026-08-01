@@ -8,9 +8,13 @@ interface AnalyticsSummary {
   total_users: number;
   free_users: number;
   premium_users: number;
+  premium_monthly: number;
+  premium_weekly: number;
   active_this_month: number;
   active_free: number;
   active_premium: number;
+  active_premium_monthly: number;
+  active_premium_weekly: number;
   conversions_total: number;
   conversions_this_month: number;
   monthly_evals_free: number;
@@ -115,7 +119,7 @@ export default function AdminAnalyticsPage() {
             <span className="text-sm font-medium dark:text-slate-400 text-slate-500">Pro Users</span>
           </div>
           <p className="text-2xl font-bold dark:text-white text-slate-900 mb-1">{summary.premium_users}</p>
-          <p className="text-xs dark:text-slate-500 text-slate-400">{summary.active_premium} active this month</p>
+          <p className="text-xs dark:text-slate-500 text-slate-400">{summary.premium_monthly} monthly · {summary.premium_weekly} weekly</p>
         </div>
 
         <div className="dark:bg-slate-900 bg-white rounded-2xl border dark:border-slate-800 border-slate-100 shadow-sm p-5">
@@ -190,13 +194,22 @@ export default function AdminAnalyticsPage() {
                 <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">{summary.monthly_evals_free}</td>
               </tr>
               <tr className="dark:bg-slate-800/30 bg-slate-50/50">
-                <td className="px-6 py-3.5 font-semibold dark:text-indigo-400 text-indigo-700">Pro</td>
-                <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">{summary.premium_users}</td>
-                <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">{summary.active_premium}</td>
+                <td className="px-6 py-3.5 font-semibold dark:text-amber-400 text-amber-700">Pro Monthly</td>
+                <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">{summary.premium_monthly}</td>
+                <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">{summary.active_premium_monthly}</td>
                 <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">
-                  {summary.premium_users > 0 ? ((summary.active_premium / summary.premium_users) * 100).toFixed(0) : 0}%
+                  {summary.premium_monthly > 0 ? ((summary.active_premium_monthly / summary.premium_monthly) * 100).toFixed(0) : 0}%
                 </td>
-                <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">{summary.monthly_evals_premium}</td>
+                <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">—</td>
+              </tr>
+              <tr className="dark:bg-slate-800/30 bg-slate-50/50">
+                <td className="px-6 py-3.5 font-semibold dark:text-orange-400 text-orange-700">Pro Weekly</td>
+                <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">{summary.premium_weekly}</td>
+                <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">{summary.active_premium_weekly}</td>
+                <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">
+                  {summary.premium_weekly > 0 ? ((summary.active_premium_weekly / summary.premium_weekly) * 100).toFixed(0) : 0}%
+                </td>
+                <td className="px-6 py-3.5 font-mono dark:text-slate-400 text-slate-700">—</td>
               </tr>
             </tbody>
           </table>

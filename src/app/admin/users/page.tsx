@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   User,
+  Filter,
 } from "lucide-react";
 
 interface UserRow {
@@ -18,6 +19,9 @@ interface UserRow {
   email: string;
   full_name: string | null;
   subscription_tier: string;
+  plan_slug: string | null;
+  plan_name: string | null;
+  plan_interval: string | null;
   role: string;
   created_at: string | null;
 }
@@ -47,12 +51,16 @@ function UserAvatar({ name, email }: { name: string | null; email: string }) {
   );
 }
 
-function TierBadge({ tier }: { tier: string }) {
+function TierBadge({ tier, planName, planInterval }: { tier: string; planName?: string | null; planInterval?: string | null }) {
   if (tier === "premium") {
+    const monthColors = "dark:bg-amber-900/30 bg-amber-50 dark:text-amber-400 text-amber-700 ring-amber-200 dark:ring-amber-900/50";
+    const weekColors = "dark:bg-orange-900/30 bg-orange-50 dark:text-orange-400 text-orange-700 ring-orange-200 dark:ring-orange-900/50";
+    const colors = planInterval === "week" ? weekColors : monthColors;
+    const label = planName || "Pro";
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full dark:bg-amber-900/30 bg-amber-50 dark:text-amber-400 text-amber-700 text-xs font-semibold ring-1 dark:ring-amber-900/50 ring-amber-200">
+      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ${colors}`}>
         <Crown className="w-3 h-3" />
-        Pro
+        {label}
       </span>
     );
   }
@@ -82,13 +90,16 @@ export default function AdminUsersPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [planFilter, setPlanFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchUsers = (p: number, q: string) => {
+  const fetchUsers = (p: number, q: string, pf: string) => {
     setLoading(true);
     setError("");
-    apiFetch<UserListResponse>(`/admin/users?page=${p}&limit=20&search=${encodeURIComponent(q)}`)
+    const params = new URLSearchParams({ page: String(p), limit: "20", search: q });
+    if (pf) params.set("plan_slug", pf);
+    apiFetch<UserListResponse>(`/admin/users?${params.toString()}`)
       .then((d) => {
         setUsers(d.users || []);
         setTotal(d.total || 0);
@@ -97,7 +108,7 @@ export default function AdminUsersPage() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetchUsers(page, search); }, [page, search]);
+  useEffect(() => { fetchUsers(page, search, planFilter); }, [page, search, planFilter]);
 
   const totalPages = Math.ceil(total / 20);
 
@@ -109,8 +120,8 @@ export default function AdminUsersPage() {
           <p className="text-sm dark:text-slate-400 text-slate-500">{total} total users</p>
         </div>
 
-        <div className="mb-6">
-          <div className="relative max-w-md">
+        <div className="mb-6 flex flex-wrap gap-4">
+          <div className="relative max-w-md flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 dark:text-slate-400 text-slate-400" />
             <input
               type="text"
@@ -120,6 +131,18 @@ export default function AdminUsersPage() {
               className="w-full dark:bg-slate-900 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500 bg-white rounded-xl border border-slate-200 py-3 pl-12 pr-4 text-sm text-slate-800 placeholder:text-slate-400 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900/30 transition-all shadow-sm"
             />
           </div>
+          <div className="relative">
+            <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 dark:text-slate-400 text-slate-400" />
+            <select
+              value={planFilter}
+              onChange={(e) => { setPlanFilter(e.target.value); setPage(1); }}
+              className="dark:bg-slate-900 dark:border-slate-700 dark:text-white bg-white border border-slate-200 rounded-xl py-3 pl-10 pr-8 text-sm outline-none focus:border-blue-500 shadow-sm appearance-none"
+            >
+              <option value="">All Plans</option>
+              <option value="premium">Monthly</option>
+              <option value="weekly_pro_pass">Weekly</option>
+            </select>
+          </div>
         </div>
 
         {error && (
@@ -128,7 +151,7 @@ export default function AdminUsersPage() {
               <span className="text-red-600 font-bold">!</span>
             </div>
             <p className="text-sm dark:text-red-400 text-red-700">{error}</p>
-            <button onClick={() => fetchUsers(page, search)} className="ml-auto text-sm font-semibold text-red-600 hover:text-red-700">
+            <button onClick={() => fetchUsers(page, search, planFilter)} className="ml-auto text-sm font-semibold text-red-600 hover:text-red-700">
               Retry
             </button>
           </div>
@@ -173,7 +196,7 @@ export default function AdminUsersPage() {
                             </div>
                           </td>
                           <td className="py-4 px-6">
-                            <TierBadge tier={u.subscription_tier} />
+                            <TierBadge tier={u.subscription_tier} planName={u.plan_name} planInterval={u.plan_interval} />
                           </td>
                           <td className="py-4 px-6">
                             <RoleBadge role={u.role} />
