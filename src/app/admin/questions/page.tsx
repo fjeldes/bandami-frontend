@@ -43,7 +43,7 @@ interface QuestionsResponse {
   counts: { writing: number; speaking: number };
 }
 
-function ExamTypeBadge({ type, taskType }: { type: string; taskType?: string }) {
+function ExamTypeBadge({ type, taskType, module }: { type: string; taskType?: string; module?: string }) {
   if (type === "writing") {
     const isTask2 = taskType === "task2";
     return (
@@ -53,10 +53,11 @@ function ExamTypeBadge({ type, taskType }: { type: string; taskType?: string }) 
       </span>
     );
   }
+  const partLabel = module === "part1" ? "Part 1" : module === "part2" ? "Part 2" : module === "part3" ? "Part 3" : "Part 1";
   return (
     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold dark:bg-emerald-900/30 dark:text-emerald-400 bg-emerald-50 text-emerald-700">
       <Mic className="w-3.5 h-3.5" />
-      Speaking
+      Speaking — {partLabel}
     </span>
   );
 }
@@ -99,7 +100,7 @@ function QuestionCard({ question, onEdit, onDelete, onToggle }: { question: Ques
     <div className={`dark:bg-slate-900 bg-white rounded-xl border ${isInactive ? "dark:border-slate-700 border-slate-200 opacity-60" : "dark:border-slate-800 border-slate-100"} shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden mb-4`}>
       <div className="dark:bg-slate-800/50 bg-slate-50/60 px-5 py-3 border-b dark:border-slate-800 border-slate-100 flex justify-between items-center">
         <div className="flex items-center gap-2 flex-wrap">
-          <ExamTypeBadge type={question.exam_type} taskType={question.task_type} />
+          <ExamTypeBadge type={question.exam_type} taskType={question.task_type} module={question.module} />
           <DifficultyBadge difficulty={question.difficulty} />
           <StatusBadge isActive={question.is_active} />
         </div>
@@ -153,7 +154,7 @@ export default function AdminQuestionsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [counts, setCounts] = useState({ writing: 0, speaking: 0 });
 
-  const [form, setForm] = useState({ exam_type: "speaking", task_type: null as string | null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null as string | null, img_info: null as string | null });
+  const [form, setForm] = useState({ exam_type: "speaking", task_type: null as string | null, difficulty: 1, prompt_text: "", title: "", module: "part1", img_url: null as string | null, img_info: null as string | null });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -174,8 +175,10 @@ export default function AdminQuestionsPage() {
   useEffect(() => { fetchQuestions(page); }, [filterType]);
 
   useEffect(() => {
-    if (form.exam_type === "writing" && !form.task_type) {
-      setForm((prev) => ({ ...prev, task_type: "task1" }));
+    if (form.exam_type === "writing") {
+      setForm((prev) => ({ ...prev, task_type: "task1", module: "general" }));
+    } else {
+      setForm((prev) => ({ ...prev, task_type: null, module: "part1" }));
     }
   }, [form.exam_type]);
 
@@ -240,7 +243,7 @@ export default function AdminQuestionsPage() {
       setPendingImageFile(null);
       showSuccess("Question created");
       setShowNew(false);
-      setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null, img_info: null });
+      setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "part1", img_url: null, img_info: null });
       fetchQuestions(1);
     } catch (err) {
       console.error("Failed to create question:", err);
@@ -323,20 +326,29 @@ export default function AdminQuestionsPage() {
                 <option value="speaking">Speaking</option>
                 <option value="writing">Writing</option>
               </select>
-              {form.exam_type === "writing" && (
-                <select value={form.task_type ?? ""} onChange={(e) => setForm({ ...form, task_type: e.target.value })} disabled={isCreating} className="dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 outline-none">
-                  <option value="task1">Task 1</option>
-                  <option value="task2">Task 2</option>
+              {form.exam_type === "speaking" && (
+                <select value={form.module} onChange={(e) => setForm({ ...form, module: e.target.value })} disabled={isCreating} className="dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 outline-none">
+                  <option value="part1">Part 1</option>
+                  <option value="part2">Part 2</option>
+                  <option value="part3">Part 3</option>
                 </select>
+              )}
+              {form.exam_type === "writing" && (
+                <>
+                  <select value={form.task_type ?? ""} onChange={(e) => setForm({ ...form, task_type: e.target.value })} disabled={isCreating} className="dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 outline-none">
+                    <option value="task1">Task 1</option>
+                    <option value="task2">Task 2</option>
+                  </select>
+                  <select value={form.module} onChange={(e) => setForm({ ...form, module: e.target.value })} disabled={isCreating} className="dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 outline-none">
+                    <option value="general">General Training</option>
+                    <option value="academic">Academic</option>
+                  </select>
+                </>
               )}
               <select value={form.difficulty} onChange={(e) => setForm({ ...form, difficulty: Number(e.target.value) })} disabled={isCreating} className="dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 outline-none">
                 <option value={1}>Easy</option>
                 <option value={2}>Medium</option>
                 <option value={3}>Hard</option>
-              </select>
-              <select value={form.module} onChange={(e) => setForm({ ...form, module: e.target.value })} disabled={isCreating} className="dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-sm disabled:opacity-50 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/30 outline-none">
-                <option value="general">General Training</option>
-                <option value="academic">Academic</option>
               </select>
             </div>
             <input
@@ -372,7 +384,7 @@ export default function AdminQuestionsPage() {
               <button onClick={handleCreate} disabled={isCreating || uploadingImage || !form.prompt_text.trim()} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl disabled:opacity-50 flex items-center gap-2 transition-colors">
                 {isCreating ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating...</> : "Create Question"}
               </button>
-              <button onClick={() => { if (!isCreating) { setShowNew(false); setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "general", img_url: null, img_info: null }); } }} disabled={isCreating} className="dark:bg-slate-800 dark:text-slate-400 px-4 py-2.5 rounded-xl text-slate-600 hover:dark:bg-slate-700 hover:bg-slate-100 disabled:opacity-50 transition-colors">Cancel</button>
+              <button onClick={() => { if (!isCreating) { setShowNew(false); setForm({ exam_type: "speaking", task_type: null, difficulty: 1, prompt_text: "", title: "", module: "part1", img_url: null, img_info: null }); } }} disabled={isCreating} className="dark:bg-slate-800 dark:text-slate-400 px-4 py-2.5 rounded-xl text-slate-600 hover:dark:bg-slate-700 hover:bg-slate-100 disabled:opacity-50 transition-colors">Cancel</button>
             </div>
           </div>
         )}
@@ -419,9 +431,15 @@ export default function AdminQuestionsPage() {
                     <select value={q.difficulty} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, difficulty: Number(e.target.value) } : qq))} className="dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-sm">
                       <option value={1}>Easy</option><option value={2}>Medium</option><option value={3}>Hard</option>
                     </select>
-                    <select value={q.module || "general"} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, module: e.target.value } : qq))} className="dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-sm">
-                      <option value="general">General</option><option value="academic">Academic</option>
-                    </select>
+                    {q.exam_type === "speaking" ? (
+                      <select value={q.module && ["part1", "part2", "part3"].includes(q.module) ? q.module : "part1"} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, module: e.target.value } : qq))} className="dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-sm">
+                        <option value="part1">Part 1</option><option value="part2">Part 2</option><option value="part3">Part 3</option>
+                      </select>
+                    ) : (
+                      <select value={q.module && ["general", "academic"].includes(q.module) ? q.module : "general"} onChange={(e) => setQuestions(questions.map((qq) => qq.id === q.id ? { ...qq, module: e.target.value } : qq))} className="dark:bg-slate-800 dark:border-slate-700 dark:text-white bg-slate-50 border border-slate-200 rounded-lg py-1.5 px-2 text-sm">
+                        <option value="general">General</option><option value="academic">Academic</option>
+                      </select>
+                    )}
                     <button onClick={() => handleUpdate(q.id)} className="bg-blue-600 text-white text-sm font-semibold px-4 py-1.5 rounded-lg">Save</button>
                     <button onClick={() => setEditing(null)} className="dark:text-slate-500 text-slate-500 text-sm px-3 py-1.5">Cancel</button>
                   </div>
