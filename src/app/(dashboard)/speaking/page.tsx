@@ -237,7 +237,7 @@ export default function SpeakingListPage() {
               <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">Unlock Speaking Part 2 & 3</p>
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 Get unlimited access with{" "}
-                <a href="/pricing" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Pro (3-day free trial — then $14.99/month + tax)</a>
+                <a href="/pricing" className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">Pro (3-day free trial — then $9.99/month + tax)</a>
               </p>
             </div>
           </div>

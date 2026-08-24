@@ -36,7 +36,7 @@ const plans = [
   {
     slug: "weekly_pro_pass",
     name: "Weekly Pro",
-    price: "$4.99",
+    price: "$3.99",
     period: "one-time",
     badge: "Most Flexible",
     tagline: "Try everything Pro offers for 7 days — no subscription",
@@ -46,7 +46,7 @@ const plans = [
   {
     slug: "premium",
     name: "Pro",
-    price: "$14.99",
+    price: "$9.99",
     period: "month",
     badge: "",
     tagline: "The complete IELTS preparation toolkit",
@@ -86,6 +86,11 @@ function PricingContent() {
       <div className="relative z-10 max-w-5xl mx-auto px-4 py-16 md:py-24">
         {/* Header */}
         <div className="text-center mb-16">
+          {/* Price reduction banner */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-500/10 dark:to-emerald-500/10 border border-green-200 dark:border-green-500/20 text-[13px] text-green-700 dark:text-green-400 font-semibold mb-6 backdrop-blur-sm shadow-sm dark:shadow-none">
+            <span className="text-lg">🎉</span>
+            <span>Special offer: Pro plans now starting at $3.99/week — was $4.99!</span>
+          </div>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-[13px] text-gray-500 dark:text-slate-400 font-medium mb-6 backdrop-blur-sm shadow-sm dark:shadow-none">
             <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
             Start with a 3-day free trial
@@ -94,7 +99,7 @@ function PricingContent() {
             Choose your path to <span className="bg-gradient-to-r from-blue-500 to-violet-500 dark:from-blue-400 dark:to-violet-400 bg-clip-text text-transparent">Band 7+</span>
           </h1>
           <p className="text-lg text-gray-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            No charge today. Then $14.99/month + tax. Cancel anytime — your progress is always saved.
+            No charge today. Then $9.99/month + tax. Cancel anytime — your progress is always saved.
           </p>
           {isPremium && (
             <div className="inline-flex items-center gap-2 mt-6 px-5 py-2 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[14px] font-semibold backdrop-blur-sm">
@@ -287,7 +292,7 @@ function PricingContent() {
                             <span className="text-[15px] text-gray-700 dark:text-slate-300 font-semibold">for 3 days</span>
                           </div>
                           <div className="flex items-baseline gap-1.5 mt-1">
-                            <span className="font-mono text-2xl text-gray-900 dark:text-white font-bold">$14.99</span>
+                            <span className="font-mono text-2xl text-gray-900 dark:text-white font-bold">$9.99</span>
                             <span className="text-[14px] text-gray-500 dark:text-slate-500">/month + tax after</span>
                           </div>
                         </div>
@@ -329,7 +334,7 @@ function PricingContent() {
           <div className="mt-14 text-center">
             <div className="max-w-lg mx-auto p-5 rounded-2xl bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 backdrop-blur-sm shadow-sm dark:shadow-none">
               <p className="text-[14px] text-gray-500 dark:text-slate-400 leading-relaxed">
-                <span className="font-semibold text-gray-900 dark:text-slate-200">No charge today.</span> Start your 3-day free trial. Then $14.99/month + tax. Cancel anytime — your progress is always saved.
+                <span className="font-semibold text-gray-900 dark:text-slate-200">No charge today.</span> Start your 3-day free trial. Then $9.99/month + tax. Cancel anytime — your progress is always saved.
               </p>
             </div>
           </div>

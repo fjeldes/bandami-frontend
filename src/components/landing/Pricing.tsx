@@ -60,10 +60,18 @@ export function Pricing() {
   return (
     <section className="py-20 md:py-28 px-4 md:px-8 bg-slate-100 dark:bg-slate-900/50" id="pricing">
       <div className="max-w-5xl mx-auto">
+        {/* Price reduction banner */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-500/10 dark:to-emerald-500/10 border border-green-200 dark:border-green-500/20 text-[13px] text-green-700 dark:text-green-400 font-semibold">
+            <span className="text-lg">🎉</span>
+            <span>Special offer: Pro plans now starting at $3.99/week — was $4.99!</span>
+          </div>
+        </div>
+
         <div className="text-center mb-16">
           <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-4">Start your 3-day free trial</h2>
           <p className="text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            No charge today. Then $14.99/month + tax. Cancel anytime.
+            No charge today. Then $9.99/month + tax. Cancel anytime.
           </p>
         </div>
 
@@ -103,7 +111,7 @@ export function Pricing() {
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-green-400 rounded-t-2xl" />
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 mt-1">{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-3xl font-bold text-slate-900 dark:text-white">$4.99</span>
+                    <span className="text-3xl font-bold text-slate-900 dark:text-white">$3.99</span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">one-time</span>
                   </div>
 
@@ -136,7 +144,7 @@ export function Pricing() {
                       <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">for 3 days</span>
                     </div>
                     <div className="flex items-baseline gap-1.5 mt-0.5">
-                      <span className="text-lg font-bold text-slate-900 dark:text-white">$14.99</span>
+                      <span className="text-lg font-bold text-slate-900 dark:text-white">$9.99</span>
                       <span className="text-sm text-slate-500 dark:text-slate-400">/month + tax after</span>
                     </div>
                   </div>

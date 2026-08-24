@@ -46,7 +46,7 @@ function LockedPeek({ text }: { text: string }) {
         <span className="material-symbols-outlined text-outline text-[20px] mb-1">lock</span>
         <span className="text-label-sm text-on-surface-variant mb-2">Full detailed feedback is locked</span>
         <button onClick={() => redirectToCheckout("premium")} className="bg-primary text-on-primary font-semibold px-4 py-2 rounded-xl text-sm hover:scale-[0.98] active:scale-[0.97] transition-all">
-          Unlock Pro · $14.99/mo
+          Unlock Pro · $9.99/mo
         </button>
       </div>
     </div>
@@ -340,7 +340,7 @@ export default function SpeakingResultsPage() {
                     <span className="text-[14px] font-semibold text-slate-600">Detailed Scoring (Pro)</span>
                     <p className="text-[13px] text-slate-400 text-center max-w-[280px]">Get detailed scoring for all sub-criteria: fluency, coherence, vocabulary, grammar, and pronunciation.</p>
                     <button onClick={() => redirectToCheckout("premium")} className="mt-2 bg-slate-900 text-white font-semibold px-5 py-2 rounded-xl text-[13px] hover:bg-slate-800 hover:-translate-y-0.5 active:translate-y-0 transition-all shadow-md">
-                      Unlock Pro · $14.99/mo
+                      Unlock Pro · $9.99/mo
                     </button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3 opacity-30 select-none pointer-events-none">

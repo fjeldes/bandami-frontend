@@ -314,7 +314,7 @@ function SubscriptionSection({ user }: { user: any }) {
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
             <h4 className="text-lg font-bold text-slate-800 dark:text-white mb-2">Switch to Monthly</h4>
             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-              Convert to Pro Monthly at $14.99/month. Your billing period will be adjusted automatically.
+              Convert to Pro Monthly at $9.99/month. Your billing period will be adjusted automatically.
             </p>
             <div className="flex gap-3">
               <button
@@ -466,14 +466,14 @@ export default function SettingsPage() {
                   gtag("event", "conversion", {
                     send_to: "AW-18354386302/wFxFCM2-kdgcEP7qhrBE",
                     transaction_id: checkoutId,
-                    value: 14.99,
+                    value: 9.99,
                     currency: "USD",
                   });
                 } else if (gtag && planSlug === "weekly_pro_pass") {
                   gtag("event", "conversion", {
                     send_to: "AW-18354386302/YUbPCNC-kdgcEP7qhrBE",
                     transaction_id: checkoutId,
-                    value: 4.99,
+                    value: 3.99,
                     currency: "USD",
                   });
                 }

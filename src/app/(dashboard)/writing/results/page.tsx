@@ -45,7 +45,7 @@ function LockedPeek({ text }: { text: string }) {
         <span className="material-symbols-outlined text-outline text-[20px] mb-1">lock</span>
         <span className="text-label-sm text-on-surface-variant mb-2">Full detailed feedback is locked</span>
         <Link href="/pricing" className="bg-primary text-on-primary font-semibold px-4 py-2 rounded-lg text-sm hover:opacity-90 transition-opacity">
-          Unlock Pro · $14.99/mo
+          Unlock Pro · $9.99/mo
         </Link>
       </div>
     </div>
@@ -146,7 +146,7 @@ function EssayUpgrade({ evaluation, isPremium }: { evaluation: Evaluation; isPre
         <h3 className="text-body-md font-semibold text-on-surface mb-1">Upgrade Your Essay to {targetCefr} Level</h3>
         <p className="text-label-sm text-on-surface-variant mb-4">Get your essay rewritten at {targetCefr} with improved vocabulary and structure.</p>
         <Link href="/pricing" className="inline-block bg-primary text-on-primary font-semibold px-5 py-2.5 rounded-lg text-sm hover:opacity-90 transition-opacity">
-          Unlock Pro · $14.99/mo
+          Unlock Pro · $9.99/mo
         </Link>
       </div>
     );

@@ -2,8 +2,8 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   { q: "How accurate is the evaluation?", a: "Our scoring system is calibrated against official IELTS band descriptors to provide reliable feedback aligned with what examiners look for. It's designed to give you a clear understanding of your current level and what to improve." },
-  { q: "What do I get on the Free plan?", a: "The Free plan gives you instant band scores, basic feedback, and identification of your main strengths and weaknesses. You get full access to Writing and Speaking Part 1. To unlock Speaking Part 2 & 3, grammar corrections, and detailed feedback, try Pro ($14.99/month — 3-day free trial)." },
-  { q: "How does the Pro trial work?", a: "Your first 3 days are free. You get full access to everything — unlimited practice, detailed analysis, personalized recommendations, study plans, and all exam modules. After 3 days, it's $14.99/month + tax. Cancel anytime. No charge if you cancel during the trial." },
+  { q: "What do I get on the Free plan?", a: "The Free plan gives you instant band scores, basic feedback, and identification of your main strengths and weaknesses. You get full access to Writing and Speaking Part 1. To unlock Speaking Part 2 & 3, grammar corrections, and detailed feedback, try Pro ($9.99/month — 3-day free trial)." },
+  { q: "How does the Pro trial work?", a: "Your first 3 days are free. You get full access to everything — unlimited practice, detailed analysis, personalized recommendations, study plans, and all exam modules. After 3 days, it's $9.99/month + tax. Cancel anytime. No charge if you cancel during the trial." },
   { q: "Can I track my progress over time?", a: "Yes. Pro subscribers get access to full history and progress tracking. Your exam history, band scores, and performance trends are stored in your dashboard so you can see your improvement over time." },
   { q: "Which payment methods do you accept?", a: "We accept all major credit and debit cards. Payments are secure and encrypted. You can cancel your subscription anytime from your account settings." },
 ];
