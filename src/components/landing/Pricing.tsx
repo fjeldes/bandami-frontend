@@ -7,7 +7,10 @@ const plans = [
     name: "Free",
     featured: false,
     badge: null,
+    tagline: "Perfect for testing your baseline level.",
     originalPrice: null,
+    price: "$0",
+    discount: null,
     features: [
       { text: "Writing (all tasks)", included: true },
       { text: "Speaking Part 1", included: true },
@@ -24,8 +27,10 @@ const plans = [
     name: "Weekly Pro",
     featured: false,
     badge: null,
+    tagline: "Best for last-minute intensive revision.",
     originalPrice: "$4.99",
     price: "$3.99",
+    discount: "Save 20%",
     features: [
       { text: "Unlimited practice", included: true },
       { text: "Detailed IELTS analysis", included: true },
@@ -44,8 +49,10 @@ const plans = [
     name: "Pro",
     featured: true,
     badge: "MOST POPULAR",
+    tagline: "The complete plan to master the exam at your own pace.",
     originalPrice: "$14.99",
     price: "$9.99",
+    discount: "Save 33%",
     features: [
       { text: "Unlimited practice", included: true },
       { text: "Detailed IELTS analysis", included: true },
@@ -65,17 +72,9 @@ export function Pricing() {
   return (
     <section className="py-20 md:py-28 px-4 md:px-8 bg-slate-100 dark:bg-slate-900/50" id="pricing">
       <div className="max-w-5xl mx-auto">
-        {/* Price reduction banner */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-500/10 dark:to-emerald-500/10 border border-green-200 dark:border-green-500/20 text-[13px] text-green-700 dark:text-green-400 font-semibold">
-            <span className="text-lg">🎉</span>
-            <span>Special offer: Pro plans now starting at $3.99/week — was $4.99!</span>
-          </div>
-        </div>
-
         <div className="text-center mb-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-4">Start your 3-day free trial</h2>
-          <p className="text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white mb-4">Unlock Your Target IELTS Band Score</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
             No charge today. Then $9.99/month + tax. Cancel anytime.
           </p>
         </div>
@@ -90,19 +89,20 @@ export function Pricing() {
               {plan.slug === "free" && (
                 <div className="h-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 flex flex-col shadow-sm">
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{plan.name}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">{plan.tagline}</p>
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-3xl font-bold text-slate-900 dark:text-white">$0</span>
+                    <span className="text-3xl font-bold text-slate-900 dark:text-white">{plan.price}</span>
                   </div>
 
                   <ul className="space-y-3 mb-8 flex-1">
                     {plan.features.map((f) => (
                       <li key={f.text} className="flex items-center gap-3">
                         {f.included ? (
-                          <CheckCircle className="w-5 h-5 shrink-0 text-blue-600 dark:text-blue-400" />
+                          <CheckCircle className="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500" />
                         ) : (
                           <XCircle className="w-5 h-5 shrink-0 text-slate-300 dark:text-slate-600" />
                         )}
-                        <span className={`text-sm ${f.included ? "text-slate-700 dark:text-slate-300" : "text-slate-400 dark:text-slate-500"}`}>{f.text}</span>
+                        <span className={`text-sm ${f.included ? "text-slate-600 dark:text-slate-400" : "text-slate-400 dark:text-slate-500"}`}>{f.text}</span>
                       </li>
                     ))}
                   </ul>
@@ -112,22 +112,30 @@ export function Pricing() {
               )}
 
               {plan.slug === "weekly_pro_pass" && (
-                <div className="h-full bg-white dark:bg-slate-900 border border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-6 flex flex-col shadow-sm relative overflow-hidden">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-green-400 rounded-t-2xl" />
+                <div className="h-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 flex flex-col shadow-sm relative overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-slate-300 dark:bg-slate-600" />
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 mt-1">{plan.name}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{plan.tagline}</p>
+                  <div className="mb-3">
+                    {plan.discount && (
+                      <span className="inline-block px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full">
+                        {plan.discount}
+                      </span>
+                    )}
+                  </div>
                   <div className="flex items-baseline gap-1 mb-6">
                     {plan.originalPrice && (
                       <span className="text-lg text-slate-400 line-through mr-1">{plan.originalPrice}</span>
                     )}
-                    <span className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{plan.price}</span>
+                    <span className="text-3xl font-bold text-slate-600 dark:text-slate-300">{plan.price}</span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">one-time</span>
                   </div>
 
                   <ul className="space-y-3 mb-8 flex-1">
                     {plan.features.map((f) => (
                       <li key={f.text} className="flex items-center gap-3">
-                        <CheckCircle className="w-5 h-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                        <span className="text-sm text-slate-700 dark:text-slate-300">{f.text}</span>
+                        <CheckCircle className="w-5 h-5 shrink-0 text-slate-400 dark:text-slate-500" />
+                        <span className="text-sm text-slate-600 dark:text-slate-400">{f.text}</span>
                       </li>
                     ))}
                   </ul>
@@ -145,6 +153,15 @@ export function Pricing() {
                   </div>
 
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 mt-2">{plan.name}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{plan.tagline}</p>
+
+                  <div className="mb-3">
+                    {plan.discount && (
+                      <span className="inline-block px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full">
+                        {plan.discount}
+                      </span>
+                    )}
+                  </div>
 
                   <div className="mb-2">
                     <div className="flex items-baseline gap-2">
@@ -156,7 +173,7 @@ export function Pricing() {
                         <span className="text-base text-slate-400 line-through mr-1">{plan.originalPrice}</span>
                       )}
                       <span className="text-lg font-bold text-blue-600 dark:text-blue-400">{plan.price}</span>
-                      <span className="text-sm text-slate-500 dark:text-slate-400">/month + tax after</span>
+                      <span className="text-xs text-slate-400 opacity-70">/month + tax after</span>
                     </div>
                   </div>
 

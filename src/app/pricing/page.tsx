@@ -89,11 +89,6 @@ function PricingContent() {
       <div className="relative z-10 max-w-5xl mx-auto px-4 py-16 md:py-24">
         {/* Header */}
         <div className="text-center mb-16">
-          {/* Price reduction banner */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-500/10 dark:to-emerald-500/10 border border-green-200 dark:border-green-500/20 text-[13px] text-green-700 dark:text-green-400 font-semibold mb-6 backdrop-blur-sm shadow-sm dark:shadow-none">
-            <span className="text-lg">🎉</span>
-            <span>Special offer: Pro plans now starting at $3.99/week — was $4.99!</span>
-          </div>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-[13px] text-gray-500 dark:text-slate-400 font-medium mb-6 backdrop-blur-sm shadow-sm dark:shadow-none">
             <span className="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
             Start with a 3-day free trial
@@ -205,20 +200,23 @@ function PricingContent() {
                         </div>
                       </div>
                     ) : (
-                      <div className="h-full bg-gradient-to-b from-white to-green-50 dark:from-slate-800/90 dark:to-slate-900/90 backdrop-blur-md border border-green-200 dark:border-green-500/30 rounded-3xl p-7 flex flex-col shadow-[0_8px_30px_rgba(34,197,94,0.06)] dark:shadow-[0_8px_30px_rgba(34,197,94,0.1)] hover:border-green-300 dark:hover:border-green-400/30 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 to-emerald-400" />
+                      <div className="h-full bg-white dark:bg-slate-900 backdrop-blur-md border border-slate-200 dark:border-slate-700 rounded-3xl p-7 flex flex-col shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.12)] hover:border-slate-300 dark:hover:border-slate-600 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
+                        <div className="absolute top-0 left-0 right-0 h-0.5 bg-slate-300 dark:bg-slate-600" />
                         {plan.badge && (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-500/10 text-green-700 dark:text-green-400 text-[11px] font-bold uppercase tracking-wider mb-4 w-fit border border-green-200 dark:border-green-500/20">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 text-[11px] font-bold uppercase tracking-wider mb-4 w-fit border border-slate-200 dark:border-white/10">
                             {plan.badge}
                           </div>
                         )}
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{plan.name}</h3>
-                        <p className="text-[13px] text-gray-500 dark:text-slate-500 mb-6 leading-relaxed">{plan.tagline}</p>
+                        <p className="text-[13px] text-gray-500 dark:text-slate-500 mb-3 leading-relaxed">{plan.tagline}</p>
+                        <div className="mb-3">
+                          <span className="inline-block px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full">Save 20%</span>
+                        </div>
                         <div className="flex items-baseline gap-1 mb-2">
                           {plan.originalPrice && (
                             <span className="font-mono text-xl text-gray-400 dark:text-slate-500 line-through mr-1">{plan.originalPrice}</span>
                           )}
-                          <span className="font-mono text-4xl font-extrabold text-green-600 dark:text-green-400 tracking-tight">{plan.price}</span>
+                          <span className="font-mono text-4xl font-extrabold text-slate-600 dark:text-slate-300 tracking-tight">{plan.price}</span>
                           <span className="text-[13px] text-gray-500 dark:text-slate-500">{plan.period}</span>
                         </div>
                         <p className="text-[11px] text-gray-400 dark:text-slate-500 mb-6">Full premium features for 7 days</p>
@@ -289,7 +287,11 @@ function PricingContent() {
                         </div>
 
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 mt-2">{plan.name}</h3>
-                        <p className="text-[13px] text-gray-500 dark:text-slate-400 mb-6 leading-relaxed">{plan.tagline}</p>
+                        <p className="text-[13px] text-gray-500 dark:text-slate-400 mb-3 leading-relaxed">{plan.tagline}</p>
+
+                        <div className="mb-3">
+                          <span className="inline-block px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full">Save 33%</span>
+                        </div>
 
                         {/* Pricing */}
                         <div className="mb-2">
@@ -302,7 +304,7 @@ function PricingContent() {
                               <span className="font-mono text-lg text-gray-400 dark:text-slate-500 line-through mr-1">{plan.originalPrice}</span>
                             )}
                             <span className="font-mono text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">{plan.price}</span>
-                            <span className="text-[14px] text-gray-500 dark:text-slate-500">/month + tax after</span>
+                            <span className="text-xs text-gray-400 opacity-70">/month + tax after</span>
                           </div>
                         </div>
 
