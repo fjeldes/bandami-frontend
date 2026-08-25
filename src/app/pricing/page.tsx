@@ -27,6 +27,7 @@ const plans = [
     slug: "free",
     name: "Free",
     price: "$0",
+    originalPrice: null,
     period: "",
     badge: "",
     tagline: "Get started with essential practice tools",
@@ -37,6 +38,7 @@ const plans = [
     slug: "weekly_pro_pass",
     name: "Weekly Pro",
     price: "$3.99",
+    originalPrice: "$4.99",
     period: "one-time",
     badge: "Most Flexible",
     tagline: "Try everything Pro offers for 7 days — no subscription",
@@ -47,6 +49,7 @@ const plans = [
     slug: "premium",
     name: "Pro",
     price: "$9.99",
+    originalPrice: "$14.99",
     period: "month",
     badge: "",
     tagline: "The complete IELTS preparation toolkit",
@@ -212,7 +215,10 @@ function PricingContent() {
                         <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{plan.name}</h3>
                         <p className="text-[13px] text-gray-500 dark:text-slate-500 mb-6 leading-relaxed">{plan.tagline}</p>
                         <div className="flex items-baseline gap-1 mb-2">
-                          <span className="font-mono text-4xl font-extrabold text-gray-900 dark:text-white tracking-tight">{plan.price}</span>
+                          {plan.originalPrice && (
+                            <span className="font-mono text-xl text-gray-400 dark:text-slate-500 line-through mr-1">{plan.originalPrice}</span>
+                          )}
+                          <span className="font-mono text-4xl font-extrabold text-green-600 dark:text-green-400 tracking-tight">{plan.price}</span>
                           <span className="text-[13px] text-gray-500 dark:text-slate-500">{plan.period}</span>
                         </div>
                         <p className="text-[11px] text-gray-400 dark:text-slate-500 mb-6">Full premium features for 7 days</p>
@@ -292,7 +298,10 @@ function PricingContent() {
                             <span className="text-[15px] text-gray-700 dark:text-slate-300 font-semibold">for 3 days</span>
                           </div>
                           <div className="flex items-baseline gap-1.5 mt-1">
-                            <span className="font-mono text-2xl text-gray-900 dark:text-white font-bold">$9.99</span>
+                            {plan.originalPrice && (
+                              <span className="font-mono text-lg text-gray-400 dark:text-slate-500 line-through mr-1">{plan.originalPrice}</span>
+                            )}
+                            <span className="font-mono text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-violet-600 dark:from-blue-400 dark:to-violet-400">{plan.price}</span>
                             <span className="text-[14px] text-gray-500 dark:text-slate-500">/month + tax after</span>
                           </div>
                         </div>

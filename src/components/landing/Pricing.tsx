@@ -7,6 +7,7 @@ const plans = [
     name: "Free",
     featured: false,
     badge: null,
+    originalPrice: null,
     features: [
       { text: "Writing (all tasks)", included: true },
       { text: "Speaking Part 1", included: true },
@@ -23,6 +24,8 @@ const plans = [
     name: "Weekly Pro",
     featured: false,
     badge: null,
+    originalPrice: "$4.99",
+    price: "$3.99",
     features: [
       { text: "Unlimited practice", included: true },
       { text: "Detailed IELTS analysis", included: true },
@@ -41,6 +44,8 @@ const plans = [
     name: "Pro",
     featured: true,
     badge: "MOST POPULAR",
+    originalPrice: "$14.99",
+    price: "$9.99",
     features: [
       { text: "Unlimited practice", included: true },
       { text: "Detailed IELTS analysis", included: true },
@@ -111,7 +116,10 @@ export function Pricing() {
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-green-400 rounded-t-2xl" />
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1 mt-1">{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-6">
-                    <span className="text-3xl font-bold text-slate-900 dark:text-white">$3.99</span>
+                    {plan.originalPrice && (
+                      <span className="text-lg text-slate-400 line-through mr-1">{plan.originalPrice}</span>
+                    )}
+                    <span className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{plan.price}</span>
                     <span className="text-sm text-slate-500 dark:text-slate-400">one-time</span>
                   </div>
 
@@ -144,7 +152,10 @@ export function Pricing() {
                       <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">for 3 days</span>
                     </div>
                     <div className="flex items-baseline gap-1.5 mt-0.5">
-                      <span className="text-lg font-bold text-slate-900 dark:text-white">$9.99</span>
+                      {plan.originalPrice && (
+                        <span className="text-base text-slate-400 line-through mr-1">{plan.originalPrice}</span>
+                      )}
+                      <span className="text-lg font-bold text-blue-600 dark:text-blue-400">{plan.price}</span>
                       <span className="text-sm text-slate-500 dark:text-slate-400">/month + tax after</span>
                     </div>
                   </div>
